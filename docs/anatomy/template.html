@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>인체 장기 모형 · Human Organ Model</title>
+<meta name="description" content="Take organs out of the body, enlarge and rotate them, and follow a bite of food through digestion. Bilingual Korean / English.">
+<style>/*__STYLES__*/</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5.5v13M16 5.5v13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6M7 6v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6M17 6v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-spin" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><path d="M4 15v4h16v-4M12 4v11M7.5 8.5L12 4l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-in" viewBox="0 0 24 24"><path d="M4 15v4h16v-4M12 15V4M7.5 10.5L12 15l4.5-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 15l5 5M8 10.5h5M10.5 8v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-cut" viewBox="0 0 24 24"><path d="M4 20L16.5 7.5l3 3L7 21z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15 3.5l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="app" id="app" data-mode="explore">
+  <aside class="rail" id="rail" aria-label="장기 목록 Organ list">
+    <header class="brand">
+      <span class="seal" aria-hidden="true">장부</span>
+      <div>
+        <h1>인체 장기 모형</h1>
+        <p>Human organ model</p>
+      </div>
+    </header>
+    <nav class="organ-nav" id="organNav" aria-label="장기 Organs"></nav>
+    <div class="rail-tools" role="group" aria-label="보기 설정 View options">
+      <button class="tool" id="toolLabels" aria-pressed="true"><span class="k">이름표</span><span class="e">Labels</span></button>
+      <button class="tool" id="toolBody" aria-pressed="true"><span class="k">몸 윤곽</span><span class="e">Body outline</span></button>
+      <button class="tool" id="toolReset"><span class="k">모두 넣기</span><span class="e">Put all back</span></button>
+      <button class="tool" id="toolView"><span class="k">시점 초기화</span><span class="e">Reset view</span></button>
+    </div>
+  </aside>
+
+  <main class="stage" id="stage">
+    <div class="stage-top">
+      <p class="figcap"><b>Fig. 1</b> 소화계 <span>Digestive system</span></p>
+      <div class="modes" id="modes" role="tablist" aria-label="모드 Mode">
+        <button role="tab" id="modeExplore" aria-selected="true"><span class="k">탐색</span><span class="e">Explore</span></button>
+        <button role="tab" id="modeMeal" aria-selected="false"><span class="k">음식 따라가기</span><span class="e">Follow the meal</span></button>
+      </div>
+    </div>
+
+    <div class="viewport" id="viewport">
+      <canvas id="gl" aria-label="3D 인체 모형 3D human torso model" role="img"></canvas>
+      <svg class="leaders" id="leaders" aria-hidden="true"></svg>
+      <div class="dropzone" id="dropzone" aria-hidden="true"></div>
+      <div class="tags" id="tags"></div>
+      <div class="cta" id="cta">
+        <button class="btn primary big-cta" id="incise"><svg><use href="#i-cut"/></svg><span class="k">절개 시작</span><span class="e">Begin the incision</span></button>
+      </div>
+      <div class="pins" id="pins"></div>
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+      <div class="hint" id="hint"></div>
+      <div class="readout" id="readout" aria-live="polite"></div>
+
+      <div class="inspect-bar" id="inspectBar" hidden>
+        <button id="inSpin" class="ib" aria-pressed="true"><svg><use href="#i-spin"/></svg><span class="k">자동 회전</span><span class="e">Auto-spin</span></button>
+        <button id="inReset" class="ib"><svg><use href="#i-prev"/></svg><span class="k">각도 초기화</span><span class="e">Reset angle</span></button>
+        <button id="inSmaller" class="ib icon" aria-label="작게 Smaller"><svg><use href="#i-minus"/></svg></button>
+        <button id="inLarger" class="ib icon" aria-label="크게 Larger"><svg><use href="#i-plus"/></svg></button>
+        <button id="inClose" class="ib primary"><svg><use href="#i-close"/></svg><span class="k">닫기</span><span class="e">Close</span></button>
+      </div>
+    </div>
+
+    <section class="meal" id="meal" hidden aria-label="음식 따라가기 Follow the meal">
+      <div class="meal-ctl">
+        <button class="ib icon" id="mealPrev" aria-label="이전 단계 Previous stage"><svg><use href="#i-prev"/></svg></button>
+        <button class="ib icon primary big" id="mealPlay" aria-label="재생 Play"><svg><use href="#i-play"/></svg></button>
+        <button class="ib icon" id="mealNext" aria-label="다음 단계 Next stage"><svg><use href="#i-next"/></svg></button>
+      </div>
+      <ol class="route" id="route"></ol>
+      <div class="meal-text" id="mealText" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <aside class="detail" id="detail" aria-label="장기 정보 Organ details"></aside>
+</div>
+
+<script>/*__SCRIPT__*/</script>
+</body>
+</html>
