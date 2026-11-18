@@ -1,1 +1,1 @@
-# middle_shool_math
+# Middle School Math
