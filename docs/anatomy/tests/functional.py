@@ -2,6 +2,8 @@
 
 Headless software GL renders a few frames per second, so every animated step polls
 the page state with a generous timeout instead of sleeping a fixed time.
+Pages use bypass_csp because Playwright's string predicates need eval; the app itself
+is exercised under its real CSP first (the CSP meta tag is asserted below).
 """
 import pathlib
 import sys
@@ -34,13 +36,15 @@ def state(pg):
 def main():
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=ARGS)
-        pg = b.new_page(viewport={'width': 1366, 'height': 800})
+        pg = b.new_page(bypass_csp=True, viewport={'width': 1366, 'height': 800})
         logs, external = [], []
         pg.on('console', lambda m: logs.append(f'{m.type}: {m.text}') if m.type in ('error', 'warning') else None)
         pg.on('pageerror', lambda e: logs.append(f'PAGEERROR: {e}'))
         pg.on('request', lambda r: external.append(r.url) if not r.url.startswith(('file:', 'data:', 'blob:')) else None)
         pg.goto(URL, timeout=90000)
         pg.wait_for_selector('#incise', state='visible')
+
+        check('page ships a strict CSP', pg.evaluate("document.querySelector('meta[http-equiv=Content-Security-Policy]')?.content.includes(\"default-src 'none'\")"))
 
         # 1. the body starts closed and the controls are locked
         st = state(pg)
@@ -51,8 +55,10 @@ def main():
         check('incision button visible', pg.is_visible('#incise'))
         check('surgeon-view card is bilingual', '집도 시점' in pg.inner_text('#detail') and "surgeon's view" in pg.inner_text('#detail'))
 
-        # 2. real click runs the animation: cut -> open -> fade -> done
+        # 2. real click runs the animation: cut -> open -> fade -> done, on wall-clock time even at ~1 fps
         pg.click('#incise')
+        t_click = pg.evaluate('performance.now()')
+        check('click gives immediate feedback (cutting state, Skip shown)', pg.get_attribute('#app', 'data-body') == 'cutting' and pg.is_visible('#skipInc') and not pg.is_visible('#incise'))
         seen = set()
         for _ in range(200):
             seen.add(state(pg)['phase'])
@@ -61,12 +67,28 @@ def main():
             pg.wait_for_timeout(250)
         st = state(pg)
         check('incision completes by itself', st['opened'], str(seen))
+        check('incision takes about its wall-clock time on a slow GPU', pg.evaluate('performance.now()') - t_click < 20000)
         check('passes through the cut phase', 'cut' in seen, str(seen))
         check('camera looks down from the surgeon pitch', abs(st['camPitch'] - 0.72) < 0.05, str(st['camPitch']))
         check('app data-body=open', pg.get_attribute('#app', 'data-body') == 'open')
         check('organ list is live after opening', pg.evaluate("document.querySelector('#rail').inert === false"))
         check('incision button hidden after opening', not pg.is_visible('#incise'))
         pg.wait_for_timeout(1500)
+
+        # 2b. Skip button opens the body at once (second page so the first keeps its state)
+        pg2 = b.new_page(viewport={'width': 1366, 'height': 800})  # CSP enforced here
+        csp_hits = []
+        pg2.on('console', lambda m: csp_hits.append(m.text) if 'Content Security Policy' in m.text else None)
+        pg2.goto(URL, timeout=90000)
+        pg2.wait_for_selector('#incise', state='visible')
+        pg2.keyboard.press('Tab')
+        pg2.focus('#incise')
+        pg2.keyboard.press('Enter')
+        check('keyboard Enter on the button starts the cut', pg2.get_attribute('#app', 'data-body') == 'cutting')
+        pg2.click('#skipInc')
+        check('Skip opens the body immediately', state(pg2)['opened'] and pg2.get_attribute('#app', 'data-body') == 'open')
+        check('app runs under its CSP with no violations', not csp_hits, str(csp_hits[:2]))
+        pg2.close()
 
         # 3. choose organs from the list: bilingual detail, 췌장 included
         for oid, kr, en in [('heart', '심장', 'Heart'), ('pancreas', '췌장', 'Pancreas'), ('stomach', '위', 'Stomach')]:

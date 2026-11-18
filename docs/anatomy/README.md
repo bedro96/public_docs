@@ -6,7 +6,7 @@ An interactive, bilingual (한국어 / English) 3D model of the human torso for 
 
 ## What it does
 
-1. **The body starts closed.** Press *절개 시작 / Begin the incision*. A scalpel draws a midline cut from the chest to the belly, the cut is pulled open into a wide window, then the skin fades to a transparent outline. The camera ends looking down from a surgeon's point of view. This is a teaching model, not a real operation.
+1. **The body starts closed.** Press *절개 시작 / Begin the incision*. A scalpel draws a midline cut from the chest to the belly, the cut is pulled open into a wide window, then the skin fades to a transparent outline. The camera ends looking down from a surgeon's point of view. This is a teaching model, not a real operation. The cut runs on the wall clock (about 6 s) even on a slow GPU, shows "Making the incision…" at once, and a *바로 열기 / Skip the cut* button (or `prefers-reduced-motion`) opens the body immediately.
 2. **Explore.** Pick an organ from the list (or tap it) to read its name in Korean and English, what it does, and its part in digestion.
    - **Take out:** drag an organ out of the body (or use *꺼내기*). It rests on the shelf; drag it back, or use *넣기* / *모두 넣기*.
    - **Enlarge and rotate:** *확대 · 회전* opens the organ big; drag to turn it, wheel or +/- to zoom, `Esc` to close.
@@ -21,6 +21,12 @@ Organs covered: mouth/teeth 입, esophagus 식도, stomach 위, small intestine 
 - Audience: Korean middle-school students; content is simplified and illustrative, not medical advice.
 - Organ shapes are procedural and stylised, not scans. Times and sizes are approximate.
 - The `anatomy` skill's isometric SVG kit and its beta 3D mode were not used because they cannot give free-rotating organic organs.
+
+## Robustness
+
+- Render resolution drops automatically (down to 50 %) when frames are slow, such as on software GL or remote desktops.
+- No WebGL, a lost WebGL context, or repeated render errors show a bilingual message instead of a blank page.
+- The built file carries a strict Content-Security-Policy (script pinned by sha256, no network, no `eval`). Playwright string predicates need `eval`, so the tests use `bypass_csp`, except one page that runs under the real CSP and asserts no violations.
 
 ## Build and test
 

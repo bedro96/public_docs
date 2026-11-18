@@ -24,7 +24,8 @@ const WAVE_GLSL = `
 uniform float uWaveC; uniform float uWaveA;
 float waveD(float u) {
   float d = u - uWaveC;
-  return uWaveA * (exp(-pow(d / 0.035, 2.0)) - 0.55 * exp(-pow((d + 0.085) / 0.05, 2.0)));
+  float a = d / 0.035, b = (d + 0.085) / 0.05;
+  return uWaveA * (exp(-a * a) - 0.55 * exp(-b * b));
 }`;
 
 function patchWave(material, wave) {

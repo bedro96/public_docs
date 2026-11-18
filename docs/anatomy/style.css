@@ -104,7 +104,7 @@ svg { display: block; }
 .leaders circle { fill: var(--indigo); opacity: 0.8; }
 .leaders path.on { stroke: var(--cinnabar); stroke-width: 1.6; opacity: 1; }
 .leaders circle.on { fill: var(--cinnabar); opacity: 1; }
-.leaders.off, .tags.off { opacity: 0; pointer-events: none; }
+.leaders.off, .tags.off { opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 0.2s, visibility 0s 0.2s; }
 .tags { position: absolute; inset: 0; pointer-events: none; transition: opacity 0.2s; }
 .tag {
   position: absolute; left: 0; top: 0; pointer-events: auto; padding: 2px 8px 3px; min-height: 34px;
@@ -144,11 +144,8 @@ svg { display: block; }
 
 /* ---------- closed body: the only action is the incision ---------- */
 .cta { position: absolute; left: 50%; bottom: 7%; transform: translateX(-50%); z-index: 4; display: none; }
-.app[data-body='closed'] .cta { display: block; }
-.big-cta { min-height: 56px; padding: 8px 24px; column-gap: 12px; }
-.big-cta svg { width: 24px; height: 24px; }
-.big-cta .k { font-size: 17px; }
-.big-cta .e { font-size: 12px; }
+.app[data-body='closed'] .cta, .app[data-body='cutting'] .cta { display: block; }
+.app[data-body='cutting'] #incise, .app[data-body='closed'] #skipInc { display: none; }
 .app:not([data-body='open']) .rail { opacity: 0.5; }
 .app:not([data-body='open']) .modes { opacity: 0.5; }
 .app:not([data-body='open']) .readout { display: none; }
@@ -164,6 +161,15 @@ svg { display: block; }
 .ib.icon { grid-template-columns: auto; padding: 6px; width: 44px; justify-content: center; }
 .ib.icon svg { grid-row: auto; margin: auto; }
 .ib:hover:not(:disabled), .btn:hover:not(:disabled) { background: #fff; border-color: var(--indigo); }
+.btn.big-cta { min-height: 56px; padding: 8px 24px; column-gap: 12px; }
+.big-cta svg { width: 24px; height: 24px; }
+.big-cta .k { font-size: 17px; }
+.big-cta .e { font-size: 12px; }
+.skip-cta { grid-template-columns: 1fr; text-align: center; }
+.skip-cta .k, .skip-cta .e { grid-column: 1; }
+.fatal { position: absolute; inset: 0; z-index: 9; display: grid; place-content: center; gap: 6px; padding: 24px; text-align: center; background: var(--paper); }
+.fatal .k { font-size: 18px; }
+.fatal .e { font-size: 13px; color: var(--ink-2); }
 .ib[aria-pressed='false'] { background: transparent; border-style: dashed; }
 .primary { background: var(--cinnabar) !important; border-color: var(--cinnabar) !important; color: #fff !important; }
 .primary .e { color: #fbe3dd; }

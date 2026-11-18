@@ -10,7 +10,7 @@ ARGS = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshade
 
 with sync_playwright() as p:
     b = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=ARGS)
-    pg = b.new_page(viewport={'width': 1366, 'height': 800})
+    pg = b.new_page(bypass_csp=True, viewport={'width': 1366, 'height': 800})
     logs = []
     pg.on('console', lambda m: logs.append(f'{m.type}: {m.text}'))
     pg.on('pageerror', lambda e: logs.append(f'PAGEERROR: {e}'))

@@ -9,7 +9,9 @@ const $ = (s, r = document) => r.querySelector(s);
 const bi = (o) => `<span class="k">${o.kr}</span><span class="e">${o.en}</span>`;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const easeIO = (t) => t * t * (3 - 2 * t);
-const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const rmq = matchMedia('(prefers-reduced-motion: reduce)');
+let reduceMotion = rmq.matches;
+rmq.addEventListener?.('change', (e) => { reduceMotion = e.matches; });
 
 const PAPER = new THREE.Color('#efeee6');
 const INK = new THREE.Color('#1f2430');
@@ -20,7 +22,27 @@ const DIM_LINE = new THREE.Color('#aeb1b8');
 const app = $('#app');
 const canvas = $('#gl');
 const viewport = $('#viewport');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
+// Without WebGL nothing can be drawn, so say so instead of leaving a stage that looks broken.
+function fatal(kr, en) {
+  const d = document.createElement('div');
+  d.className = 'fatal';
+  d.setAttribute('role', 'alert');
+  d.innerHTML = `<span class="k">${kr}</span><span class="e">${en}</span>`;
+  viewport.appendChild(d);
+}
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
+} catch (err) {
+  fatal('이 브라우저에서는 3D를 그릴 수 없어요. 하드웨어 가속을 켜거나 다른 브라우저로 열어 보세요.', 'This browser cannot draw 3D. Turn on hardware acceleration or try another browser.');
+  throw err;
+}
+canvas.addEventListener('webglcontextlost', (e) => {
+  e.preventDefault();
+  fatal('그래픽 연결이 끊어졌어요. 잠시 뒤 자동으로 돌아오지 않으면 새로고침해 주세요.', 'The graphics connection was lost. If it does not come back by itself, please reload.');
+});
+canvas.addEventListener('webglcontextrestored', () => viewport.querySelectorAll('.fatal').forEach((n) => n.remove()));
+window.addEventListener('error', () => { if (!window.__anatomy) fatal('불러오는 중 문제가 생겼어요. 새로고침해 보세요.', 'Something went wrong while loading. Please reload.'); });
 renderer.setClearColor(0x000000, 0);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(28, 1, 0.5, 300);
@@ -128,7 +150,7 @@ const bodyMesh = (() => {
           else if (e < 0.062 * g) { wound = 1.0; wc = vec3(0.12, 0.14, 0.19); }
           else if (e < 0.115 * g) { wound = 1.0; wc = vec3(0.91, 0.81, 0.56); }
         }
-        float d = 1.0 - abs(dot(n, v));
+        float d = clamp(1.0 - abs(dot(n, v)), 0.0, 1.0);
         float rim = smoothstep(0.80, 0.9, d);
         float low = smoothstep(-1.2, -0.3, vP.y);
         float lowSkin = smoothstep(-1.2, -0.75, vP.y);
@@ -213,6 +235,7 @@ for (const id of IDS) {
   };
 }
 
+let quality = 1; // render-resolution scale, lowered by adaptQuality() on slow GPUs
 const layout = { portrait: false, w: 800, h: 600, dist: 20, center: new THREE.Vector3(0, 3.1, 0.2), halfW: 6.8 };
 
 /* =========================================================
@@ -234,7 +257,7 @@ function trayScale(id) {
 function resize() {
   const r = viewport.getBoundingClientRect();
   const w = Math.max(200, Math.round(r.width)), h = Math.max(200, Math.round(r.height));
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const dpr = Math.min(2, window.devicePixelRatio || 1) * quality;
   renderer.setPixelRatio(dpr);
   renderer.setSize(w, h, false);
   GLOBAL_UNIFORMS.uRes.value.set(w * dpr, h * dpr);
@@ -658,6 +681,8 @@ function beginIncision() {
   scalpel.visible = true;
   placeScalpel(0);
   refreshAll();
+  say('절개를 시작해요', 'Starting the incision');
+  $('#skipInc').focus({ preventScroll: true });
 }
 function finishIncision() {
   S.inc.phase = 'done';
@@ -665,7 +690,9 @@ function finishIncision() {
   bodyUniforms.uCut.value = 1; bodyUniforms.uOpen.value = 1; bodyUniforms.uSkin.value = 0;
   S.camPitch = SURGEON_PITCH;
   scalpel.visible = false;
+  const lostFocus = document.activeElement === $('#skipInc') || document.activeElement === $('#incise');
   refreshAll();
+  if (lostFocus) listBtn[IDS[0]].focus({ preventScroll: true });
 }
 function incisionUpdate(dt) {
   const I = S.inc;
@@ -912,6 +939,7 @@ $('#toolBody').addEventListener('click', (e) => {
 $('#toolReset').addEventListener('click', () => { putAll(); });
 $('#toolView').addEventListener('click', () => { S.camYaw = 0; S.camPitch = SURGEON_PITCH; });
 $('#incise').addEventListener('click', beginIncision);
+$('#skipInc').addEventListener('click', () => { if (S.inc.phase !== 'closed' && S.inc.phase !== 'done') finishIncision(); });
 
 /* =========================================================
    Pointer interaction
@@ -987,6 +1015,11 @@ function endPointer(e) {
   const p = ptr;
   ptr = null;
   app.classList.remove('dragging');
+  // an interrupted gesture (palm rejection, system swipe) must not drop the organ somewhere by accident
+  if (e.type === 'pointercancel') {
+    if (S.held) { S.held = null; refreshAll(); }
+    return;
+  }
   if (S.held) {
     const id = S.held;
     S.held = null;
@@ -1047,9 +1080,10 @@ function outlineFor(id) {
   return hl;
 }
 
-function update(dt) {
+function update(dt, wall = dt) {
   S.time += dt;
-  incisionUpdate(dt);
+  // the incision follows the wall clock (not the capped dt) so a slow or software-rendered GPU still finishes it in about 6 s
+  incisionUpdate(Math.min(wall, 1));
   // camera
   placeCamera();
   const insp = S.inspect ? inspectTarget(S.inspect) : null;
@@ -1207,12 +1241,30 @@ function updateReadout() {
   }
 }
 
+// Slow GPUs (software GL, remote desktops, VMs) get a lower render resolution until the frame rate recovers.
+let slow = 0;
+function adaptQuality(wall) {
+  if (wall > 0.12 && quality > 0.5) slow++;
+  else if (wall < 0.05) slow = Math.max(0, slow - 1);
+  if (slow >= 4) { slow = 0; quality = Math.max(0.5, quality - 0.25); resize(); }
+}
+
 let last = performance.now();
+let frameErrors = 0;
 function frame(now) {
-  const dt = Math.min(0.1, (now - last) / 1000);
+  const wall = (now - last) / 1000;
+  const dt = Math.min(0.1, wall);
   last = now;
-  update(dt);
-  renderer.render(scene, camera);
+  try {
+    update(dt, wall);
+    renderer.render(scene, camera);
+    adaptQuality(wall);
+    frameErrors = 0;
+  } catch (err) {
+    // keep the loop alive so Skip and the controls still work, but tell the learner if it keeps failing
+    console.error(err);
+    if (++frameErrors === 5) fatal('3D 화면을 그리다 문제가 생겼어요. 새로고침해 보세요.', 'The 3D view hit a problem. Please reload.');
+  }
   requestAnimationFrame(frame);
 }
 
@@ -1250,7 +1302,7 @@ window.__anatomy = {
   rotate: (yaw, pitch) => { S.spin = false; S.yaw = yaw; S.pitch = pitch; refreshInspectBar(); },
   zoom: (z) => { S.zoom = z; },
   state: () => ({
-    mode: S.mode, camPitch: S.camPitch, opened: S.opened, phase: S.inc.phase, selected: S.selected, inspect: S.inspect, removed: [...S.removed], held: S.held,
+    mode: S.mode, quality, camPitch: S.camPitch, opened: S.opened, phase: S.inc.phase, selected: S.selected, inspect: S.inspect, removed: [...S.removed], held: S.held,
     yaw: S.yaw, pitch: S.pitch, zoom: S.zoom, meal: { ...S.meal },
     at: Object.fromEntries(IDS.map((id) => [id, { x: A[id].pos.x, y: A[id].pos.y, z: A[id].pos.z, s: A[id].scale }])),
   }),

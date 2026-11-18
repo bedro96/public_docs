@@ -2,6 +2,7 @@
 // three.js + app code are bundled with esbuild; Korean fonts are subset to the glyphs actually used.
 import { build } from 'esbuild';
 import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
@@ -33,16 +34,23 @@ const textFile = join(tmp, 'chars.txt');
 writeFileSync(textFile, [...chars].join(''));
 
 let faces = '';
+try {
 for (const f of FONTS) {
   const out = join(tmp, `${f.family}${f.weight}.woff`);
   execFileSync('pyftsubset', [f.file, `--text-file=${textFile}`, '--flavor=woff', `--output-file=${out}`, '--layout-features=*', '--no-hinting']);
   const b64 = readFileSync(out).toString('base64');
   faces += `@font-face{font-family:'${f.family}';font-weight:${f.weight};font-style:normal;font-display:swap;src:url(data:font/woff;base64,${b64}) format('woff');}\n`;
 }
-rmSync(tmp, { recursive: true, force: true });
+} finally {
+  rmSync(tmp, { recursive: true, force: true });
+}
 
 const css = read('style.css').replace('/*__FONTS__*/', faces);
+// The app is offline and self-contained, so the page may load nothing from anywhere else; the script is pinned by hash.
+const scriptHash = createHash('sha256').update(js).digest('base64');
+const csp = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-${scriptHash}'; style-src 'unsafe-inline'; font-src data:; img-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">`;
 const html = read('template.html')
+  .replace('<!--__CSP__-->', () => csp)
   .replace('/*__STYLES__*/', () => css)
   .replace('/*__SCRIPT__*/', () => js);
 

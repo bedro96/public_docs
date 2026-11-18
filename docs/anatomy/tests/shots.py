@@ -13,7 +13,7 @@ def main():
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=ARGS)
         logs = []
-        pg = b.new_page(viewport={'width': 1366, 'height': 800})
+        pg = b.new_page(bypass_csp=True, viewport={'width': 1366, 'height': 800})
         pg.on('console', lambda m: logs.append(f'{m.type}: {m.text}'))
         pg.on('pageerror', lambda e: logs.append(f'PAGEERROR: {e}'))
         pg.goto(URL, timeout=90000)
@@ -39,7 +39,7 @@ def main():
         pg.screenshot(path=str(OUT / 'meal_full.png'))
 
         pg.close()
-        ph = b.new_page(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
+        ph = b.new_page(bypass_csp=True, viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
         ph.on('pageerror', lambda e: logs.append(f'PAGEERROR: {e}'))
         ph.goto(URL, timeout=90000)
         ph.evaluate('__anatomy.openBody(true)')

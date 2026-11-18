@@ -19,4 +19,5 @@
 ## Layout
 - Three columns on desktop: organ list, stage, detail. At ≤ 900 px one column with the list as a horizontal strip.
 - Removed organs rest on side shelves (desktop) or a bottom shelf (portrait).
-- Motion respects `prefers-reduced-motion` (the incision opens instantly).
+- Motion respects `prefers-reduced-motion`, including a change after load (the incision opens instantly).
+- While the body is closed or being cut, a large bottom-centre call to action shows: *절개 시작* when closed, a quieter *바로 열기 / Skip the cut* while cutting. Labels and leaders are `visibility:hidden` when off so they take no clicks or focus.
