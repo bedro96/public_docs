@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:,">
+<title>%%TITLE%%</title>
+<style>/*__STYLES__*/</style>
+</head>
+<body>
+<a class="skip-link" href="#lecture">강의 본문으로 건너뛰기</a>
+<noscript><p class="noscript">이 칠판 강의는 JavaScript가 켜져 있어야 재생됩니다. 브라우저 설정에서 JavaScript를 허용해 주세요.</p></noscript>
+<p id="fatal" class="fatal" role="alert" hidden>강의 데이터를 불러오지 못했습니다. 파일이 손상되었거나 빌드가 완료되지 않았습니다.</p>
+
+<div class="page">
+  <header class="masthead">
+    <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true">§</span> <span id="lesson-eyebrow"></span> <span id="lesson-count" class="eyebrow-count"></span></p>
+    <h1 id="lesson-title" class="lesson-title"></h1>
+    <p id="lesson-subtitle" class="lesson-subtitle"></p>
+    <p class="silent-chip"><span class="chip-dot" aria-hidden="true"></span><span class="chip-key">소리 없는 판서</span><span class="chip-val">해설 음성 없이 글과 그림으로 진행해요</span></p>
+  </header>
+
+  <main id="lecture" class="lecture" tabindex="-1">
+    <section class="stage" aria-labelledby="stage-title">
+      <h2 id="stage-title" class="sr-only">판서 강의 칠판</h2>
+
+      <div class="board-frame">
+        <div class="board">
+          <div class="board-head">
+            <p id="board-kicker" class="board-kicker"><span id="board-tag" class="tag" data-tone="analogy"></span></p>
+            <h3 id="board-title" class="board-title"></h3>
+            <p id="board-count" class="board-count" aria-hidden="true"></p>
+          </div>
+          <div id="board-stage" class="board-stage">
+            <canvas id="board" role="img" aria-label="칠판" aria-describedby="board-sr"></canvas>
+            <div id="board-hint" class="board-hint" aria-hidden="true">
+              <span class="hint-disc"><span class="hint-tri"></span></span>
+              <span id="hint-text" class="hint-text"></span>
+            </div>
+          </div>
+        </div>
+        <div class="tray">
+          <ul id="legend" class="legend" aria-label="칠판 범례"></ul>
+          <span class="tray-chalk" aria-hidden="true"></span>
+        </div>
+      </div>
+      <div id="board-sr" class="sr-only"></div>
+
+      <div class="controls" role="group" aria-label="재생 제어">
+        <div class="status-row">
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+          <p id="time" class="time" aria-hidden="true">0:00 / 0:00</p>
+        </div>
+        <div id="progress" class="progress" role="progressbar" aria-label="현재 단계 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0%"><span id="progress-fill" class="progress-fill"></span></div>
+
+        <div class="transport">
+          <button type="button" id="prev" class="btn" aria-label="이전 단계">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 5h2v14H7zM20 5v14L10 12z" fill="currentColor"/></svg>
+            <span>이전 단계</span>
+          </button>
+          <button type="button" id="play" class="btn btn-primary btn-play">
+            <span id="play-icon" class="icon-wrap" aria-hidden="true">
+              <svg id="icon-play" viewBox="0 0 24 24" focusable="false"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
+              <svg id="icon-pause" viewBox="0 0 24 24" focusable="false" hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/></svg>
+            </span>
+            <span id="play-label">재생</span>
+          </button>
+          <button type="button" id="next" class="btn" aria-label="다음 단계">
+            <span>다음 단계</span>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5h2v14h-2zM4 5v14l10-7z" fill="currentColor"/></svg>
+          </button>
+          <button type="button" id="replay" class="btn" aria-label="현재 단계 다시 재생">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z" fill="currentColor"/></svg>
+            <span>현재 단계 다시</span>
+          </button>
+          <button type="button" id="restart" class="btn" aria-label="강의 처음부터 다시 재생">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 5h2v14H6zM9 12l10-7v14z" fill="currentColor"/></svg>
+            <span>처음부터</span>
+          </button>
+        </div>
+
+        <div class="options">
+          <button type="button" id="auto-toggle" class="btn btn-toggle" aria-pressed="true">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5v14l8-7zM13 5v14l8-7z" fill="currentColor"/></svg>
+            <span>다음 단계로 자동 넘김</span><b class="state" id="auto-state">켬</b>
+          </button>
+          <label class="select">
+            <span>재생 속도</span>
+            <select id="speed">
+              <option value="0.75">0.75배</option>
+              <option value="1" selected>1배</option>
+              <option value="1.25">1.25배</option>
+              <option value="1.5">1.5배</option>
+            </select>
+          </label>
+        </div>
+
+        <p id="reduced-note" class="note" role="status" hidden>동작 줄이기 설정이 켜져 있어 판서 애니메이션 없이 완성된 칠판을 바로 보여 줍니다.</p>
+        <p class="keys"><kbd>Space</kbd> 재생/일시정지 · <kbd>←</kbd> <kbd>→</kbd> 이전/다음 단계 · <kbd>1</kbd>–<kbd>8</kbd> 단계 이동</p>
+      </div>
+
+      <nav class="chapters" aria-label="단계 선택">
+        <ol id="chapters" class="chapter-list"></ol>
+      </nav>
+
+      <section class="caption" aria-labelledby="caption-title">
+        <div class="caption-head">
+          <h3 id="caption-title" class="caption-title">단계 요약 · 설명</h3>
+          <button type="button" id="caption-toggle" class="btn btn-small" aria-expanded="true" aria-controls="caption-body">설명 접기</button>
+        </div>
+        <div id="caption-body" class="caption-body">
+          <p id="summary" class="summary"></p>
+          <ol id="beats" class="beats" aria-label="설명 순서"></ol>
+          <aside id="callout" class="callout" data-tone="info">
+            <p id="callout-title" class="callout-title"></p>
+            <p id="callout-text" class="callout-text"></p>
+          </aside>
+        </div>
+      </section>
+    </section>
+
+    <section id="misconceptions" class="card" aria-labelledby="mis-title">
+      <header class="section-head">
+        <p class="section-eyebrow">짚고 넘어가기</p>
+        <h2 id="mis-title" class="section-title">자주 하는 오해</h2>
+      </header>
+      <ul id="mis-list" class="mis-list"></ul>
+    </section>
+
+    <section id="references" class="card card-quiet" aria-labelledby="ref-title">
+      <header class="section-head">
+        <p class="section-eyebrow">더 읽을거리</p>
+        <h2 id="ref-title" class="section-title">참고 문서</h2>
+      </header>
+      <ul id="ref-list" class="ref-list"></ul>
+    </section>
+  </main>
+
+  <footer class="colophon">
+    <p class="colophon-author">작성: %%AUTHOR%%</p>
+    <p>하나의 HTML 파일에 글꼴과 계산 코드가 모두 들어 있어 인터넷 연결 없이 볼 수 있습니다. 판서는 영상이 아니라 Canvas로 그리는 애니메이션이며, 해설 음성은 없습니다.</p>
+    <p>손글씨 글꼴: 나눔손글씨 펜 (SIL Open Font License 1.1).</p>
+  </footer>
+</div>
+
+<script>/*__ECMATH__*/</script>
+<script>/*__SCENE__*/</script>
+<script>/*__PLAYER__*/</script>
+</body>
+</html>

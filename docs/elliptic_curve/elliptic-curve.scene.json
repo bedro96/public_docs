@@ -1,0 +1,467 @@
+{
+  "schema": "elliptic-curve-lesson/1",
+  "lang": "ko",
+  "eyebrow": "암호학 노트 · 타원곡선",
+  "title": "타원곡선 칠판 강의",
+  "subtitle": "곡선 위의 덧셈에서 Ed25519 인증서 서명까지, 8단계",
+  "author": "Microsoft Korea STU",
+  "ui": { "hint": "눌러서 판서 시작" },
+  "steps": [
+    {
+      "id": "shape",
+      "nav": "곡선의 모양",
+      "title": "타원곡선은 어떻게 생겼을까?",
+      "tag": { "tone": "analogy", "text": "비유 그림: 실수 평면" },
+      "summary": "타원곡선은 식 y^{2} = x^{3} + ax + b 가 그리는 곡선이에요. 이 곡선 위의 점들에 '덧셈'을 정의할 수 있다는 점이 핵심이에요.",
+      "beats": [
+        { "at": 0.3, "text": "이름은 '타원'이지만 타원(ellipse)처럼 생기지 않았어요. 식은 y^{2} = x^{3} + ax + b 꼴이에요." },
+        { "at": 4.0, "text": "a = -4, b = 4 로 그리면 매끈한 곡선이 하나 나와요. y가 제곱이라서 (x, y)가 곡선 위에 있으면 (x, -y)도 곡선 위에 있고, 그래서 x축에 대칭이에요." },
+        { "at": 8.0, "text": "뾰족점이나 스스로 교차하는 점이 있으면 안 돼요. 조건은 4a^{3} + 27b^{2} ≠ 0 이고, 이 곡선은 값이 176이라 통과예요." }
+      ],
+      "callout": {
+        "tone": "info",
+        "title": "이 그림은 비유예요",
+        "text": "매끈한 곡선은 실수 평면에서 그린 이해용 그림이에요. 실제 암호는 이 식을 '나머지 계산'(유한체) 위에서 쓰고, 그때는 흩어진 점이 돼요. 4단계에서 확인해요."
+      },
+      "legend": [
+        { "color": "mint", "style": "line", "text": "곡선 y^{2} = x^{3} - 4x + 4" },
+        { "color": "yellow", "style": "dot", "text": "곡선 위의 점" },
+        { "color": "pink", "style": "dash", "text": "x축 대칭" }
+      ],
+      "alt": "가로축 x, 세로축 y의 좌표평면(가로세로 눈금 간격이 같음)에 곡선 y^{2} = x^{3} - 4x + 4 가 그려져 있습니다. 곡선은 x가 약 -2.4인 지점에서 시작해 오른쪽으로 벌어지는 매끈한 한 덩어리이고, x축에 대칭입니다. 점 (1, 1)과 (1, -1)이 점선으로 이어져 x축 대칭을 보여 줍니다.",
+      "math": {
+        "curve": { "model": "weierstrass", "field": "Q", "a": "-4", "b": "4" },
+        "points": {
+          "A": { "x": "1", "y": "1" },
+          "Am": { "op": "neg", "args": ["A"], "expect": ["1", "-1"] }
+        },
+        "checks": [{ "discriminant": "176" }]
+      },
+      "board": {
+        "kind": "plane",
+        "view": { "x": [-3.5, 4.5], "y": [-4.6, 4.6] },
+        "elements": [
+          { "type": "axes", "at": 0, "dur": 0.8 },
+          { "type": "curve", "color": "mint", "at": 0.5, "dur": 2.8, "label": { "text": "y^{2} = x^{3} - 4x + 4", "x": -3.3, "y": -3.9 } },
+          { "type": "point", "ref": "A", "color": "yellow", "at": 4.0, "label": "[[A]]", "dir": "ur" },
+          { "type": "point", "ref": "Am", "color": "yellow", "at": 4.6, "label": "[[Am]]", "dir": "dr" },
+          { "type": "link", "from": "A", "to": "Am", "color": "pink", "at": 5.2, "dur": 0.9 }
+        ]
+      },
+      "panel": [
+        { "text": "y^{2} = x^{3} + ax + b", "color": "white", "size": "xl", "at": 0.3 },
+        { "text": "4a^{3} + 27b^{2} ≠ 0   (뾰족점 없음)", "color": "mint", "size": "m", "at": 2.2 },
+        { "text": "a = -4,  b = 4", "color": "yellow", "size": "l", "at": 4.4 },
+        { "text": "y^{2} = x^{3} - 4x + 4", "color": "yellow", "size": "l", "at": 5.6 },
+        { "text": "4(-4)^{3} + 27(4)^{2} = -256 + 432 = 176 ≠ 0", "color": "mint", "size": "m", "at": 8.0 },
+        { "text": "(x, y)가 곡선 위이면 (x, -y)도 곡선 위", "color": "pink", "size": "m", "at": 10.2 }
+      ]
+    },
+    {
+      "id": "chord",
+      "nav": "현으로 더하기",
+      "title": "점 두 개를 어떻게 더할까?",
+      "tag": { "tone": "analogy", "text": "비유 그림: 실수 평면" },
+      "summary": "점 P, Q를 지나는 직선이 곡선과 만나는 세 번째 점 R을 x축 반대편으로 뒤집으면 P + Q예요.",
+      "beats": [
+        { "at": 1.2, "text": "곡선 위의 두 점 P, Q를 지나는 직선을 그으면 곡선과 세 번째 점 R에서 만나요. 세 점 P, Q, R은 한 직선 위에 있어요." },
+        { "at": 5.0, "text": "R을 x축 반대편으로 뒤집은 점이 P + Q예요. 이 '긋고, 뒤집는' 규칙이 곡선 위 덧셈의 정의예요." },
+        { "at": 8.6, "text": "이 덧셈은 a + b = b + a 이고 (a + b) + c = a + (b + c) 도 성립해요. 항등원 O와 역원 -P가 있어서 곡선 위의 점들은 '군(group)'이 돼요." },
+        { "at": 11.4, "text": "P와 -P를 지나는 직선은 수직선이라 세 번째 교점이 없어요. 그 자리를 무한원점 O라고 약속해서 P + (-P) = O 가 돼요." }
+      ],
+      "callout": {
+        "tone": "info",
+        "title": "그림 없이 공식으로 계산해요",
+        "text": "기울기 m을 구하면 x_{R} = m^{2} - x_{P} - x_{Q} 로 R이 정해져요. 직선을 눈으로 그리는 게 아니라 이 공식을 쓰기 때문에, 숫자가 유한체여도 똑같이 계산할 수 있어요."
+      },
+      "legend": [
+        { "color": "yellow", "style": "line", "text": "P, Q를 지나는 직선" },
+        { "color": "pink", "style": "dot", "text": "세 번째 교점 R" },
+        { "color": "mint", "style": "dot", "text": "P + Q (뒤집은 점)" }
+      ],
+      "alt": "곡선 y^{2} = x^{3} - 4x + 4 위의 점 P(-2, 2)와 Q(1, -1)을 지나는 직선 y = -x가 그려져 있고, 이 직선은 곡선과 R(2, -2)에서 다시 만납니다. R을 x축 반대편으로 뒤집은 점 (2, 2)가 P + Q입니다.",
+      "math": {
+        "curve": { "model": "weierstrass", "field": "Q", "a": "-4", "b": "4" },
+        "points": {
+          "P": { "x": "-2", "y": "2" },
+          "Q": { "x": "1", "y": "-1" },
+          "S": { "op": "add", "args": ["P", "Q"], "expect": ["2", "2"] },
+          "R": { "op": "neg", "args": ["S"], "expect": ["2", "-2"] }
+        },
+        "checks": [{ "collinear": ["P", "Q", "R"] }]
+      },
+      "board": {
+        "kind": "plane",
+        "view": { "x": [-3.5, 4.5], "y": [-4.6, 4.6] },
+        "elements": [
+          { "type": "axes", "at": 0, "dur": 0.6 },
+          { "type": "curve", "color": "mint", "at": 0.2, "dur": 1.4 },
+          { "type": "point", "ref": "P", "color": "yellow", "at": 1.6, "label": "P = [[P]]", "dir": "ul" },
+          { "type": "point", "ref": "Q", "color": "yellow", "at": 2.2, "label": "Q = [[Q]]", "dir": "dl" },
+          { "type": "line", "through": ["P", "Q"], "color": "yellow", "at": 2.8, "dur": 1.6 },
+          { "type": "point", "ref": "R", "color": "pink", "at": 4.6, "label": "R = [[R]]", "dir": "dr" },
+          { "type": "link", "from": "R", "to": "S", "color": "pink", "at": 5.4, "dur": 1.0 },
+          { "type": "point", "ref": "S", "color": "mint", "at": 6.6, "label": "P + Q = [[S]]", "dir": "ur" }
+        ]
+      },
+      "panel": [
+        { "text": "P + Q = ?", "color": "white", "size": "xl", "at": 0.3 },
+        { "text": "1. 직선 PQ를 긋는다", "color": "yellow", "size": "m", "at": 2.4 },
+        { "text": "2. 세 번째 교점 R을 찾는다", "color": "pink", "size": "m", "at": 4.2 },
+        { "text": "3. R을 x축 반대편으로 뒤집는다", "color": "mint", "size": "m", "at": 5.8 },
+        { "text": "P + Q = -R = [[S]]", "color": "mint", "size": "l", "at": 7.6 },
+        { "text": "m = (-1 - 2) / (1 - (-2)) = -1", "color": "white", "size": "s", "at": 9.4 },
+        { "text": "x_{R} = m^{2} - x_{P} - x_{Q} = 1 + 2 - 1 = 2", "color": "white", "size": "s", "at": 10.8 },
+        { "text": "P + (-P) = O  (무한원점)", "color": "pink", "size": "m", "at": 12.2 }
+      ]
+    },
+    {
+      "id": "scalar",
+      "nav": "거듭 더하기",
+      "title": "같은 점을 여러 번 더하면?",
+      "tag": { "tone": "analogy", "text": "비유 그림: 실수 평면" },
+      "summary": "P + P는 접선으로, P를 k번 더한 kP(스칼라 곱)는 두 배와 덧셈을 이진수 자릿수만큼만 해서 빠르게 구해요.",
+      "beats": [
+        { "at": 0.9, "text": "같은 점 P를 두 번 더할 때는 직선 대신 P에서의 접선을 그어요. 접선의 기울기는 (3x^{2} + a) / (2y)예요." },
+        { "at": 4.4, "text": "접선이 곡선과 다시 만나는 점 (1, 1)을 뒤집으면 2P = (1, -1)이에요. 이어서 2P + P = 3P = (8, 22), 2P의 접선으로 4P = (-7/4, 19/8)이에요." },
+        { "at": 9.0, "text": "P를 k번 더한 kP를 스칼라 곱이라고 해요. 두 배와 덧셈을 k의 이진수 자릿수만큼만 하면 돼서 k가 아주 커도 빨라요(double-and-add)." },
+        { "at": 11.8, "text": "예를 들어 k = 13 = 1101_{2} 이면 두 배 3번, 더하기 2번이면 충분해요." }
+      ],
+      "callout": {
+        "tone": "info",
+        "title": "왜 유한체로 갈까요?",
+        "text": "유리수 위에서는 kP의 분수가 k가 커질수록 빠르게 길어져요(4P의 좌표가 이미 -7/4, 19/8). 유한체에서는 숫자가 정해진 크기를 넘지 않아서 아무리 많이 더해도 계산량이 일정해요."
+      },
+      "legend": [
+        { "color": "yellow", "style": "dash", "text": "P에서의 접선" },
+        { "color": "sky", "style": "dash", "text": "2P에서의 접선" },
+        { "color": "mint", "style": "dot", "text": "2P, 3P, 4P" }
+      ],
+      "alt": "곡선 y^{2} = x^{3} - 4x + 4 위의 점 P(0, 2)에서 접선 y = 2 - x를 그으면 곡선과 (1, 1)에서 다시 만나고, 이를 뒤집은 점 2P = (1, -1)이 나옵니다. 2P에서의 접선은 (-7/4, -19/8)에서 다시 만나고 이를 뒤집으면 4P = (-7/4, 19/8)입니다. 3P = (8, 22)는 그래프 범위 밖 오른쪽 위에 있습니다.",
+      "math": {
+        "curve": { "model": "weierstrass", "field": "Q", "a": "-4", "b": "4" },
+        "points": {
+          "P": { "x": "0", "y": "2" },
+          "P2": { "op": "add", "args": ["P", "P"], "expect": ["1", "-1"] },
+          "T1": { "op": "neg", "args": ["P2"], "expect": ["1", "1"] },
+          "P3": { "op": "add", "args": ["P2", "P"], "expect": ["8", "22"] },
+          "N3": { "op": "neg", "args": ["P3"], "expect": ["8", "-22"] },
+          "P4": { "op": "add", "args": ["P2", "P2"], "expect": ["-7/4", "19/8"] },
+          "T2": { "op": "neg", "args": ["P4"], "expect": ["-7/4", "-19/8"] }
+        },
+        "checks": [
+          { "tangent": ["P", "T1"] },
+          { "tangent": ["P2", "T2"] },
+          { "collinear": ["P", "P2", "N3"] },
+          { "ladder": { "k": "13", "doublings": 3, "additions": 2 } }
+        ]
+      },
+      "board": {
+        "kind": "plane",
+        "view": { "x": [-3.5, 4.5], "y": [-4.6, 4.6] },
+        "elements": [
+          { "type": "axes", "at": 0, "dur": 0.6 },
+          { "type": "curve", "color": "mint", "at": 0.2, "dur": 1.4 },
+          { "type": "point", "ref": "P", "color": "yellow", "at": 1.6, "label": "P = [[P]]", "dir": "ul" },
+          { "type": "tangent", "point": "P", "color": "yellow", "at": 2.2, "dur": 1.4 },
+          { "type": "point", "ref": "T1", "color": "pink", "at": 3.8, "dir": "ur", "small": true },
+          { "type": "link", "from": "T1", "to": "P2", "color": "pink", "at": 4.4, "dur": 0.8 },
+          { "type": "point", "ref": "P2", "color": "mint", "at": 5.4, "label": "2P = [[P2]]", "dir": "dr" },
+          { "type": "tangent", "point": "P2", "color": "sky", "at": 6.2, "dur": 1.4 },
+          { "type": "link", "from": "T2", "to": "P4", "color": "pink", "at": 7.8, "dur": 0.8 },
+          { "type": "point", "ref": "P4", "color": "mint", "at": 8.8, "label": "4P = [[P4]]", "short": "4P", "dir": "ul" },
+          { "type": "point", "ref": "P3", "color": "mint", "at": 9.6, "label": "3P = [[P3]]", "short": "3P", "dir": "dl" }
+        ]
+      },
+      "panel": [
+        { "text": "kP = P + P + ... + P  (k번)", "color": "white", "size": "xl", "at": 0.3 },
+        { "text": "2P = [[P2]]  (접선)", "color": "mint", "size": "l", "at": 2.8 },
+        { "text": "3P = [[P3]]", "color": "mint", "size": "l", "at": 5.0 },
+        { "text": "4P = [[P4]]  (2P의 접선)", "color": "mint", "size": "l", "at": 6.8 },
+        { "text": "k = 13 = 1101_{2}  ->  두 배 3번, 더하기 2번", "color": "yellow", "size": "m", "at": 10.0 },
+        { "text": "유리수에서는 분수가 점점 길어져요", "color": "pink", "size": "m", "at": 12.0 }
+      ]
+    },
+    {
+      "id": "finite",
+      "nav": "유한체 위의 곡선",
+      "title": "진짜 암호는 어디서 계산할까?",
+      "tag": { "tone": "real", "text": "실제 암호: 유한체 위의 점" },
+      "summary": "x, y를 mod 17 같은 나머지로만 계산하면 곡선은 흩어진 점이 되고, 덧셈 공식은 그대로 쓸 수 있어요.",
+      "beats": [
+        { "at": 0.3, "text": "x, y를 0~16의 나머지(mod 17)로만 계산해 y^{2} = x^{3} + 2x + 2 를 만족하는 점을 찾으면, 매끈한 곡선이 아니라 점 18개가 흩어져 나타나요." },
+        { "at": 3.0, "text": "같은 덧셈 공식(기울기, x_{3}, y_{3})을 mod 17에서 그대로 써요. 나눗셈은 역원 곱하기로 바뀌어요." },
+        { "at": 5.6, "text": "G = (5, 1)을 1번, 2번, ... 더하면 19번째에 O로 돌아오고, 그 사이에 곡선 위 점을 하나도 빠짐없이 한 번씩 지나가요. 그래서 G의 위수는 19예요." },
+        { "at": 12.0, "text": "13G = (16, 4)예요. 순서대로 세면 쉽지만, 점 (16, 4)만 보고 13을 알아내는 문제는 다음 단계에서 다뤄요." }
+      ],
+      "callout": {
+        "tone": "warn",
+        "title": "비유 그림과 실제의 차이",
+        "text": "앞의 매끈한 곡선은 이해를 돕는 비유예요. 실제 암호의 점은 이렇게 격자 위에 흩어져 있어서, 눈으로 직선을 찾을 수는 없고 공식만 같아요. 교재에서 자주 쓰는 작은 예제라 p = 17로 점이 19개뿐이에요."
+      },
+      "legend": [
+        { "color": "white", "style": "dot", "text": "곡선 위의 점 18개" },
+        { "color": "yellow", "style": "dot", "text": "G의 배수 1G, 2G, ..., 18G" },
+        { "color": "pink", "style": "dot", "text": "13G" },
+        { "color": "sky", "style": "dash", "text": "y와 17 - y (-P)" }
+      ],
+      "alt": "0부터 16까지의 눈금이 가로세로 같은 간격인 격자에 점 18개가 흩어져 있습니다. 곡선은 y^{2} = x^{3} + 2x + 2 (mod 17)입니다. 기준점 G = (5, 1)의 배수 1G부터 18G가 번호와 함께 차례로 표시되고, 13G = (16, 4)가 강조됩니다. 19G는 무한원점입니다.",
+      "math": {
+        "curve": { "model": "weierstrass", "field": "F17", "a": "2", "b": "2" },
+        "points": {
+          "G": { "x": "5", "y": "1" },
+          "G2": { "op": "mul", "k": "2", "args": ["G"], "expect": ["6", "3"] },
+          "G3": { "op": "mul", "k": "3", "args": ["G"], "expect": ["10", "6"] },
+          "G13": { "op": "mul", "k": "13", "args": ["G"], "expect": ["16", "4"] },
+          "G19": { "op": "mul", "k": "19", "args": ["G"], "expect": "O" }
+        },
+        "checks": [
+          { "groupOrder": "19" },
+          { "order": { "of": "G", "equals": "19" } },
+          { "generates": "G" }
+        ]
+      },
+      "board": {
+        "kind": "finite",
+        "elements": [
+          { "type": "axes", "at": 0, "dur": 0.8 },
+          { "type": "hline", "y": 8.5, "color": "sky", "at": 1.0, "dur": 0.8, "label": "y 와 17 - y" },
+          { "type": "dots", "color": "white", "at": 1.8, "dur": 1.2 },
+          { "type": "orbit", "of": "G", "color": "yellow", "at": 3.4, "dur": 7.2 },
+          { "type": "point", "ref": "G13", "color": "pink", "at": 10.8, "label": "13G = [[G13]]", "dir": "ul" }
+        ]
+      },
+      "panel": [
+        { "text": "y^{2} = x^{3} + 2x + 2  (mod 17)", "color": "white", "size": "xl", "at": 0.3 },
+        { "text": "점 18개 + 무한원점 O = 모두 19개", "color": "mint", "size": "m", "at": 2.4 },
+        { "text": "G = [[G]]", "color": "yellow", "size": "l", "at": 4.0 },
+        { "text": "2G = [[G2]],  3G = [[G3]],  ...", "color": "yellow", "size": "m", "at": 5.4 },
+        { "text": "19G = O   ->   G의 위수는 19", "color": "mint", "size": "m", "at": 9.2 },
+        { "text": "13G = [[G13]]", "color": "pink", "size": "l", "at": 11.2 }
+      ]
+    },
+    {
+      "id": "ecdlp",
+      "nav": "되돌리기 어려운 문제",
+      "title": "왜 안전하다고 할까?",
+      "tag": { "tone": "real", "text": "실제 암호: 유한체 위의 점" },
+      "summary": "k에서 Q = kG를 만드는 건 빠르지만, G와 Q에서 k를 찾는 문제(ECDLP)는 알려진 효율적인 고전 알고리즘이 없어요.",
+      "beats": [
+        { "at": 0.3, "text": "G와 Q = kG를 알 때 k를 찾는 문제가 타원곡선 이산로그 문제(ECDLP)예요. k에서 Q를 만드는 건 빠른데, 거꾸로는 그렇지 않아요." },
+        { "at": 1.0, "text": "작은 곡선은 하나씩 세어 보면 끝나요. 13G = (16, 4)는 G를 최대 19번만 더해 보면 찾아요." },
+        { "at": 3.0, "text": "Ed25519처럼 군의 크기 L이 약 2^{252}이면 k에서 Q를 만드는 건 최대 500번 남짓의 연산이에요." },
+        { "at": 5.0, "text": "반대로 k를 찾는 알려진 일반 공격(폴라드 로)은 L의 제곱근에 해당하는 약 2^{126}번의 군 연산 규모예요. 막대는 로그 눈금이에요." },
+        { "at": 7.4, "text": "'불가능'이 증명된 것은 아니에요. 알려진 효율적인 고전 알고리즘이 없다는 뜻이고, 충분히 큰 양자 컴퓨터에서는 쇼어 알고리즘으로 풀린다고 알려져 있어요." }
+      ],
+      "callout": {
+        "tone": "warn",
+        "title": "곡선은 아무거나 쓰지 않아요",
+        "text": "곡선과 기준점을 잘못 고르면 쉽게 풀리는 경우가 있어요. 그래서 오랜 검토를 거친 표준 곡선(Ed25519 등)을 그대로 써요."
+      },
+      "legend": [
+        { "color": "mint", "style": "bar", "text": "작은 곡선에서 k 찾기" },
+        { "color": "yellow", "style": "bar", "text": "k에서 kG 만들기 (쉬움)" },
+        { "color": "pink", "style": "bar", "text": "kG에서 k 찾기 (어려움)" }
+      ],
+      "alt": "가로 막대 세 개로 연산 횟수를 로그 눈금으로 비교합니다. 작은 곡선에서 k를 찾는 데는 13번, Ed25519 크기에서 k로 kG를 만드는 데는 최대 약 504번, 반대로 kG에서 k를 찾는 일반 공격은 약 2의 126제곱 번으로, 마지막 막대가 압도적으로 깁니다.",
+      "math": {
+        "curve": { "model": "weierstrass", "field": "F17", "a": "2", "b": "2" },
+        "points": {
+          "G": { "x": "5", "y": "1" },
+          "G13": { "op": "mul", "k": "13", "args": ["G"], "expect": ["16", "4"] }
+        },
+        "checks": [{ "order": { "of": "G", "equals": "19" } }]
+      },
+      "board": {
+        "kind": "bars",
+        "axisLabel": "연산 횟수 (로그 눈금)",
+        "axisMax": 128,
+        "axisTicks": [0, 32, 64, 96, 128],
+        "elements": [
+          { "type": "bar", "color": "mint", "at": 1.0, "dur": 1.0, "count": "13", "label": "작은 곡선 (p = 17): k 찾기", "value": "13번" },
+          { "type": "bar", "color": "yellow", "at": 3.0, "dur": 1.0, "count": "504", "label": "Ed25519 크기: k로 kG 만들기", "value": "최대 약 504번" },
+          { "type": "bar", "color": "pink", "at": 5.0, "dur": 2.6, "pow2": 126, "label": "Ed25519 크기: kG에서 k 찾기", "value": "약 2^{126}번" }
+        ]
+      },
+      "panel": [
+        { "text": "Q = kG", "color": "white", "size": "xl", "at": 0.3 },
+        { "text": "알려진 것: G, Q     구할 것: k", "color": "yellow", "size": "l", "at": 1.4 },
+        { "text": "k에서 Q 로:  빠르다 (double-and-add)", "color": "mint", "size": "m", "at": 3.4 },
+        { "text": "Q에서 k 로:  알려진 효율적 방법 없음", "color": "pink", "size": "m", "at": 5.4 }
+      ]
+    },
+    {
+      "id": "edwards",
+      "nav": "뒤틀린 에드워즈 곡선",
+      "title": "예외 없는 덧셈 공식",
+      "tag": { "tone": "real", "text": "실제 암호: 유한체 위의 점" },
+      "summary": "뒤틀린 에드워즈 곡선은 덧셈 공식이 하나뿐이라 예외 처리가 필요 없어요. Ed25519가 이 곡선 위에 있어요.",
+      "beats": [
+        { "at": 0.4, "text": "뒤틀린 에드워즈 곡선은 x와 y가 거의 대칭인 식 -x^{2} + y^{2} = 1 + dx^{2}y^{2} 를 써요. 항등원이 평범한 점 (0, 1)이고 -(x, y) = (-x, y)예요." },
+        { "at": 4.6, "text": "덧셈 공식이 하나뿐이에요. 같은 점을 더할 때, 반대인 점을 더할 때, 항등원을 더할 때도 같은 공식이라서 예외 처리가 필요 없어요(완전한 덧셈 공식)." },
+        { "at": 9.4, "text": "조건은 -1은 제곱수이고 d는 제곱수가 아닌 것이에요. Ed25519는 p = 2^{255} - 19 위에서 d = -121665/121666으로 이 조건을 만족해요." },
+        { "at": 13.0, "text": "예외가 없으면 구현이 단순해지고, 값에 따라 계산 경로가 달라지는 것도 줄이기 쉬워요. 그림은 F_{17}의 작은 예(d = 6, 점 20개)예요." }
+      ],
+      "callout": {
+        "tone": "warn",
+        "title": "작은 예와 실제 Ed25519",
+        "text": "그림의 점 20개는 이해를 위한 작은 예이고, 진짜 Ed25519 곡선은 점이 8 × L개(L은 약 2^{252})예요. 서명에는 크기가 L인 부분군의 기준점 B(y = 4/5)를 써요."
+      },
+      "legend": [
+        { "color": "white", "style": "dot", "text": "곡선 위의 점 20개" },
+        { "color": "orange", "style": "dot", "text": "항등원 O = (0, 1)" },
+        { "color": "yellow", "style": "dot", "text": "P와 -P" },
+        { "color": "pink", "style": "dot", "text": "3P" },
+        { "color": "mint", "style": "dot", "text": "P + 3P" }
+      ],
+      "alt": "0부터 16까지의 눈금이 가로세로 같은 간격인 격자에 뒤틀린 에드워즈 곡선 -x^{2} + y^{2} = 1 + 6x^{2}y^{2} (mod 17)의 점 20개가 흩어져 있습니다. 항등원 (0, 1), 점 P = (2, 6)과 그 반대 -P = (15, 6), 3P = (6, 14), P + 3P = (7, 9)가 강조됩니다.",
+      "math": {
+        "curve": { "model": "edwards", "field": "F17", "a": "-1", "d": "6" },
+        "points": {
+          "O": { "op": "inf", "expect": "O" },
+          "P": { "x": "2", "y": "6" },
+          "NP": { "op": "neg", "args": ["P"], "expect": ["15", "6"] },
+          "P2": { "op": "add", "args": ["P", "P"], "expect": ["5", "10"] },
+          "P3": { "op": "mul", "k": "3", "args": ["P"], "expect": ["6", "14"] },
+          "P4": { "op": "add", "args": ["P", "P3"], "expect": ["7", "9"] },
+          "Z": { "op": "add", "args": ["P", "NP"], "expect": "O" }
+        },
+        "checks": [
+          { "complete": true },
+          { "groupOrder": "20" },
+          { "order": { "of": "P", "equals": "20" } }
+        ]
+      },
+      "board": {
+        "kind": "finite",
+        "elements": [
+          { "type": "axes", "at": 0, "dur": 0.8 },
+          { "type": "dots", "color": "white", "at": 0.6, "dur": 1.4 },
+          { "type": "point", "ref": "O", "color": "orange", "at": 4.4, "label": "O = [[O]]", "dir": "ur" },
+          { "type": "point", "ref": "P", "color": "yellow", "at": 5.4, "label": "P = [[P]]", "dir": "ur" },
+          { "type": "point", "ref": "NP", "color": "yellow", "at": 6.4, "label": "-P = [[NP]]", "dir": "ur" },
+          { "type": "point", "ref": "P3", "color": "pink", "at": 8.4, "label": "3P = [[P3]]", "dir": "dr" },
+          { "type": "point", "ref": "P4", "color": "mint", "at": 10.2, "label": "P + 3P = [[P4]]", "dir": "ur" }
+        ]
+      },
+      "panel": [
+        { "text": "-x^{2} + y^{2} = 1 + dx^{2}y^{2}", "color": "white", "size": "xl", "at": 0.3 },
+        { "text": "x_{3} = (x_{1}y_{2} + y_{1}x_{2}) / (1 + d x_{1}x_{2}y_{1}y_{2})", "color": "yellow", "size": "s", "at": 2.6 },
+        { "text": "y_{3} = (y_{1}y_{2} + x_{1}x_{2}) / (1 - d x_{1}x_{2}y_{1}y_{2})", "color": "yellow", "size": "s", "at": 4.4 },
+        { "text": "항등원 (0, 1),  -(x, y) = (-x, y)", "color": "mint", "size": "m", "at": 6.2 },
+        { "text": "P + P,  P + (-P),  P + O  모두 같은 공식", "color": "pink", "size": "m", "at": 8.0 },
+        { "text": "P + (-P) = [[Z]]  (항등원)", "color": "mint", "size": "m", "at": 10.0 },
+        { "text": "Ed25519:  p = 2^{255} - 19,  d = -121665/121666", "color": "sky", "size": "m", "at": 11.8 }
+      ]
+    },
+    {
+      "id": "ed25519",
+      "nav": "Ed25519 서명",
+      "title": "Ed25519는 서명 방식이에요",
+      "tag": { "tone": "real", "text": "실제 암호: 서명 (암호화 아님)" },
+      "summary": "비밀 숫자 a로 공개키 A = aB를 만들고, 서명 (R, S)가 S·B = R + k·A 를 만족하는지로 확인해요.",
+      "beats": [
+        { "at": 0.4, "text": "Ed25519는 EdDSA 서명 방식을 이 곡선 위에서 쓰는 거예요. 비밀 숫자 a로 공개키 A = aB를 만들어요. 공개키는 32바이트예요." },
+        { "at": 4.6, "text": "서명할 때는 메시지 M과 비밀값으로 정해지는 숫자 r로 R = rB를 만들고, 해시 k = H(R, A, M)로 S = r + ka (mod L)을 계산해요. 서명 (R, S)는 64바이트예요." },
+        { "at": 9.6, "text": "확인하는 쪽은 공개키 A만 있으면 돼요. S·B = R + k·A 인지 보면 되고, (r + ka)B = rB + k(aB) 이기 때문에 진짜 서명이면 항상 맞아요." },
+        { "at": 13.4, "text": "중요한 건 이게 서명이라는 점이에요. 메시지를 숨기는 암호화도, 비밀을 나누는 키 교환도 아니에요. 키 교환에는 X25519 같은 방식을 따로 써요." }
+      ],
+      "callout": {
+        "tone": "warn",
+        "title": "위조가 어려운 이유와 한계",
+        "text": "공개키 A에서 a를 알아내려면 ECDLP를 풀어야 해요. 실제 구현에는 인코딩 확인이나 8배 곱하기 같은 세부 규칙이 더 있으니, 직접 만들지 말고 검증된 라이브러리를 써요."
+      },
+      "legend": [
+        { "color": "sky", "style": "box", "text": "서명하는 쪽 / 확인하는 쪽" },
+        { "color": "yellow", "style": "box", "text": "메시지와 서명 (R, S)" },
+        { "color": "mint", "style": "line", "text": "공개 정보와 계산식" }
+      ],
+      "alt": "서명하는 쪽, 메시지와 서명, 확인하는 쪽 세 상자가 화살표로 이어져 있고, 아래에 서명과 검증의 식 R = rB, k = H(R, A, M), S = r + ka mod L, S B = R + k A 가 차례로 적힙니다.",
+      "board": {
+        "kind": "flow",
+        "cols": 3,
+        "elements": [
+          { "type": "node", "id": "signer", "color": "sky", "at": 0.6, "title": "서명하는 쪽", "lines": ["개인키 a", "공개키 A = aB"] },
+          { "type": "node", "id": "message", "color": "yellow", "at": 6.0, "title": "메시지 M + 서명", "lines": ["(R, S)  64바이트"] },
+          { "type": "node", "id": "verifier", "color": "sky", "at": 11.0, "title": "확인하는 쪽", "lines": ["공개키 A만 필요"] }
+        ]
+      },
+      "panel": [
+        { "text": "공개키   A = aB   (32바이트)", "color": "white", "size": "m", "at": 1.6 },
+        { "text": "r = H(prefix, M),   R = rB", "color": "yellow", "size": "m", "at": 4.8 },
+        { "text": "k = H(R, A, M),   S = r + ka  mod L", "color": "yellow", "size": "m", "at": 7.0 },
+        { "text": "S B  =  R + k A  ?", "color": "pink", "size": "l", "at": 10.2 },
+        { "text": "(r + ka)B = rB + k(aB) = R + kA", "color": "mint", "size": "m", "at": 12.0 },
+        { "text": "서명이다.  암호화도 키 교환도 아니다.", "color": "pink", "size": "m", "at": 14.0 }
+      ]
+    },
+    {
+      "id": "x509",
+      "nav": "인증서에 서명하기",
+      "title": "인증서는 서명된 문서예요",
+      "tag": { "tone": "real", "text": "실제 활용: X.509 인증서" },
+      "summary": "CA(인증기관)가 '이 이름의 주인은 이 공개키'라는 내용에 서명한 것이 X.509 인증서예요. 서명 방식으로 Ed25519를 쓸 수도 있어요.",
+      "beats": [
+        { "at": 0.4, "text": "서버는 자기 키 쌍을 만들고, 공개키와 이름을 CA(인증기관)에 보내 인증서를 요청해요." },
+        { "at": 3.4, "text": "CA는 요청한 쪽이 그 이름의 주인이 맞는지 확인한 뒤 인증서 내용(TBS: 이름, 공개키, 유효기간, 발급자)을 만들어요." },
+        { "at": 7.4, "text": "CA는 자기 개인키로 그 내용에 서명해요. CA가 Ed25519를 쓰면 이 서명이 앞 단계의 (R, S)예요. 알고리즘 식별자는 RFC 8410에 정해져 있어요." },
+        { "at": 11.6, "text": "확인하는 쪽은 신뢰하는 CA의 공개키로 서명을 검증하고, 유효기간, 이름, 인증서 체인 같은 다른 조건도 함께 확인해요." },
+        { "at": 15.0, "text": "정리하면 곡선 위 덧셈에서 시작해, 정방향은 쉽고 역방향은 어려운 성질로 서명을 만들고, 그 서명이 인증서의 신뢰를 지켜요." }
+      ],
+      "callout": {
+        "tone": "warn",
+        "title": "모든 인증서가 Ed25519는 아니에요",
+        "text": "인증서는 RSA, ECDSA(P-256 등), Ed25519처럼 여러 서명 방식을 쓸 수 있고, 어떤 방식이 허용되는지는 환경과 정책마다 달라요. 또 서명은 내용을 숨기지 않아요. 연결의 비밀 키는 보통 키 교환이 따로 만들어요."
+      },
+      "legend": [
+        { "color": "sky", "style": "box", "text": "사람, 서버, CA" },
+        { "color": "yellow", "style": "box", "text": "인증서 내용과 서명" },
+        { "color": "mint", "style": "box", "text": "검증" }
+      ],
+      "alt": "여섯 개 상자가 화살표로 이어진 흐름도입니다. 서버가 공개키와 이름을 보내고, CA가 확인하고, 인증서 내용(TBS)을 만들고, CA 개인키로 서명하고, 서명이 붙은 인증서가 만들어지고, 확인하는 쪽이 CA 공개키로 서명을 검증합니다.",
+      "board": {
+        "kind": "flow",
+        "cols": 3,
+        "elements": [
+          { "type": "node", "id": "server", "color": "sky", "at": 0.6, "title": "서버", "lines": ["공개키 A + 이름", "(인증서 요청)"] },
+          { "type": "node", "id": "ca", "color": "sky", "at": 3.6, "title": "CA가 확인", "lines": ["이름의 주인이 맞는지"] },
+          { "type": "node", "id": "tbs", "color": "yellow", "at": 5.6, "title": "인증서 내용 TBS", "lines": ["이름, 공개키 A,", "유효기간, 발급자"] },
+          { "type": "node", "id": "sign", "color": "sky", "at": 7.8, "title": "CA가 서명", "lines": ["CA 개인키", "Ed25519 서명 64바이트"] },
+          { "type": "node", "id": "cert", "color": "yellow", "at": 10.0, "title": "인증서", "lines": ["내용 + 알고리즘 + 서명값"] },
+          { "type": "node", "id": "check", "color": "mint", "at": 12.2, "title": "확인하는 쪽", "lines": ["CA 공개키로 서명 검증"] }
+        ]
+      },
+      "panel": [
+        { "text": "서명값 = Ed25519 서명(CA 개인키, TBS)", "color": "yellow", "size": "m", "at": 8.4 },
+        { "text": "확인 = Ed25519 검증(CA 공개키, TBS, 서명값)", "color": "mint", "size": "m", "at": 12.8 },
+        { "text": "인증서가 보증하는 것: 이 이름 = 이 공개키", "color": "pink", "size": "l", "at": 15.0 }
+      ]
+    }
+  ],
+  "misconceptions": [
+    {
+      "title": "매끈한 곡선 그림이 곧 암호는 아니에요",
+      "text": "실수 평면의 그림은 이해를 돕는 비유예요. 실제 암호는 유한체 위의 흩어진 점으로 계산하고, 덧셈 공식은 같아요."
+    },
+    {
+      "title": "Ed25519는 암호화가 아니라 서명이에요",
+      "text": "메시지를 숨기지 않고, 누가 만들었는지와 내용이 바뀌지 않았는지만 확인해 줘요. 키 교환에는 X25519 같은 별도 방식을 써요."
+    },
+    {
+      "title": "'풀 수 없다'가 아니라 '알려진 효율적 방법이 없다'",
+      "text": "ECDLP가 어렵다는 건 증명이 아니라, 오랜 연구에도 효율적인 고전 알고리즘이 알려지지 않았다는 뜻이에요. 충분히 큰 양자 컴퓨터는 쇼어 알고리즘으로 풀 수 있다고 알려져 있어요."
+    },
+    {
+      "title": "모든 인증서가 Ed25519를 쓰는 건 아니에요",
+      "text": "인증서는 RSA, ECDSA, Ed25519 등 여러 서명 방식을 쓸 수 있고, 어떤 방식이 쓰이는지는 환경과 정책마다 달라요."
+    }
+  ],
+  "references": [
+    "RFC 8032 - Edwards-Curve Digital Signature Algorithm (EdDSA)",
+    "RFC 7748 - Elliptic Curves for Security (X25519)",
+    "RFC 8410 - Algorithm Identifiers for Ed25519, Ed448, X25519, and X448 for Use in the Internet X.509 Public Key Infrastructure",
+    "RFC 5280 - Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile",
+    "D. J. Bernstein, P. Birkner, M. Joye, T. Lange, C. Peters - Twisted Edwards Curves",
+    "D. J. Bernstein, N. Duif, T. Lange, P. Schwabe, B.-Y. Yang - High-speed high-security signatures"
+  ]
+}
