@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
 <title>학습 자료 목차 · docs</title>
-<meta name="description" content="docs 폴더의 HTML 학습 자료 5개를 분야별로 정리한 목차입니다. 인체 장기 모형, 자동차 공장, 조선소 모형, 일차함수 칠판 강의.">
+<meta name="description" content="docs 폴더의 HTML 학습 자료 4개를 분야별로 정리한 목차입니다. 인체 장기 모형, 자동차 공장, 조선소 모형, 일차함수 칠판 강의.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23111e3b'/%3E%3Cpath d='M16 4v24' stroke='%2312773d' stroke-width='5'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%23f6f9fb' stroke='%23ba4a00' stroke-width='3'/%3E%3C/svg%3E">
 <script>document.documentElement.classList.add('js')</script>
 <style>
@@ -125,8 +125,6 @@ a{color:inherit;text-underline-offset:.22em}
 @media (hover:none){.go{opacity:1;transform:none}}
 .stop__sub{margin:0;font-size:.9375rem;color:var(--ink-2)}
 .stop__sum{margin:8px 0 0;max-width:34em;color:var(--ink);text-wrap:pretty}
-.twin{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;font-size:.875rem;line-height:1.55;color:var(--c-ink)}
-.twin .i{width:1rem;height:1rem;margin-top:.25rem}
 .facts{margin:10px 0 0;display:flex;flex-wrap:wrap;gap:2px 22px;font-size:.875rem;line-height:1.6;color:var(--ink-2)}
 .facts div{display:flex;gap:8px;min-width:0}
 .facts dt{flex:none;color:var(--muted)}
@@ -178,13 +176,12 @@ code{font:.8125rem/1.55 var(--mono);color:var(--ink);overflow-wrap:anywhere;word
   <symbol id="i-arrow" viewBox="0 0 20 20"><path d="M3.5 10h12M11 5.5 15.5 10 11 14.5"/></symbol>
   <symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.5"/><path d="m13.2 13.2 4 4"/></symbol>
   <symbol id="i-x" viewBox="0 0 20 20"><path d="m5.5 5.5 9 9m0-9-9 9"/></symbol>
-  <symbol id="i-twin" viewBox="0 0 20 20"><rect x="3.5" y="7.5" width="9" height="9" rx="2"/><path d="M7.5 7.5v-2a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/></symbol>
 </svg>
 
 <header class="mast">
   <div class="wrap mast__in">
     <h1>학습 자료 목차</h1>
-    <p>docs 폴더의 HTML 자료 5개를 분야별 노선으로 묶었습니다. 각 자료는 파일 하나로 열리며, 이름을 누르면 바로 이동합니다.</p>
+    <p>docs 폴더의 HTML 자료 4개를 분야별 노선으로 묶었습니다. 각 자료는 파일 하나로 열리며, 이름을 누르면 바로 이동합니다.</p>
   </div>
 </header>
 
@@ -201,10 +198,10 @@ code{font:.8125rem/1.55 var(--mono);color:var(--ink);overflow-wrap:anywhere;word
     </form>
     <h2 class="tools__h tools__h--cats" id="cats-h">분야</h2>
     <div class="cats" role="group" aria-labelledby="cats-h">
-      <button type="button" class="cat cat--all" data-cat="all" aria-pressed="true"><span class="roundel roundel--s" aria-hidden="true">전</span><span>전체</span><span class="cat__n">5</span></button>
+      <button type="button" class="cat cat--all" data-cat="all" aria-pressed="true"><span class="roundel roundel--s" aria-hidden="true">전</span><span>전체</span><span class="cat__n">4</span></button>
       <button type="button" class="cat cat--sci" data-cat="sci" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">과</span><span>과학</span><span class="cat__n">1</span></button>
       <button type="button" class="cat cat--eng" data-cat="eng" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">공</span><span>기술·공학</span><span class="cat__n">2</span></button>
-      <button type="button" class="cat cat--math" data-cat="math" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">수</span><span>수학</span><span class="cat__n">2</span></button>
+      <button type="button" class="cat cat--math" data-cat="math" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">수</span><span>수학</span><span class="cat__n">1</span></button>
     </div>
     <p class="status" role="status" aria-live="polite" data-status></p>
   </section>
@@ -274,35 +271,20 @@ code{font:.8125rem/1.55 var(--mono);color:var(--ink);overflow-wrap:anywhere;word
       <header class="line__head">
         <span class="roundel" aria-hidden="true">수</span>
         <h2 id="h-math">수학</h2>
-        <p class="line__count">자료 <span data-count>2</span>개</p>
+        <p class="line__count">자료 <span data-count>1</span>개</p>
       </header>
       <ol class="stops">
         <li class="stop" data-cat="math" style="--i:0">
           <div class="stop__main">
-            <h3 class="stop__name"><a href="linear-function/%EC%9D%BC%EC%B0%A8%ED%95%A8%EC%88%98_%EC%B9%A0%ED%8C%90%EA%B0%95%EC%9D%98.html" aria-describedby="p-lin t-lin">일차함수 칠판 강의<svg class="i go" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a></h3>
+            <h3 class="stop__name"><a href="linear-function/%EC%9D%BC%EC%B0%A8%ED%95%A8%EC%88%98_%EC%B9%A0%ED%8C%90%EA%B0%95%EC%9D%98.html" aria-describedby="p-lin">일차함수 칠판 강의<svg class="i go" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a></h3>
             <p class="stop__sub">직선을 읽는 두 가지 숫자</p>
             <p class="stop__sum">분필 판서와 음성 해설로 기울기와 y절편을 배우고, 실험과 확인 문제로 점검하는 칠판 강의입니다.</p>
-            <p class="twin" id="t-lin"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-twin"/></svg><span><code>middle_school_math/</code> 폴더에도 내용이 똑같은 파일이 있습니다.</span></p>
           </div>
           <dl class="facts">
             <div><dt>형식</dt><dd>칠판 강의 · 8장 · 약 4분</dd></div>
             <div><dt>언어</dt><dd>한국어 음성 해설</dd></div>
             <div><dt>크기</dt><dd>약 8.5 MB (음성 포함)</dd></div>
             <div><dt>경로</dt><dd><code id="p-lin">linear-function/<wbr>일차함수_칠판강의.html</code></dd></div>
-          </dl>
-        </li>
-        <li class="stop" data-cat="math" style="--i:1">
-          <div class="stop__main">
-            <h3 class="stop__name"><a href="middle_school_math/%EC%9D%BC%EC%B0%A8%ED%95%A8%EC%88%98_%EC%B9%A0%ED%8C%90%EA%B0%95%EC%9D%98.html" aria-describedby="p-msm t-msm">일차함수 칠판 강의<svg class="i go" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a></h3>
-            <p class="stop__sub">직선을 읽는 두 가지 숫자</p>
-            <p class="stop__sum">분필 판서와 음성 해설로 기울기와 y절편을 배우고, 실험과 확인 문제로 점검하는 칠판 강의입니다.</p>
-            <p class="twin" id="t-msm"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-twin"/></svg><span><code>linear-function/</code> 폴더의 파일과 내용이 똑같습니다.</span></p>
-          </div>
-          <dl class="facts">
-            <div><dt>형식</dt><dd>칠판 강의 · 8장 · 약 4분</dd></div>
-            <div><dt>언어</dt><dd>한국어 음성 해설</dd></div>
-            <div><dt>크기</dt><dd>약 8.5 MB (음성 포함)</dd></div>
-            <div><dt>경로</dt><dd><code id="p-msm">middle_school_math/<wbr>일차함수_칠판강의.html</code></dd></div>
           </dl>
         </li>
       </ol>
@@ -317,7 +299,7 @@ code{font:.8125rem/1.55 var(--mono);color:var(--ink);overflow-wrap:anywhere;word
 
 <footer class="foot">
   <div class="wrap">
-    <p>이 목록은 docs/ 아래의 모든 HTML 파일(template.html 제외)을 담고 있습니다. 같은 파일이 두 경로에 있으면 둘 다 적었습니다.</p>
+    <p>이 목록은 docs/ 아래의 모든 HTML 파일(template.html 제외)을 담고 있습니다.</p>
     <p>분야와 한 줄 설명은 각 자료의 제목과 README를 읽고 정리했습니다. 새 자료를 추가하면 이 파일에도 항목을 더해 주세요.</p>
   </div>
 </footer>

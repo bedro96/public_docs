@@ -1,7 +1,0 @@
-{
-  "provider": "Microsoft Foundry / Azure AI Speech",
-  "model": "MAI-Voice-2",
-  "voice": "ko-KR-Haena:MAI-Voice-2",
-  "synthetic": true,
-  "language": "ko-KR"
-}

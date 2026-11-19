@@ -22,13 +22,13 @@ A reference-book style table of contents for a small shelf of offline, interacti
 Mode: Read (a docs index, not a landing page). Opened on a laptop, a classroom projector or a phone. Hosted on GitHub Pages; each target is a standalone offline HTML file.
 
 ## Capabilities and Constraints
-- Lists every `docs/**/*.html` except `template.html` and `index.html` itself. Duplicates are listed by path because the requirement is every file.
+- Lists every `docs/**/*.html` except `template.html` and `index.html` itself.
 - Category filter and search, both optional enhancements over a fully readable static list.
 - Names and summaries come from each page's `<title>`, `<h1>`, `README.md` and `PRODUCT.md`; nothing is invented.
 - Inventory is hand-maintained in the markup; there is no build step.
 
 ## Evidence on Hand
-Five eligible files at time of writing: `anatomy/human-organs.html`, `auto-factory/auto-factory.html`, `shipyard/shipyard.html`, `linear-function/일차함수_칠판강의.html`, `middle_school_math/일차함수_칠판강의.html` (byte-identical to the previous one). No supplied logo, brand colors or screenshots.
+Four eligible files at time of writing: `anatomy/human-organs.html`, `auto-factory/auto-factory.html`, `shipyard/shipyard.html`, and `linear-function/일차함수_칠판강의.html`. No supplied logo, brand colors or screenshots.
 
 ## Product Principles
 - Every page is findable and openable within seconds.
