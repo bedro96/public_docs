@@ -1,376 +1,600 @@
 #!/usr/bin/env node
-// 손자병법 칠판 강의 빌드: art-of-war.scene.json  ->  art-of-war.html (단일 파일, 오프라인)
-//
-//   node build.mjs             장면 파일을 검증하고 art-of-war.html 을 다시 만든다
-//   node build.mjs --verify    저장된 art-of-war.html 이 장면 파일과 일치하는지(최신인지) 확인한다
-//   node build.mjs --scene a.scene.json --out b.html
-//
-// 그림(블록, 화살표, 배치)은 chalk-talk 엔진이 장면 파일로부터 그린다. 이 파일은 엔진을 그대로 호출한 뒤
-// 한국어 문서에 필요한 것만 덧붙인다. 템플릿의 기준 문자열이 정확히 한 번 나오지 않으면 빌드가 실패한다.
-//   1. 외부 웹폰트 링크를 지우고 시스템 한글 글꼴 스택을 쓴다 (Google Fonts 에는 한글이 없고, 오프라인에서는 못 받는다)
-//   2. 조작 버튼, 단계 목록, 문서 제목의 ARIA 와 툴팁을 한국어로 바꾼다
-//   3. 영상 제목·채널·19:03 링크를 담은 출처 푸터를 붙인다
-//   4. 장면의 단계별 handout 으로 채워지는 '강의 노트' 서랍을 붙인다
-//   5. 결과물을 점검한다: proof:false, code/calls/inferred 없음, 외부 요청 없음, 오디오 없음
+/* 손자병법 칠판 강의 빌드.
+ *
+ *   node build.mjs               -> art-of-war.html  (글꼴·스타일·장면·재생기·해설 음성·분필 소리를 모두 넣은 단일 파일)
+ *   node build.mjs --no-audio    -> 해설 MP3 없이 만드는 개발용 빌드(판서 시간은 대본 길이로 추정). 배포용이 아닙니다.
+ *   node build.mjs --check       -> 파일을 쓰지 않고 검사만
+ *   옵션: --content DIR  --audio DIR  --out FILE
+ *
+ * 빌드는 아래 중 하나라도 어긋나면 실패합니다. "빌드 성공" = "검사 통과" 입니다.
+ *   - content/00-meta.json + 01~04 단계 파일을 합친 장면이 SCHEMA.md 규격(validate.mjs)을 어김
+ *     (필수 필드, id 유일, 23단계 · 편 1~13 순서, 해설 330~430자·한자/숫자/기호 금지, at 오름차순,
+ *      노드 범위·겹침, 링크 끝점, 연표 연도 범위, 인용 필수, 태그 종류, 기업 이름 금지 …)
+ *   - 칠판(Canvas)에 그려질 글자가 내장 글꼴(나눔손글씨 펜 + 한자 부분 글꼴)에 없음 → 조용히 빈 네모가 되는 것을 막습니다
+ *   - 칠판 배치 검사(layout.js): 글이 노드 상자·칠판 밖으로 넘치는 경우 (넓은 화면 / 좁은 화면 폭 여러 개)
+ *   - 외부 URL / 외부 글꼴 / 네트워크 호출 / innerHTML / speechSynthesis 같은 위험한 코드
+ *   - 이 폴더에 art-of-war.html 말고 다른 .html(템플릿 제외)이 있음
+ *   - 소리: 해설 MP3(단계마다 1개)가 없거나 길이가 durations.json 과 다름, 대본이 바뀌어 MP3 가 오래됨(scriptSha256),
+ *           목소리가 ko-KR-Haena:MAI-Voice-2 가 아님, 분필 녹음이 CC0 실제 녹음이 아님, 오디오에 URL 이 들어 있음
+ *
+ * 산출물에는 외부 URL 이 한 글자도 없어야 합니다. 예외는 하나뿐입니다: 장면 데이터의 참고 문헌(references)과
+ * 영상 출처(source) 문장 속 URL 은 "화면에 보이는 글자"일 뿐 링크도 요청도 아니므로 허용합니다(검사는 그 글자를 빼고 합니다).
+ */
+import crypto from 'node:crypto';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { validateLesson, formatProblems, SCHEMA } from './validate.mjs';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-export const SCENE_FILE = path.join(here, 'art-of-war.scene.json');
-export const OUT_FILE = path.join(here, 'art-of-war.html');
+const require = createRequire(import.meta.url);
 
-const isFile = f => { try { return fs.statSync(f).isFile(); } catch { return false; } };
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+export const ROOT = path.dirname(fileURLToPath(import.meta.url));
+export const OUTPUT_NAME = 'art-of-war.html';
+export const TEMPLATE_NAME = 'template.html';
+export { SCHEMA };
+export const STEP_FILES = ['01-background.json', '02-chapters-a.json', '03-chapters-b.json', '04-closing.json'];
+/** 칠판 배치 검사에 쓰는 칠판(stage) 가로 폭(px): 넓은 화면(1280 뷰포트), 넓은 화면의 최소(layout.js WIDE_MIN), 좁은 화면(390 뷰포트), 더 좁은 화면 */
+export const LAYOUT_WIDTHS = [1088, 1000, 350, 300];
+/** 판서가 해설보다 이만큼(초) 넘게 늦게 끝나면 경고 */
+const DRAW_OVERRUN_WARN = 4;
 
-/* ------------------------------------------------------------------ 장면 검증 */
-
-// 이 강의는 코드 근거를 주장하지 않는다. 아래 키가 하나라도 있으면 엔진이 증명 모드를 켜 버린다.
-const FORBIDDEN_KEYS = ['code', 'calls', 'inferred', 'proof', 'root'];
-const HANDOUT_KEYS = ['ref', 'classic', 'limit', 'modern'];
-const hasText = v => typeof v === 'string' && v.trim() !== '';
-
-function walkKeys(v, where, visit) {
-  if (Array.isArray(v)) v.forEach((x, i) => walkKeys(x, `${where}[${i}]`, visit));
-  else if (v && typeof v === 'object') {
-    for (const [k, x] of Object.entries(v)) { visit(k, `${where}.${k}`); walkKeys(x, `${where}.${k}`, visit); }
+/* ---------------------------------------------------------------------
+ * 글꼴 읽기 (TTF/OTF 의 cmap·hmtx): 글꼴이 실제로 가진 글자와 글자 폭
+ * ------------------------------------------------------------------- */
+export function parseFont(buf) {
+  const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  const numTables = dv.getUint16(4);
+  const tables = {};
+  for (let i = 0; i < numTables; i++) {
+    const rec = 12 + i * 16;
+    const tag = String.fromCharCode(dv.getUint8(rec), dv.getUint8(rec + 1), dv.getUint8(rec + 2), dv.getUint8(rec + 3));
+    tables[tag] = dv.getUint32(rec + 8);
   }
+  for (const need of ['cmap', 'head', 'hhea', 'hmtx']) if (tables[need] === undefined) throw new Error('글꼴에 ' + need + ' 표가 없습니다');
+  const upm = dv.getUint16(tables.head + 18);
+  const numHM = dv.getUint16(tables.hhea + 34);
+  const cmapOff = tables.cmap;
+  const subCount = dv.getUint16(cmapOff + 2);
+  const cmap = new Map(); // 코드포인트 -> 글리프 번호
+  for (let i = 0; i < subCount; i++) {
+    const off = cmapOff + dv.getUint32(cmapOff + 4 + i * 8 + 4);
+    const format = dv.getUint16(off);
+    if (format === 4) {
+      const segX2 = dv.getUint16(off + 6);
+      const endO = off + 14;
+      const startO = endO + segX2 + 2;
+      const deltaO = startO + segX2;
+      const rangeO = deltaO + segX2;
+      for (let s = 0; s < segX2 / 2; s++) {
+        const end = dv.getUint16(endO + s * 2);
+        const start = dv.getUint16(startO + s * 2);
+        const delta = dv.getInt16(deltaO + s * 2);
+        const rOff = dv.getUint16(rangeO + s * 2);
+        for (let c = start; c <= end && c !== 0xffff; c++) {
+          let g;
+          if (rOff === 0) g = (c + delta) & 0xffff;
+          else {
+            g = dv.getUint16(rangeO + s * 2 + rOff + (c - start) * 2);
+            if (g !== 0) g = (g + delta) & 0xffff;
+          }
+          if (g !== 0) cmap.set(c, g);
+        }
+      }
+    } else if (format === 12) {
+      const groups = dv.getUint32(off + 12);
+      for (let g = 0; g < groups; g++) {
+        const start = dv.getUint32(off + 16 + g * 12);
+        const end = dv.getUint32(off + 20 + g * 12);
+        const gid = dv.getUint32(off + 24 + g * 12);
+        for (let c = start; c <= end; c++) if (gid + (c - start) !== 0) cmap.set(c, gid + (c - start));
+      }
+    }
+  }
+  if (cmap.size === 0) throw new Error('글꼴 cmap을 해석하지 못했습니다');
+  const hmtx = tables.hmtx;
+  const advance = (gid) => dv.getUint16(hmtx + Math.min(gid, numHM - 1) * 4);
+  return {
+    size: cmap.size,
+    has: (cp) => cmap.has(cp),
+    /** 글자 폭(em 단위). 글꼴에 없으면 null */
+    em(cp) { const g = cmap.get(cp); return g === undefined ? null : advance(g) / upm; },
+  };
 }
 
-/** 장면 파일의 약속을 검사하고 문제 목록(문자열 배열)을 돌려준다. 비어 있으면 통과. */
-export function validateScene(scene) {
-  const bad = [];
-  if (!scene || typeof scene !== 'object') return ['장면이 JSON 객체가 아닙니다'];
-  if (scene.proof !== false) bad.push('"proof": false 여야 합니다 (코드 근거를 주장하지 않는 개념 강의)');
-  for (const [k, v] of Object.entries(scene)) {
-    if (k === 'proof') continue;
-    walkKeys({ [k]: v }, '장면', (key, where) => { if (FORBIDDEN_KEYS.includes(key)) bad.push(`${where}: "${key}" 키는 쓸 수 없습니다`); });
+/** 칠판에 그려질 글 중 글꼴들(순서대로 대체)에 없는 글자를 {char, code, where}[] 로 돌려줍니다. */
+export function missingGlyphs(entries, fonts, { onlyHan = false } = {}) {
+  const missing = new Map();
+  for (const { text, where } of entries) {
+    for (const ch of text) {
+      if (/\s/.test(ch)) continue;
+      if (onlyHan && !/\p{Script=Han}/u.test(ch)) continue;
+      const cp = ch.codePointAt(0);
+      if (fonts.some((f) => f.has(cp))) continue;
+      if (!missing.has(ch)) missing.set(ch, where);
+    }
   }
-  if (scene.lang !== 'ko') bad.push('"lang": "ko" 여야 합니다');
-  if (scene.style !== 'chalk') bad.push('"style": "chalk" 여야 합니다');
-  if (!hasText(scene.title)) bad.push('title 이 없습니다');
-
-  const steps = Array.isArray(scene.steps) ? scene.steps : [];
-  if (steps.length < 4 || steps.length > 8) bad.push(`단계는 4~8개여야 합니다 (현재 ${steps.length}개)`);
-  if (!steps.some(s => s && s.recap === true)) bad.push('recap 단계가 없습니다');
-  steps.forEach((s, i) => {
-    const at = `steps[${i}]`;
-    if (!s || !hasText(s.title) || !hasText(s.say)) bad.push(`${at}: title 과 say 가 필요합니다`);
-    const h = s && s.handout;
-    if (!h || typeof h !== 'object') { bad.push(`${at}: handout(강의 노트)이 없습니다`); return; }
-    for (const k of HANDOUT_KEYS) if (!hasText(h[k])) bad.push(`${at}.handout.${k}: 비어 있습니다`);
-    // 영상 구간·챕터 링크 같은 키는 영상 내용을 확인하지 못한 상태에서 출처를 암시하므로 막는다.
-    for (const k of Object.keys(h)) if (!HANDOUT_KEYS.includes(k)) bad.push(`${at}.handout.${k}: 허용되지 않는 키입니다 (${HANDOUT_KEYS.join(', ')}만 사용)`);
-  });
-
-  const src = scene.source;
-  if (!src || typeof src !== 'object') { bad.push('source 가 없습니다'); return bad; }
-  for (const k of ['title', 'channel', 'channelUrl', 'url', 'at']) if (!hasText(src[k])) bad.push(`source.${k}: 비어 있습니다`);
-  if (JSON.stringify(src.verified) !== JSON.stringify(['title', 'channel'])) bad.push('source.verified 는 ["title", "channel"] 이어야 합니다 (영상에서 확인한 것은 제목과 채널뿐)');
-  try {
-    const v = new URL(src.url), c = new URL(src.channelUrl);
-    if (v.protocol !== 'https:' || v.hostname !== 'www.youtube.com' || v.pathname !== '/watch' || !v.searchParams.get('v')) bad.push('source.url 은 https://www.youtube.com/watch?v=… 형태여야 합니다');
-    if (c.protocol !== 'https:' || c.hostname !== 'www.youtube.com' || !c.pathname.startsWith('/@')) bad.push('source.channelUrl 은 https://www.youtube.com/@… 형태여야 합니다');
-    const t = /^(\d+)s?$/.exec(v.searchParams.get('t') || '');
-    const m = /^(\d+):([0-5]\d)$/.exec(src.at || '');
-    if (!t || !m) bad.push('source.url 의 t=…s 와 source.at(MM:SS)이 필요합니다');
-    else if (+t[1] !== +m[1] * 60 + +m[2]) bad.push(`source.at(${src.at})과 source.url 의 t=${t[1]}s 가 같은 시각이 아닙니다`);
-  } catch { bad.push('source.url / source.channelUrl 이 올바른 URL 이 아닙니다'); }
-  return bad;
+  return [...missing].map(([char, where]) => ({ char, where, code: 'U+' + char.codePointAt(0).toString(16).toUpperCase().padStart(4, '0') }));
 }
 
-/* ------------------------------------------------------------------ chalk-talk 엔진 */
+/** 글꼴 폭 표로 글 너비를 재는 measure(text, px) — 브라우저의 measureText 를 빌드 단계에서 흉내 냅니다. */
+export function makeMeasure(fonts) {
+  /* 한 글꼴 크기로 잰 폭. layout.js 의 boosted() 가 한자/그 밖 덩어리별 크기(KO_BOOST)를 입힙니다. */
+  return (text, px) => {
+    let em = 0;
+    for (const ch of String(text)) {
+      const cp = ch.codePointAt(0);
+      let w = null;
+      for (const f of fonts) { w = f.em(cp); if (w !== null) break; }
+      em += w === null ? (cp > 0x2e80 ? 1 : 0.55) : w;
+    }
+    return em * px;
+  };
+}
 
-/** 엔진 위치: CHALK_TALK_DIR → 저장소 .github/skills → ~/.agents/skills. 심볼릭 링크는 실제 경로로 푼다. */
-export function findEngine(env = process.env) {
-  const repoRoot = path.resolve(here, '..', '..');
-  const tried = [env.CHALK_TALK_DIR, path.join(repoRoot, '.github', 'skills', 'chalk-talk'), path.join(os.homedir(), '.agents', 'skills', 'chalk-talk')].filter(Boolean);
-  for (const dir of tried) {
+/* ---------------------------------------------------------------------
+ * 콘텐츠 합치기: content/00-meta.json + 01~04 단계 파일(파일명 순서)
+ * ------------------------------------------------------------------- */
+export function loadContent(dir) {
+  const problems = [];
+  let meta = null;
+  const metaPath = path.join(dir, '00-meta.json');
+  try { meta = JSON.parse(fs.readFileSync(metaPath, 'utf8')); } catch (e) { problems.push('content/00-meta.json 을 읽을 수 없습니다: ' + e.message); }
+  const files = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => /^0[1-9][\w-]*\.json$/.test(f)).sort() : [];
+  const steps = [];
+  for (const f of files) {
     try {
-      const real = fs.realpathSync(dir);
-      if (isFile(path.join(real, 'scripts', 'build.mjs')) && isFile(path.join(real, 'assets', 'template.html'))) return real;
-    } catch { /* 다음 후보 */ }
+      const j = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+      if (!j || !Array.isArray(j.steps)) { problems.push('content/' + f + ': { "steps": [...] } 형식이어야 합니다'); continue; }
+      const extra = Object.keys(j).filter((k) => k !== 'steps');
+      if (extra.length) problems.push('content/' + f + ': steps 밖의 키는 쓸 수 없습니다 (' + extra.join(', ') + ')');
+      steps.push(...j.steps);
+    } catch (e) { problems.push('content/' + f + ' 을(를) 읽을 수 없습니다: ' + e.message); }
   }
-  throw new Error('chalk-talk 엔진을 찾지 못했습니다. CHALK_TALK_DIR 로 위치를 알려 주세요. 찾아 본 곳:\n  ' + tried.join('\n  '));
+  if (meta && meta.steps !== undefined) problems.push('content/00-meta.json: steps 는 01~04 파일에 써야 합니다');
+  const scene = meta && typeof meta === 'object' ? Object.assign({}, meta, { steps }) : null;
+  const complete = STEP_FILES.every((f) => files.includes(f));
+  return { scene, files, complete, problems };
 }
 
-function stockBuild(engineDir, scenePath) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'aow-stock-'));
-  try {
-    const out = path.join(dir, 'stock.out');
-    execFileSync(process.execPath, [path.join(engineDir, 'scripts', 'build.mjs'), scenePath, out], {
-      env: { ...process.env, CHALK_SHARE: '1' }, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8',
-    });
-    return fs.readFileSync(out, 'utf8');
-  } catch (err) {
-    throw new Error('엔진 빌드 실패: ' + String(err.stderr || err.message).trim());
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
+/* ---------------------------------------------------------------------
+ * 소리 (해설 MP3 + CC0 분필 녹음 1개) 내장
+ *
+ *   audio/<단계 id>.mp3         narrate.py 가 만든 ko-KR-Haena 해설 (24 kHz 모노 MP3)
+ *   audio/durations.json        클립 길이(초)        audio/provider.json  목소리·모델·대본 해시
+ *   assets/chalk-writing.mp3    실제 칠판 녹음(CC0)   assets/chalk-writing-source.json  출처(감사용, URL 포함)
+ *
+ * 빌드는 MP3 를 base64 data URI 로 장면에 넣습니다. 원본 JSON/MP3 파일은 고치지 않습니다.
+ * 출처 JSON 의 URL 과 MP3 꼬리표(ID3)는 산출물에 넣지 않습니다.
+ * ------------------------------------------------------------------- */
+export const AUDIO_MIME = 'data:audio/mpeg;base64,';
+export const EXPECTED_VOICE = { voice: 'ko-KR-Haena:MAI-Voice-2', model: 'MAI-Voice-2', language: 'ko-KR' };
+const CLIP_MIN_SECONDS = 20; // 330자 이상 해설은 어떤 속도로도 20초보다 짧을 수 없습니다
+const CHALK_MIN_SECONDS = 4; // 분필 소리는 이 녹음을 4초 안팎 조각으로 나눠 돌려 쓴다 (player.js 의 CHALK_SEGMENT_SEC)
+const DURATION_TOLERANCE = 0.1;
+const URL_BYTES_RE = /https?:\/\/|\bwww\.|\bftp:\/\//i;
+const MP3_BITRATES = { 1: [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320], 2: [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160] };
+const MP3_RATES = { 3: [44100, 48000, 32000], 2: [22050, 24000, 16000], 0: [11025, 12000, 8000] };
+
+/** 맨 앞 ID3v2 꼬리표의 전체 길이(없으면 0). */
+function id3v2Length(buf, off = 0) {
+  if (buf.length < off + 10 || buf.toString('latin1', off, off + 3) !== 'ID3') return 0;
+  if ((buf[off + 6] | buf[off + 7] | buf[off + 8] | buf[off + 9]) & 0x80) return 0; // 동기화 안전 정수가 아님 → 꼬리표가 아님
+  const size = (buf[off + 6] << 21) | (buf[off + 7] << 14) | (buf[off + 8] << 7) | buf[off + 9];
+  return 10 + size + (buf[off + 5] & 0x10 ? 10 : 0);
+}
+
+/** MP3 프레임 머리 하나를 해석합니다. MPEG Layer III 가 아니면 null. */
+function mp3Header(buf, off) {
+  if (off + 4 > buf.length || buf[off] !== 0xff || (buf[off + 1] & 0xe0) !== 0xe0) return null;
+  const ver = (buf[off + 1] >> 3) & 3; // 3: MPEG1, 2: MPEG2, 0: MPEG2.5, 1: 예약
+  const layer = (buf[off + 1] >> 1) & 3; // 1: Layer III
+  if (ver === 1 || layer !== 1) return null;
+  const bitrate = MP3_BITRATES[ver === 3 ? 1 : 2][buf[off + 2] >> 4]; // 0(자유 형식)·15(불량) 은 거부
+  const sampleRate = MP3_RATES[ver][(buf[off + 2] >> 2) & 3];
+  if (!bitrate || !sampleRate) return null;
+  const samples = ver === 3 ? 1152 : 576;
+  const channels = (buf[off + 3] >> 6) === 3 ? 1 : 2;
+  const size = Math.floor(((samples / 8) * bitrate * 1000) / sampleRate) + ((buf[off + 2] >> 1) & 1);
+  return { size, sampleRate, samples, channels, ver };
+}
+
+/**
+ * MP3 를 프레임 단위로 걸어 길이를 셉니다 (디코더 없이). Xing/Info 머리 프레임은 소리가 아니므로 세지 않습니다.
+ * 반환: { frames, duration(초), sampleRate, channels, junkBytes(프레임 밖 바이트: 잘림·손상) }
+ */
+export function mp3Info(input) {
+  const buf = Buffer.isBuffer(input) ? input : Buffer.from(input);
+  let off = id3v2Length(buf);
+  let frames = 0;
+  let samples = 0;
+  let junkBytes = 0;
+  let sampleRate = 0;
+  let channels = 0;
+  let first = true;
+  while (off < buf.length) {
+    const h = mp3Header(buf, off);
+    if (!h || off + h.size > buf.length) {
+      if (buf.length - off === 128 && buf.toString('latin1', off, off + 3) === 'TAG') break; // ID3v1 은 프레임이 아니다
+      junkBytes++;
+      off++;
+      continue;
+    }
+    if (first) {
+      first = false;
+      const side = h.ver === 3 ? (h.channels === 1 ? 17 : 32) : h.channels === 1 ? 9 : 17;
+      const tag = buf.toString('latin1', off + 4 + side, off + 8 + side);
+      if (tag === 'Xing' || tag === 'Info') { off += h.size; continue; }
+    }
+    frames++;
+    samples += h.samples;
+    sampleRate = h.sampleRate;
+    channels = h.channels;
+    off += h.size;
   }
+  return { frames, duration: sampleRate ? samples / sampleRate : 0, sampleRate, channels, junkBytes };
 }
 
-/* ------------------------------------------------------------------ 한국어 화면 구성 */
-
-// 시스템 한글 글꼴만 쓴다. 외부 글꼴 파일도, 글꼴 임베드도 없다.
-const SANS = '"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR","NanumBarunGothic","Nanum Barun Gothic","NanumGothic",system-ui,sans-serif';
-const MONO = 'ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,"Noto Sans Mono CJK KR","NanumGothicCoding",monospace';
-const FONT_MARK = '/* 한글 글꼴 */';
-
-const CSS = `
-${FONT_MARK}
-[data-style="chalk"]{
-  --hand:${SANS}; --sans:var(--hand); --display:var(--hand); --mono:${MONO};
-  --sub-f:var(--hand); --packet-f:var(--hand); --tag-f:var(--hand); --eyebrow-f:var(--hand); --group-f:var(--hand);
-  --sub-s:13px; --sub-lh:16px; --packet-s:13px; --tag-s:12px; --tag-ls:.02em; --eyebrow-ls:.08em; --group-ls:.04em;
+/** 맨 앞 ID3v2 와 맨 끝 ID3v1 꼬리표(제작 도구·출처 URL 이 들어갈 수 있는 곳)를 걷어 냅니다. */
+export function stripMp3Tags(input) {
+  let buf = Buffer.isBuffer(input) ? input : Buffer.from(input);
+  for (let n = id3v2Length(buf); n > 0 && n <= buf.length; n = id3v2Length(buf)) buf = buf.subarray(n);
+  if (buf.length >= 128 && buf.toString('latin1', buf.length - 128, buf.length - 125) === 'TAG') buf = buf.subarray(0, buf.length - 128);
+  return Buffer.from(buf);
 }
-.txt h2,.txt p,.mtitle,.src,.notes{word-break:keep-all; overflow-wrap:break-word}
 
-/* 화면 크기: 아래에 출처 푸터가 보일 자리를 남긴다 */
-.app{width:min(100%, calc((100vh - 200px) * 16 / 9))}
-.src{width:min(100%, calc((100vh - 200px) * 16 / 9)); min-width:min(100%, 640px); margin:0 auto; padding:2px 16px 4px; font:400 12.5px/1.6 var(--ui-f); color:var(--ink-2)}
-.src p{margin:0; max-width:110ch; text-wrap:pretty}
-.src a{color:var(--accent); text-underline-offset:.2em}
-.src a:hover{color:var(--ink)}
-.src a:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
-.credit{position:static; display:block; width:min(100%, calc((100vh - 200px) * 16 / 9)); min-width:min(100%, 640px); margin:0 auto; padding:0 16px 14px; text-align:right; opacity:1}
-@media (max-width:720px){.src{padding:2px 16px 8px}.credit{display:none}}
+/** 출처 메타데이터 문자열에서 URL 을 지웁니다. */
+const scrubUrls = (v) => String(v).replace(/(?:https?:\/\/|www\.)\S*/gi, '').replace(/\s{2,}/g, ' ').trim();
+const isStr = (v) => typeof v === 'string' && v.trim().length > 0;
 
-/* 강의 노트 서랍 */
-.ctl .notes-btn{width:auto; padding:0 13px; font:600 14px/1 var(--ui-f); white-space:nowrap}
-.notes{position:fixed; top:12px; right:12px; bottom:12px; width:min(420px, calc(100vw - 24px)); display:flex; flex-direction:column;
-  background:var(--card); color:var(--ink); border:1px solid var(--line-2); border-radius:14px; box-shadow:0 18px 60px rgba(0,0,0,.28);
-  transform:translateX(calc(100% + 24px)); visibility:hidden; transition:transform .32s cubic-bezier(.2,.7,.3,1), visibility 0s linear .32s; z-index:6}
-.notes.open{transform:none; visibility:visible; transition:transform .32s cubic-bezier(.2,.7,.3,1)}
-.notes header{display:flex; align-items:center; gap:10px; padding:14px 14px 12px 18px; border-bottom:1px solid var(--line)}
-.notes-t{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px}
-.notes-t strong{font:700 17px/1.3 var(--ui-f)}
-.notes-t span{font:400 13px/1.4 var(--ui-f); color:var(--ink-2)}
-.notes-x{all:unset; cursor:pointer; padding:7px 12px; border-radius:8px; border:1px solid var(--line-2); font:600 13.5px/1.2 var(--ui-f); color:var(--ink)}
-.notes-x:hover{border-color:var(--ink-2)}
-.notes-x:focus-visible,.notes-body:focus-visible,.notes-btn:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
-.notes-body{flex:1; overflow:auto; padding:16px 18px 8px}
-.notes-body h3{margin:0 0 14px; font:700 20px/1.35 var(--ui-title-f); color:var(--accent)}
-.notes-body section{margin:0 0 16px}
-.notes-body h4{margin:0 0 4px; font:700 13.5px/1.4 var(--ui-f); letter-spacing:.02em; color:var(--ink-2)}
-.notes-body p{margin:0; font:400 16px/1.65 var(--ui-f); color:var(--ink)}
-.notes-body .lim{padding-left:12px; border-left:3px solid var(--warn)}
-.notes-foot{margin:0; padding:10px 18px 14px; border-top:1px solid var(--line); font:400 12.5px/1.55 var(--ui-f); color:var(--ink-2)}
-@media (min-width:1100px){body.notes-open{padding-right:444px}}
-@media (prefers-reduced-motion:reduce){.notes,.notes.open{transition:none}}
-@media print{.notes,.notes-btn{display:none}}
-`;
+/**
+ * 해설·분필 소리를 읽어 검증하고 장면에 넣을 값을 돌려줍니다. 문제는 problems 에 모읍니다.
+ * opts.noAudio 이면 해설은 건너뛰고(개발용) 분필 녹음만 검사합니다.
+ * 반환: { clips: {id: {audio, duration}}, provider, chalk }
+ */
+export function loadAudio(root, audioDir, scene, problems, opts = {}) {
+  const out = { clips: {}, provider: null, chalk: null };
+  const readJson = (rel, abs) => {
+    try { return JSON.parse(fs.readFileSync(abs || path.join(root, rel), 'utf8')); } catch (e) { problems.push(rel + ' 을(를) 읽을 수 없습니다: ' + e.message); return null; }
+  };
+  const readMp3 = (rel, abs) => {
+    let raw;
+    try { raw = fs.readFileSync(abs || path.join(root, rel)); } catch { problems.push(rel + ' 이(가) 없습니다 (해설은 python narrate.py, 분필은 assets/ 의 녹음을 확인하세요)'); return null; }
+    const body = stripMp3Tags(raw);
+    const info = mp3Info(body);
+    if (info.frames === 0) { problems.push(rel + ': MP3 프레임을 찾을 수 없습니다 (MP3 파일이 아니거나 비어 있음)'); return null; }
+    if (info.junkBytes > 0) problems.push(rel + ': 프레임 밖 바이트 ' + info.junkBytes + '개 — 잘렸거나 손상된 MP3 입니다');
+    const hit = URL_BYTES_RE.exec(body.toString('latin1'));
+    if (hit) problems.push(rel + ': 오디오 본문에 URL(' + hit[0] + ')이 들어 있어 내장할 수 없습니다 — 다시 인코딩하세요');
+    return { body, info };
+  };
 
-const TEXT = {
-  desc: '손자병법 13편을 묻고, 따지고, 덜 상하는 길을 고르고, 멈출 줄 아는 하나의 판단 흐름으로 풀어 보는 8단계 칠판 강의입니다. 인문학이랑의 영상에서 영감을 받은 일반 개요입니다.',
-  credit: '칠판 강의 · chalk-talk',
-  notesBtn: '강의 노트', notesTip: '강의 노트 열기/닫기 (N)',
+  if (!opts.noAudio) {
+    const provider = readJson('audio/provider.json', path.join(audioDir, 'provider.json'));
+    const durations = readJson('audio/durations.json', path.join(audioDir, 'durations.json'));
+    if (provider) {
+      if (provider.voice !== EXPECTED_VOICE.voice) problems.push('audio/provider.json: 해설 목소리(voice)가 ' + EXPECTED_VOICE.voice + ' 이어야 합니다 (현재 ' + provider.voice + ')');
+      if (provider.model !== EXPECTED_VOICE.model) problems.push('audio/provider.json: model 이 ' + EXPECTED_VOICE.model + ' 이어야 합니다 (현재 ' + provider.model + ')');
+      if (provider.language !== EXPECTED_VOICE.language) problems.push('audio/provider.json: language 가 ' + EXPECTED_VOICE.language + ' 이어야 합니다');
+      if (provider.synthetic !== true) problems.push('audio/provider.json: synthetic 이 true 여야 합니다 — AI 합성 음성임을 화면에 알려야 합니다');
+      if (!provider.scriptSha256 || typeof provider.scriptSha256 !== 'object') problems.push('audio/provider.json: scriptSha256(단계별 대본 해시)가 없습니다');
+      out.provider = {};
+      for (const k of ['provider', 'model', 'voice', 'language', 'format']) if (typeof provider[k] === 'string') out.provider[k] = scrubUrls(provider[k]);
+      out.provider.synthetic = provider.synthetic === true;
+    }
+    for (const step of scene.steps || []) {
+      if (!step || typeof step.id !== 'string') continue;
+      const id = step.id;
+      const rel = 'audio/' + id + '.mp3';
+      if (provider && provider.scriptSha256 && typeof step.narration === 'string') {
+        const sha = crypto.createHash('sha256').update(step.narration).digest('hex');
+        if (provider.scriptSha256[id] !== sha) problems.push(id + ': 해설 대본이 바뀌어 ' + rel + ' 이(가) 오래되었습니다 — python narrate.py 로 해설을 다시 생성하세요');
+      }
+      const mp3 = readMp3(rel, path.join(audioDir, id + '.mp3'));
+      if (!mp3) continue;
+      const want = durations ? durations[id] : undefined;
+      if (!durations || !(want > 0)) problems.push(id + ': audio/durations.json 에 길이가 없습니다');
+      else if (Math.abs(mp3.info.duration - want) > DURATION_TOLERANCE) problems.push(rel + ': 길이 불일치 — MP3 프레임 ' + mp3.info.duration.toFixed(2) + '초, durations.json ' + want + '초');
+      const min = opts.clipMinSeconds === undefined ? CLIP_MIN_SECONDS : opts.clipMinSeconds;
+      if (mp3.info.duration < min) problems.push(rel + ': 길이 ' + mp3.info.duration.toFixed(1) + '초는 해설로 너무 짧습니다 (' + min + '초 이상)');
+      out.clips[id] = { audio: AUDIO_MIME + mp3.body.toString('base64'), duration: want > 0 ? want : mp3.info.duration };
+    }
+  }
+
+  const src = readJson('assets/chalk-writing-source.json');
+  const chalk = readMp3('assets/chalk-writing.mp3');
+  if (src) {
+    if (src.license !== 'CC0-1.0') problems.push('assets/chalk-writing-source.json: 분필 녹음의 license 는 CC0-1.0 이어야 합니다 (현재 ' + src.license + ')');
+    if (src.recorded !== true) problems.push('assets/chalk-writing-source.json: recorded 가 true(실제 녹음)여야 합니다 — 합성 분필 소리는 쓸 수 없습니다');
+    if (!isStr(src.title) || !isStr(src.creator)) problems.push('assets/chalk-writing-source.json: title, creator 가 필요합니다');
+  }
+  if (chalk && chalk.info.duration < CHALK_MIN_SECONDS) problems.push('assets/chalk-writing.mp3: 길이 ' + chalk.info.duration.toFixed(1) + '초는 너무 짧습니다 (' + CHALK_MIN_SECONDS + '초 이상 필요 — 짧은 조각 순환)');
+  if (src && chalk) {
+    out.chalk = {
+      title: scrubUrls(src.title || ''),
+      creator: scrubUrls(src.creator || ''),
+      license: src.license,
+      recorded: src.recorded === true,
+      edits: scrubUrls(src.edits || ''),
+      duration: Math.round(chalk.info.duration * 1000) / 1000,
+      audio: AUDIO_MIME + chalk.body.toString('base64'),
+    };
+  }
+  return out;
+}
+
+/* ---------------------------------------------------------------------
+ * 출력 검사
+ * ------------------------------------------------------------------- */
+const FONT_DATA_RE = /url\(data:font\/(?:ttf|otf);base64,[A-Za-z0-9+/=]+\)/g;
+const AUDIO_DATA_RE = /data:audio\/mpeg;base64,[A-Za-z0-9+/=]+/g;
+
+/** 외부 자원/네트워크/위험 API 사용 흔적을 문자열 목록으로 돌려줍니다. */
+export function findForbidden(html) {
+  const text = html.replace(FONT_DATA_RE, 'url(data:font)').replace(AUDIO_DATA_RE, 'data:audio');
+  const problems = [];
+  const rules = [
+    [/https?:\/\//i, '외부 URL (http/https)'],
+    [/(^|[^\w.])\/\/[a-z0-9-]+\.[a-z]{2,}\//i, '프로토콜 없는 외부 URL (//host/)'],
+    [/\bwww\./i, '외부 URL (www.)'],
+    [/@import\b/i, 'CSS @import'],
+    [/fonts\.(googleapis|gstatic)/i, '구글 글꼴'],
+    [/<[a-z][^>]*\s(?:src|href|action|poster|srcset)\s*=\s*["'](?!#|data:)/i, '외부/상대 경로 src·href'],
+    [/url\(\s*["']?(?!data:|#)/i, 'data: 가 아닌 CSS url()'],
+    [/\bfetch\s*\(/, 'fetch() 네트워크 호출'],
+    [/XMLHttpRequest/, 'XMLHttpRequest'],
+    [/\bWebSocket\b/, 'WebSocket'],
+    [/\bEventSource\b/, 'EventSource'],
+    [/sendBeacon/, 'sendBeacon'],
+    [/importScripts/, 'importScripts'],
+    [/\beval\s*\(/, 'eval()'],
+    [/new\s+Function\s*\(/, 'new Function()'],
+    [/\.innerHTML\b|\.outerHTML\b|insertAdjacentHTML|document\.write\s*\(/, 'HTML 문자열 삽입 API'],
+    [/speechSynthesis|SpeechSynthesisUtterance/, '브라우저 음성 합성(speechSynthesis) — 해설은 내장 MP3 만 씁니다'],
+  ];
+  for (const [re, label] of rules) {
+    const m = re.exec(text);
+    if (m) problems.push(label + ' — "' + text.slice(Math.max(0, m.index - 20), m.index + 50).replace(/\s+/g, ' ') + '"');
+  }
+  return problems;
+}
+
+function listHtmlFiles(dir, base = dir) {
+  const found = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === 'node_modules' || entry.name.startsWith('.')) continue;
+    const p = path.join(dir, entry.name);
+    if (entry.isDirectory()) found.push(...listHtmlFiles(p, base));
+    else if (/\.html?$/i.test(entry.name)) found.push(path.relative(base, p));
+  }
+  return found;
+}
+
+const jsonForScript = (value) => JSON.stringify(value).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+/* ---------------------------------------------------------------------
+ * 칠판 배치 검사 (layout.js 를 빌드에서 그대로 돌립니다)
+ * ------------------------------------------------------------------- */
+/**
+ * 각 단계를 여러 칠판 폭에서 배치해 보고, error 는 problems 로, warn 은 warnings 로 모읍니다.
+ * 글 폭은 나눔손글씨 펜·한자 부분 글꼴의 글자 폭 표로 잽니다(브라우저 measureText 와 같은 글꼴).
+ */
+export function layoutCheck(L, steps, measure, widths = LAYOUT_WIDTHS) {
+  const errors = [];
+  const warnings = new Map();
+  for (const W of widths) {
+    for (const raw of steps) {
+      let plan;
+      try { plan = L.planStep(raw, W, measure); } catch (e) { errors.push('배치 계산 실패 ' + raw.id + ' (W=' + W + '): ' + e.message); continue; }
+      for (const is of plan.issues) {
+        const msg = raw.id + ' (칠판 폭 ' + W + 'px' + (plan.wide ? ' 넓은 화면' : ' 좁은 화면') + (plan.mode === 'flow' || plan.mode === 'vertical' ? ', 세로 재배치' : '') + '): ' + is.detail + ' [' + is.kind + ']';
+        if (is.level === 'error') errors.push('칠판 배치 — ' + msg);
+        else warnings.set(is.kind + '|' + raw.id + '|' + is.detail, msg);
+      }
+    }
+  }
+  return { errors, warnings: [...warnings.values()] };
+}
+
+/** 소리·판서 시간표 요약(참고용) */
+function timingSummary(L, steps, durations) {
+  return steps.map((s) => {
+    const D = durations[s.id] || L.estimateDuration(s.narration);
+    return { id: s.id, duration: D, animEnd: L.stepEnd(s, D), estimated: !durations[s.id] };
+  });
+}
+
+/* ---------------------------------------------------------------------
+ * 빌드
+ * ------------------------------------------------------------------- */
+export const readSources = (root) => {
+  const read = (name) => fs.readFileSync(path.join(root, name), 'utf8');
+  return { template: read(TEMPLATE_NAME), styles: read('style.css'), layout: read('layout.js'), draw: read('draw.js'), player: read('player.js') };
 };
 
-// [찾을 문자열, 바꿀 문자열, 이름]: 템플릿에 정확히 한 번 있어야 한다.
-const UI_SWAPS = [
-  ['<html lang="en" data-style="studio" data-theme="light">', '<html lang="ko" data-style="studio" data-theme="light">', 'html lang'],
-  ['aria-label="Steps"', 'aria-label="강의 단계"', 'Steps'],
-  ['aria-label="Step list"', 'aria-label="단계 목록"', 'Step list'],
-  ['aria-label="Previous step" title="Previous (←)"', 'aria-label="이전 단계" title="이전 (←)"', 'prev'],
-  ['aria-label="Play" title="Play (P)"', 'aria-label="재생" title="재생 (P)"', 'play'],
-  ['aria-label="Next step" title="Next (→ / space)"', 'aria-label="다음 단계" title="다음 (→ / 스페이스)"', 'next'],
-  ['aria-label="Proof view: which arrows are backed by code" aria-pressed="false" title="Proof view (V)"', 'aria-label="근거 보기: 화살표가 코드로 뒷받침되는지" aria-pressed="false" title="근거 보기 (V)"', 'proof'],
-  ['aria-label="Before / after the change" aria-pressed="false" title="Before / after (D)"', 'aria-label="변경 전/후 보기" aria-pressed="false" title="변경 전/후 (D)"', 'diff'],
-  ['aria-label="Source code"', 'aria-label="소스 코드"', 'Source code'],
-  ['aria-label="Close code" title="Close (Esc)"', 'aria-label="코드 닫기" title="닫기 (Esc)"', 'Close code'],
-  ["$('play').setAttribute('aria-label', 'Pause')", "$('play').setAttribute('aria-label', '일시정지')", 'JS pause'],
-  ["$('play').setAttribute('aria-label', 'Play')", "$('play').setAttribute('aria-label', '재생')", 'JS play'],
-  ["`Step ${i + 1}${st.title ? ': ' + st.title : ''}`", "`${i + 1}단계${st.title ? ': ' + st.title : ''}`", 'JS step label'],
-  ['b.title = st.title || `Step ${i + 1}`', 'b.title = st.title || `${i + 1}단계`', 'JS step title'],
-  ["+ 'Before / after (D)'", "+ '변경 전/후 (D)'", 'JS diff tip'],
-];
+/**
+ * opts: { root, content, audio, noAudio, write, out, strictStructure, clipMinSeconds, widths }
+ * 반환: { html, scene, summary, warnings, stats }   — 실패하면 e.problems 가 붙은 Error 를 던집니다.
+ */
+export function build(opts = {}) {
+  const root = opts.root || ROOT;
+  const contentDir = path.resolve(root, opts.content || 'content');
+  const audioDir = path.resolve(root, opts.audio || 'audio');
+  const noAudio = opts.noAudio === true;
+  const warnings = [];
+  const problems = [];
 
-function once(html, find, repl, name) {
-  const parts = html.split(find);
-  if (parts.length !== 2) throw new Error(`템플릿 기준 문자열 "${name}"이(가) ${parts.length - 1}번 나옵니다 (1번이어야 함). chalk-talk 템플릿이 바뀌었는지 확인하세요.`);
-  return parts[0] + repl + parts[1];
-}
+  const loaded = loadContent(contentDir);
+  problems.push(...loaded.problems);
+  if (!loaded.scene) fail(problems);
+  const scene = loaded.scene;
+  const strictStructure = opts.strictStructure !== undefined ? opts.strictStructure : loaded.complete;
+  if (!strictStructure) warnings.push('콘텐츠 파일이 모두 있지는 않아(' + STEP_FILES.join(', ') + ') 23단계 구조 검사를 건너뜁니다');
 
-/** once() 와 같지만 정확히 count 번 나와야 하는 문자열을 모두 바꾼다. */
-function exactly(html, find, repl, count, name) {
-  const parts = html.split(find);
-  if (parts.length !== count + 1) throw new Error(`템플릿 기준 문자열 "${name}"이(가) ${parts.length - 1}번 나옵니다 (${count}번이어야 함). chalk-talk 템플릿이 바뀌었는지 확인하세요.`);
-  return parts.join(repl);
-}
+  const result = validateLesson(scene, { strictStructure });
+  problems.push(...result.errors);
+  warnings.push(...result.warnings);
 
-const footerHtml = s => `<footer class="src" aria-label="출처">
-  <p>출처: <a href="${esc(s.channelUrl)}" target="_blank" rel="noopener noreferrer">${esc(s.channel)}</a>의 영상 <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">〈${esc(s.title)}〉</a>(링크는 ${esc(s.at)} 위치로 열립니다)에서 영감을 받은 손자병법 일반 개요입니다.
-  영상에서 확인한 것은 제목과 채널뿐이며, 이 페이지의 설명을 영상 속 발언이나 ${esc(s.at)} 구간의 내용으로 소개하지 않습니다.</p>
-</footer>`;
-
-const notesHtml = `<aside id="notes" class="notes" aria-labelledby="notes-title" inert>
-  <header>
-    <div class="notes-t"><strong id="notes-title" tabindex="-1">강의 노트</strong><span id="notes-step"></span></div>
-    <button type="button" id="notes-close" class="notes-x" title="닫기 (Esc)">닫기</button>
-  </header>
-  <div id="notes-body" class="notes-body" tabindex="0" role="region" aria-label="단계별 강의 노트"></div>
-  <p class="notes-foot">손자병법 원전을 바탕으로 한 일반 해설이며, 영상 속 발언을 옮긴 것이 아닙니다. '현대적 해석'은 이해를 돕기 위한 적용 예입니다.</p>
-</aside>`;
-
-// 서랍은 장면 JSON 의 steps[k].handout 만 읽어 그린다. 문자열은 textContent 로만 넣는다.
-const notesScript = `<script>
-(() => {
-'use strict';
-const scene = JSON.parse(document.getElementById('scene').textContent);
-const steps = Array.isArray(scene.steps) ? scene.steps : [];
-const $ = id => document.getElementById(id);
-const btn = $('notes-btn'), panel = $('notes'), body = $('notes-body'), label = $('notes-step');
-const SECTIONS = [['classic', '원문과 풀이', ''], ['limit', '읽을 때 주의할 점', 'lim'], ['modern', '현대적 해석', '']];
-const make = (tag, text, cls) => { const e = document.createElement(tag); if (text) e.textContent = text; if (cls) e.className = cls; return e; };
-let shown = 0;
-function render(k) {
-  if (k === shown) return;
-  shown = k;
-  const st = steps[k - 1], h = st && st.handout;
-  body.replaceChildren();
-  label.textContent = st ? k + ' / ' + steps.length + '단계 · ' + st.title : '';
-  if (!h) return;
-  body.appendChild(make('h3', h.ref));
-  for (const [key, title, cls] of SECTIONS) {
-    if (!h[key]) continue;
-    const s = make('section'); s.appendChild(make('h4', title)); s.appendChild(make('p', h[key], cls)); body.appendChild(s);
+  /* 글꼴: 나눔손글씨 펜 + 한자 부분 글꼴 */
+  const nanumPath = path.join(root, 'assets', 'NanumPenScript-Regular.ttf');
+  const hanjaPath = path.join(root, 'assets', 'ChalkHanja-subset.otf');
+  let nanumBuf = null;
+  let hanjaBuf = null;
+  let fonts = null;
+  try { nanumBuf = fs.readFileSync(nanumPath); } catch { problems.push('assets/NanumPenScript-Regular.ttf 이(가) 없습니다'); }
+  try { hanjaBuf = fs.readFileSync(hanjaPath); } catch { problems.push('assets/ChalkHanja-subset.otf 이(가) 없습니다 — python3 subset_hanja.py 로 만드세요'); }
+  for (const lic of ['OFL.txt', 'OFL-NotoSerifCJK.txt']) if (!fs.existsSync(path.join(root, 'assets', lic))) problems.push('assets/' + lic + ' (글꼴 라이선스 전문)이 없습니다');
+  if (nanumBuf && hanjaBuf) {
+    fonts = { nanum: parseFont(nanumBuf), hanja: parseFont(hanjaBuf) };
+    // 칠판(Canvas) 글: 모든 글자가 두 글꼴 중 하나에 있어야 합니다.
+    for (const m of missingGlyphs(result.chalk, [fonts.nanum, fonts.hanja])) {
+      problems.push('칠판 글꼴에 없는 글자 ' + m.code + ' "' + m.char + '" (' + m.where + ') — 한자·기호라면 python3 subset_hanja.py 로 한자 부분 글꼴을 다시 만들고, 아니라면 다른 글자로 바꾸세요');
+    }
+    // 화면(DOM) 글: 한자는 내장 한자 글꼴에 있어야 합니다(시스템 글꼴에 기대지 않습니다).
+    for (const m of missingGlyphs(result.dom, [fonts.nanum, fonts.hanja], { onlyHan: true })) {
+      problems.push('한자 부분 글꼴에 없는 한자 ' + m.code + ' "' + m.char + '" (' + m.where + ') — python3 subset_hanja.py 로 한자 부분 글꼴을 다시 만드세요');
+    }
   }
-  body.scrollTop = 0;
-}
-const sync = () => render(parseInt($('n').textContent, 10) || 1);
-const isOpen = () => panel.classList.contains('open');
-function setOpen(on) {
-  panel.classList.toggle('open', on); panel.inert = !on;
-  document.body.classList.toggle('notes-open', on);
-  btn.setAttribute('aria-expanded', String(on));
-  if (on) { sync(); $('notes-title').focus({ preventScroll: true }); } else if (panel.contains(document.activeElement)) btn.focus();
-}
-btn.addEventListener('click', () => setOpen(!isOpen()));
-$('notes-close').addEventListener('click', () => setOpen(false));
-// 서랍 안의 스페이스·PageDown 등은 스크롤과 버튼 동작에 쓰고, 강의 단계 이동으로 새어 나가지 않게 한다.
-const KEEP = [' ', 'Enter', 'PageDown', 'PageUp', 'Home', 'End', 'j', 'k'];
-for (const e of [panel, btn]) e.addEventListener('keydown', ev => { if (KEEP.includes(ev.key)) ev.stopPropagation(); });
-document.addEventListener('keydown', ev => {
-  if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
-  if (ev.key === 'Escape' && isOpen()) setOpen(false);
-  else if (ev.key === 'n' || ev.key === 'N') setOpen(!isOpen());
-});
-new MutationObserver(sync).observe($('n'), { childList: true, characterData: true, subtree: true });
-sync();
-if (new URLSearchParams(location.search).has('notes')) setOpen(true);
-})();
-</script>
-`;
 
-/** 검증된 장면 JSON 문자열로 최종 HTML 을 만든다. */
-export function buildPage(sceneRaw, { engineDir = findEngine() } = {}) {
-  const scene = JSON.parse(sceneRaw);
-  const bad = validateScene(scene);
-  if (bad.length) throw new Error('장면 검증 실패:\n  - ' + bad.join('\n  - '));
+  /* 소스 */
+  let src;
+  try { src = readSources(root); } catch (e) { problems.push('소스 파일을 읽을 수 없습니다: ' + e.message); fail(problems); }
+  for (const [name, text] of [['layout.js', src.layout], ['draw.js', src.draw], ['player.js', src.player], ['style.css', src.styles]]) {
+    if (/<\/script|<!--/i.test(text)) problems.push(name + ' 에 </script 또는 <!-- 가 있어 HTML에 넣을 수 없습니다');
+  }
+  for (const token of ['/*__STYLES__*/', '/*__LAYOUT__*/', '/*__DRAW__*/', '/*__SCENE__*/', '/*__PLAYER__*/', '%%TITLE%%', '%%AUTHOR%%']) {
+    if (!src.template.includes(token)) problems.push('template.html 에 ' + token + ' 가 없습니다');
+  }
 
-  // 엔진은 파일 경로를 받는다. 임시 폴더에 장면을 두고 돌린다(저장소에 .html 이 새로 생기지 않게 한다).
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'aow-scene-'));
-  let html;
-  try {
-    const p = path.join(tmp, 'art-of-war.scene.json');
-    fs.writeFileSync(p, sceneRaw);
-    html = stockBuild(engineDir, p);
-  } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+  /* 소리 */
+  const audio = loadAudio(root, audioDir, scene, problems, { noAudio, clipMinSeconds: opts.clipMinSeconds });
 
-  // 1. 외부 웹폰트: 링크 3줄과 설명 주석을 지운다.
-  const fontLinks = /<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">\n<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>\n<!--[^\n]*-->\n<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com\/[^"]*">\n/;
-  if (html.split(fontLinks).length !== 2) throw new Error('템플릿의 Google Fonts 링크 블록을 찾지 못했습니다. chalk-talk 템플릿이 바뀌었는지 확인하세요.');
-  html = html.replace(fontLinks, () => '');
-  // 템플릿 기본값에 남은 Geist 글꼴 이름(오프라인에서는 받을 수 없다)도 한글 시스템 스택으로 바꾼다.
-  html = exactly(html, '--sans:"Geist","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;', `--sans:${SANS};`, 1, 'default sans');
-  html = exactly(html, '--mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;', `--mono:${MONO};`, 2, 'default mono');
-  // 템플릿의 기본(studio) 스타일은 이 강의에서 쓰이지 않지만 muted 색이 밝은 바탕에서 대비 2.5:1 이라 정적 검사에 걸린다. 같은 줄의 --edge 색으로 맞춘다.
-  html = once(html, '--muted:#A1A1AA; --edge:#71717A;', '--muted:#71717A; --edge:#71717A;', 'studio muted');
-  html = once(html, '</style>', CSS + '</style>', 'style end');
+  /* 칠판 배치 검사 + 시간표 */
+  let summary = [];
+  if (fonts && Array.isArray(scene.steps) && result.errors.length === 0) {
+    try {
+      const L = require(path.join(root, 'layout.js'));
+      const lc = layoutCheck(L, scene.steps, makeMeasure([fonts.nanum, fonts.hanja]), opts.widths || LAYOUT_WIDTHS);
+      problems.push(...lc.errors);
+      warnings.push(...lc.warnings.map((w) => '배치 경고 — ' + w));
+      const durations = {};
+      for (const s of scene.steps) if (audio.clips[s.id]) durations[s.id] = audio.clips[s.id].duration;
+      summary = timingSummary(L, scene.steps, durations);
+      for (const t of summary) {
+        if (t.animEnd - t.duration > DRAW_OVERRUN_WARN) warnings.push(t.id + ': 판서가 해설보다 ' + (t.animEnd - t.duration).toFixed(1) + '초 늦게 끝납니다 (마지막 at 을 앞으로 당기거나 글을 줄이세요)');
+      }
+    } catch (e) {
+      problems.push('layout.js 를 불러오거나 실행하지 못했습니다: ' + e.message);
+    }
+  }
+  if (problems.length) fail(problems);
 
-  // 2. 한국어 UI 와 문서 제목.
-  for (const [find, repl, name] of UI_SWAPS) html = once(html, find, repl, name);
-  html = once(html, '<title>Chalk Talk</title>', `<title>${esc(scene.title)}</title>\n<meta name="description" content="${esc(TEXT.desc)}">`, 'title');
-  html = once(html, '<h1 class="sr" id="sr-title">Chalk Talk</h1>', `<h1 class="sr" id="sr-title">${esc(scene.title)}${scene.subtitle ? ' - ' + esc(scene.subtitle) : ''}</h1>`, 'sr-title');
+  /* 조립 */
+  const lesson = JSON.parse(JSON.stringify(scene));
+  if (!noAudio) {
+    for (const step of lesson.steps) {
+      step.audio = audio.clips[step.id].audio;
+      step.audioDuration = audio.clips[step.id].duration;
+    }
+    lesson.narrationProvider = audio.provider;
+  } else {
+    lesson.narrationProvider = null;
+    warnings.push('--no-audio: 해설 음성(MP3)이 없는 개발용 빌드입니다. 판서 시간은 대본 길이로 추정하며 배포하지 마세요');
+  }
+  lesson.chalkSound = audio.chalk;
+  lesson.build = { noAudio };
 
-  // 3. 서랍 버튼, 푸터, 서랍.
-  html = once(html, '<button id="theme" aria-label="Switch light / dark" title="Light / dark (T)">',
-    `<button type="button" id="notes-btn" class="notes-btn" aria-controls="notes" aria-expanded="false" title="${TEXT.notesTip}">${TEXT.notesBtn}</button>\n        <button id="theme" aria-label="밝은 화면과 어두운 화면 전환" title="밝게 / 어둡게 (T)">`, 'theme button');
-  html = once(html, '<span class="credit">chalk-talk</span>', `${footerHtml(scene.source)}\n<span class="credit">${TEXT.credit}</span>\n${notesHtml}`, 'credit');
-  html = once(html, '</body>', notesScript + '</body>', 'body end');
+  const fontFace =
+    '@font-face{font-family:ChalkKorean;src:url(data:font/ttf;base64,' + nanumBuf.toString('base64') + ') format("truetype");font-weight:400;font-style:normal;font-display:block}\n' +
+    '@font-face{font-family:ChalkHanja;src:url(data:font/otf;base64,' + hanjaBuf.toString('base64') + ') format("opentype");font-weight:100 900;font-style:normal;font-display:block}\n';
+  const assemble = (data) => src.template
+    .replace('%%TITLE%%', () => escapeHtml(scene.title))
+    .replace('%%AUTHOR%%', () => escapeHtml(scene.author))
+    .replace('/*__STYLES__*/', () => fontFace + src.styles)
+    .replace('/*__LAYOUT__*/', () => src.layout)
+    .replace('/*__DRAW__*/', () => src.draw)
+    .replace('/*__SCENE__*/', () => 'window.LESSON_DATA = ' + jsonForScript(data) + ';')
+    .replace('/*__PLAYER__*/', () => src.player);
+  const html = assemble(lesson);
 
-  const problems = auditPage(html, scene);
-  if (problems.length) throw new Error('결과물 점검 실패:\n  - ' + problems.join('\n  - '));
-  return html;
-}
+  // 외부 URL 검사: 참고 문헌·영상 출처 문장 속 URL 글자는 "보이는 글"이므로 빼고 검사합니다.
+  const forCheck = JSON.parse(JSON.stringify(lesson));
+  forCheck.references = (forCheck.references || []).map(scrubUrls);
+  forCheck.source = Object.fromEntries(Object.entries(forCheck.source || {}).map(([k, v]) => [k, scrubUrls(v)]));
+  const checked = assemble(forCheck);
+  const leftovers = checked.replace(FONT_DATA_RE, '').replace(AUDIO_DATA_RE, '').match(/\/\*__[A-Z]+__\*\/|%%[A-Z]+%%/g);
+  if (leftovers) problems.push('치환되지 않은 토큰: ' + leftovers.join(', '));
+  problems.push(...findForbidden(checked).map((p) => '금지된 항목: ' + p));
+  const wantAudio = (noAudio ? 0 : lesson.steps.length) + 1;
+  if ((html.match(AUDIO_DATA_RE) || []).length !== wantAudio) problems.push('내장된 오디오가 ' + wantAudio + '개가 아닙니다');
+  if ((html.match(FONT_DATA_RE) || []).length !== 2) problems.push('내장된 글꼴이 2개(나눔손글씨 펜 + 한자 부분 글꼴)가 아닙니다');
 
-/* ------------------------------------------------------------------ 결과물 점검 */
+  const outName = opts.out ? path.basename(opts.out) : OUTPUT_NAME;
+  const htmlFiles = listHtmlFiles(root).filter((f) => f !== TEMPLATE_NAME && f !== OUTPUT_NAME && f !== outName);
+  if (htmlFiles.length) problems.push('이 폴더에는 ' + OUTPUT_NAME + ' 외의 HTML을 둘 수 없습니다: ' + htmlFiles.join(', '));
+  if (problems.length) fail(problems);
 
-const SCENE_BLOCK = /<script id="scene" type="application\/json">\n([\s\S]*?)\n<\/script>/;
-const LEFTOVER_ENGLISH = ['aria-label="Steps"', 'aria-label="Step list"', 'aria-label="Previous step"', 'aria-label="Play"', 'aria-label="Next step"',
-  'aria-label="Switch light / dark"', 'aria-label="Close code"', 'aria-label="Source code"', '<title>Chalk Talk</title>', '>Chalk Talk</h1>', "'Pause'", '`Step ${'];
-const NETWORK_OR_MEDIA = [/<link[\s>]/i, /<script[^>]*\ssrc=/i, /<(?:img|iframe|object|embed|audio|video|source|track)[\s>]/i, /\bfetch\s*\(/, /XMLHttpRequest/, /sendBeacon/,
-  /\bWebSocket\b/, /\bEventSource\b/, /importScripts/, /new\s+Worker\b/, /\bimport\s*\(/, /@import/i, /AudioContext/, /new\s+Audio\b/, /speechSynthesis/];
-
-/** 최종 HTML 점검. 문제 목록을 돌려준다(비어 있으면 통과). */
-export function auditPage(html, scene) {
-  const bad = [];
-  const m = SCENE_BLOCK.exec(html);
-  if (!m) return ['장면 JSON 블록을 찾지 못했습니다'];
-  let embedded;
-  try { embedded = JSON.parse(m[1]); } catch (e) { return ['장면 JSON 이 올바르지 않습니다: ' + e.message]; }
-  if (JSON.stringify(embedded) !== JSON.stringify(scene)) bad.push('내장된 장면이 장면 파일과 다릅니다');
-  bad.push(...validateScene(embedded).map(x => '내장 장면: ' + x));
-
-  const page = html.replace(SCENE_BLOCK, '');
-  // 외부 의존성: 허용되는 주소는 SVG 네임스페이스와 출처 푸터의 두 링크(이동용, 자동 요청 아님)뿐이다.
-  const allowed = new Set(['http://www.w3.org/2000/svg', esc(scene.source.url), esc(scene.source.channelUrl)]);
-  for (const u of page.match(/https?:\/\/[^\s"'<>)\\]+/g) || []) if (!allowed.has(u)) bad.push(`허용되지 않은 외부 주소: ${u}`);
-  if (/(?:src|href|action|poster)\s*=\s*["']?\/\//i.test(page)) bad.push('프로토콜 상대(//…) 외부 주소가 있습니다');
-  for (const re of NETWORK_OR_MEDIA) if (re.test(page)) bad.push(`금지된 요소/API: ${re}`);
-  if (/url\(\s*["']?(?!#)/.test(page)) bad.push('url(#…) 이외의 url() 참조가 있습니다');
-  const anchors = page.match(/<a\s[^>]*href=/g) || [];
-  if (anchors.length !== 2) bad.push(`푸터 링크는 영상·채널 2개여야 합니다 (현재 ${anchors.length}개)`);
-  for (const a of page.match(/<a\s[^>]*>/g) || []) if (!/target="_blank"/.test(a) || !/rel="noopener noreferrer"/.test(a)) bad.push(`새 창 링크에 rel="noopener noreferrer" 가 없습니다: ${a}`);
-
-  for (const s of LEFTOVER_ENGLISH) if (page.includes(s)) bad.push(`영어 UI 문자열이 남아 있습니다: ${s}`);
-  if (!page.includes('<html lang="ko"')) bad.push('<html lang="ko"> 가 아닙니다');
-  if (!page.includes(`<title>${esc(scene.title)}</title>`)) bad.push('<title> 이 장면 제목과 다릅니다');
-  if (!page.includes(`id="sr-title">${esc(scene.title)}`)) bad.push('제목 ARIA(sr-title)가 한국어 제목이 아닙니다');
-  if (!/<button id="proof"[^>]*\shidden/.test(page)) bad.push('증거 보기 버튼이 숨겨져 있어야 합니다');
-  if (page.indexOf(FONT_MARK) < page.indexOf('--hand:"Patrick Hand"')) bad.push('한글 글꼴 규칙이 템플릿 기본 글꼴보다 앞에 있습니다');
-  if (/Geist/.test(page)) bad.push('받을 수 없는 Geist 글꼴 이름이 남아 있습니다');
-  for (const id of ['notes', 'notes-btn', 'notes-body', 'notes-close']) if (!page.includes(`id="${id}"`)) bad.push(`#${id} 가 없습니다`);
-  if (!page.includes('class="src"')) bad.push('출처 푸터가 없습니다');
-  return bad;
+  if (opts.write !== false) fs.writeFileSync(opts.out ? path.resolve(root, opts.out) : path.join(root, OUTPUT_NAME), html);
+  return {
+    html,
+    scene: lesson,
+    summary,
+    warnings,
+    stats: {
+      bytes: Buffer.byteLength(html),
+      steps: lesson.steps.length,
+      glyphs: { nanum: fonts.nanum.size, hanja: fonts.hanja.size },
+      audioClips: noAudio ? 0 : lesson.steps.length,
+      chalkSeconds: audio.chalk.duration,
+      strictStructure,
+      noAudio,
+    },
+  };
 }
 
-/* ------------------------------------------------------------------ 실행 */
+function fail(problems) {
+  const e = new Error(formatProblems(problems, '빌드 실패'));
+  e.problems = problems;
+  throw e;
+}
 
-function main(argv) {
-  const opt = { scene: SCENE_FILE, out: OUT_FILE, verify: false };
+function parseArgs(argv) {
+  const o = {};
   for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === '--verify') opt.verify = true;
-    else if (argv[i] === '--scene' && argv[i + 1]) opt.scene = path.resolve(argv[++i]);
-    else if (argv[i] === '--out' && argv[i + 1]) opt.out = path.resolve(argv[++i]);
-    else throw new Error(`알 수 없는 인자: ${argv[i]}\n사용법: node build.mjs [--verify] [--scene 파일] [--out 파일]`);
+    const a = argv[i];
+    if (a === '--no-audio') o.noAudio = true;
+    else if (a === '--check') o.write = false;
+    else if (a === '--content') o.content = argv[++i];
+    else if (a === '--audio') o.audio = argv[++i];
+    else if (a === '--out') o.out = argv[++i];
+    else if (a === '-h' || a === '--help') o.help = true;
+    else throw new Error('알 수 없는 옵션: ' + a);
   }
-  if (!isFile(opt.scene)) throw new Error('장면 파일이 없습니다: ' + opt.scene);
-  const sceneRaw = fs.readFileSync(opt.scene, 'utf8');
-  const html = buildPage(sceneRaw);
-  if (opt.verify) {
-    if (!isFile(opt.out) || fs.readFileSync(opt.out, 'utf8') !== html) throw new Error(`${path.basename(opt.out)} 이(가) 장면 파일과 다릅니다. node build.mjs 로 다시 만드세요.`);
-    console.log(`확인: ${path.basename(opt.out)} 은(는) 최신입니다`);
-    return;
-  }
-  fs.writeFileSync(opt.out, html);
-  const s = JSON.parse(sceneRaw);
-  console.log(`${opt.out}\n${(Buffer.byteLength(html) / 1024).toFixed(0)} KB · ${s.steps.length}단계 · 노드 ${s.nodes.length} · 간선 ${s.edges.length} · proof:false · 외부 의존성 없음`);
+  return o;
 }
 
-const entry = process.argv[1] && (() => { try { return fs.realpathSync(path.resolve(process.argv[1])); } catch { return null; } })();
-if (entry && entry === fs.realpathSync(fileURLToPath(import.meta.url))) {
-  try { main(process.argv.slice(2)); } catch (err) { console.error('build: ' + err.message); process.exit(1); }
+function main() {
+  try {
+    const args = parseArgs(process.argv.slice(2));
+    if (args.help) {
+      console.log('사용법: node build.mjs [--no-audio] [--check] [--content DIR] [--audio DIR] [--out FILE]');
+      return;
+    }
+    const r = build(args);
+    const name = args.out ? path.basename(args.out) : OUTPUT_NAME;
+    for (const w of r.warnings) console.warn('경고: ' + w);
+    console.log((args.write === false ? '검사 통과: ' : '빌드 성공: ') + name + ' (' + (r.stats.bytes / 1048576).toFixed(2) + ' MB)');
+    const totalAnim = r.summary.reduce((n, s) => n + s.animEnd, 0);
+    const totalDur = r.summary.reduce((n, s) => n + s.duration, 0);
+    console.log('단계 ' + r.stats.steps + '개, 해설 ' + (r.stats.noAudio ? '추정 ' : '') + (totalDur / 60).toFixed(1) + '분, 판서 합계 ' + (totalAnim / 60).toFixed(1) + '분 (속도 1배, 단계 사이 0.9초 간격 제외)');
+    for (const s of r.summary) console.log('  - ' + s.id.padEnd(16) + ' 해설 ' + s.duration.toFixed(1).padStart(5) + '초' + (s.estimated ? '(추정)' : '      ') + ' / 판서 끝 ' + s.animEnd.toFixed(1).padStart(5) + '초');
+    console.log('글꼴 글자 수: 나눔손글씨 펜 ' + r.stats.glyphs.nanum + ' + 한자 부분 ' + r.stats.glyphs.hanja + ' · 해설 MP3 ' + r.stats.audioClips + '개 + 분필 녹음(CC0) ' + r.stats.chalkSeconds.toFixed(1) + '초 내장 · 외부 URL 0건 · 글리프 누락 0건');
+    if (r.stats.noAudio) console.warn('\n⚠ 개발용 빌드(--no-audio): 해설 음성이 없습니다. 배포 전에는 python narrate.py 로 해설을 만든 뒤 node build.mjs 로 다시 빌드하세요.');
+  } catch (e) {
+    console.error(e.message);
+    process.exitCode = 1;
+  }
 }
+
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) main();

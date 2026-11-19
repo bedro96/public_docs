@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:,">
+<title>%%TITLE%%</title>
+<style>/*__STYLES__*/</style>
+</head>
+<body>
+<a class="skip-link" href="#lecture">강의 본문으로 건너뛰기</a>
+<noscript><p class="noscript">이 칠판 강의는 JavaScript가 켜져 있어야 재생됩니다. 브라우저 설정에서 JavaScript를 허용해 주세요.</p></noscript>
+<p id="fatal" class="fatal" role="alert" hidden>강의 데이터를 불러오지 못했습니다. 파일이 손상되었거나 빌드가 완료되지 않았습니다.</p>
+
+<div class="page">
+  <header class="masthead">
+    <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true">§</span> <span id="lesson-eyebrow"></span> <span id="lesson-count" class="eyebrow-count"></span></p>
+    <h1 id="lesson-title" class="lesson-title"></h1>
+    <p id="lesson-subtitle" class="lesson-subtitle"></p>
+    <p class="voice-chip"><span class="chip-dot" aria-hidden="true"></span><span class="chip-key">해설 음성</span><span id="voice-chip-label" class="chip-val"></span></p>
+  </header>
+
+  <main id="lecture" class="lecture" tabindex="-1">
+    <section class="stage" aria-labelledby="stage-title">
+      <h2 id="stage-title" class="sr-only">판서 강의 칠판</h2>
+
+      <div class="board-frame">
+        <div class="board">
+          <div class="board-head">
+            <p id="board-kicker" class="board-kicker"><span id="board-tag" class="tag" data-tone="fact"></span><span id="board-kicker-text" class="kicker-text"></span></p>
+            <h3 id="board-title" class="board-title"></h3>
+            <p id="board-count" class="board-count" aria-hidden="true"></p>
+          </div>
+          <div id="board-stage" class="board-stage">
+            <canvas id="board" role="img" aria-label="칠판" aria-describedby="board-sr"></canvas>
+            <div id="board-hint" class="board-hint" aria-hidden="true">
+              <span class="hint-disc"><span class="hint-tri"></span></span>
+              <span id="hint-text" class="hint-text"></span>
+            </div>
+          </div>
+        </div>
+        <div class="tray">
+          <ul id="legend" class="legend" aria-label="칠판 범례"></ul>
+          <span class="tray-chalk" aria-hidden="true"></span>
+        </div>
+      </div>
+      <div id="board-sr" class="sr-only"></div>
+
+      <div class="controls" role="group" aria-label="재생 제어">
+        <div class="status-row">
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+          <p id="time" class="time" aria-hidden="true">0:00 / 0:00</p>
+        </div>
+        <div id="progress" class="progress" role="progressbar" aria-label="현재 단계 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0%"><span id="progress-fill" class="progress-fill"></span></div>
+
+        <div class="transport">
+          <button type="button" id="prev" class="btn" aria-label="이전 단계">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 5h2v14H7zM20 5v14L10 12z" fill="currentColor"/></svg>
+            <span>이전 단계</span>
+          </button>
+          <button type="button" id="play" class="btn btn-primary btn-play">
+            <span id="play-icon" class="icon-wrap" aria-hidden="true">
+              <svg id="icon-play" viewBox="0 0 24 24" focusable="false"><path d="M7 4v16l13-8z" fill="currentColor"/></svg>
+              <svg id="icon-pause" viewBox="0 0 24 24" focusable="false" hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/></svg>
+            </span>
+            <span id="play-label">재생</span>
+          </button>
+          <button type="button" id="next" class="btn" aria-label="다음 단계">
+            <span>다음 단계</span>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5h2v14h-2zM4 5v14l10-7z" fill="currentColor"/></svg>
+          </button>
+          <button type="button" id="replay" class="btn" aria-label="현재 단계 다시 재생">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z" fill="currentColor"/></svg>
+            <span>현재 단계 다시</span>
+          </button>
+          <button type="button" id="restart" class="btn" aria-label="강의 처음부터 다시 재생">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 5h2v14H6zM9 12l10-7v14z" fill="currentColor"/></svg>
+            <span>처음부터</span>
+          </button>
+        </div>
+
+        <div class="options">
+          <button type="button" id="auto-toggle" class="btn btn-toggle" aria-pressed="true">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5v14l8-7zM13 5v14l8-7z" fill="currentColor"/></svg>
+            <span>다음 단계로 자동 넘김</span><b class="state" id="auto-state">켬</b>
+          </button>
+          <button type="button" id="voice-toggle" class="btn btn-toggle" aria-pressed="true">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <span>해설 음성</span><b class="state" id="voice-state">켬</b>
+          </button>
+          <button type="button" id="chalk-toggle" class="btn btn-toggle" aria-pressed="true">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 18 15 7l3 3L7 21H4z" fill="currentColor"/><path d="M16.5 5.5 18 4l3 3-1.5 1.5z" fill="currentColor"/></svg>
+            <span>분필 소리</span><b class="state" id="chalk-state">켬</b>
+          </button>
+          <label class="chalk-volume" for="chalk-volume">
+            <span>분필 음량</span>
+            <input id="chalk-volume" type="range" min="0" max="100" step="1" value="25">
+            <output id="chalk-volume-value" for="chalk-volume">25%</output>
+          </label>
+          <label class="select">
+            <span>재생 속도</span>
+            <select id="speed">
+              <option value="0.75">0.75배</option>
+              <option value="1" selected>1배</option>
+              <option value="1.25">1.25배</option>
+              <option value="1.5">1.5배</option>
+            </select>
+          </label>
+        </div>
+
+        <p id="voice-label" class="voice-label"></p>
+        <p id="voice-note" class="voice-note" role="status" aria-live="polite"></p>
+        <p id="chalk-note" class="voice-note" role="status" aria-live="polite"></p>
+        <p id="reduced-note" class="note" role="status" hidden>동작 줄이기 설정이 켜져 있어 판서 애니메이션 없이 완성된 칠판을 바로 보여 줍니다.</p>
+        <p class="keys"><kbd>Space</kbd> 재생/일시정지 · <kbd>←</kbd> <kbd>→</kbd> 이전/다음 단계 · <kbd>1</kbd>–<kbd>9</kbd> 단계 이동 · 소리는 재생 버튼을 누른 뒤에 시작합니다.</p>
+      </div>
+
+      <nav class="chapters" aria-label="단계 선택">
+        <div class="lecture-progress">
+          <p class="lecture-progress-head"><span class="lecture-progress-title">강의 전체 진행</span> <span id="lecture-progress-text" class="lecture-progress-text"></span></p>
+          <div class="lecture-bar" aria-hidden="true"><span id="lecture-progress-fill" class="lecture-bar-fill"></span></div>
+        </div>
+        <div id="chapters" class="chapter-groups"></div>
+      </nav>
+
+      <section class="caption" aria-labelledby="caption-title">
+        <div class="caption-head">
+          <h3 id="caption-title" class="caption-title">단계 요약 · 설명</h3>
+          <button type="button" id="caption-toggle" class="btn btn-small" aria-expanded="true" aria-controls="caption-body">설명 접기</button>
+        </div>
+        <div id="caption-body" class="caption-body">
+          <figure id="quote" class="quote" hidden>
+            <figcaption class="quote-label">원문 한 구절</figcaption>
+            <blockquote id="quote-han" class="quote-han" lang="ko"></blockquote>
+            <p class="quote-reading"><span class="quote-key">독음</span> <span id="quote-reading"></span></p>
+            <p class="quote-meaning"><span class="quote-key">뜻</span> <span id="quote-meaning"></span></p>
+            <p class="quote-where"><span class="quote-key">출처</span> <span id="quote-where"></span></p>
+          </figure>
+          <p id="summary" class="summary"></p>
+          <ol id="beats" class="beats" aria-label="설명 순서"></ol>
+          <aside id="callout" class="callout" data-tone="info">
+            <p id="callout-title" class="callout-title"></p>
+            <p id="callout-text" class="callout-text"></p>
+          </aside>
+          <details id="transcript" class="transcript">
+            <summary>해설 대본 보기 (소리를 못 들을 때)</summary>
+            <p id="transcript-text" class="transcript-text"></p>
+          </details>
+        </div>
+      </section>
+
+      <section class="digest-section" aria-labelledby="digest-title">
+        <p class="section-eyebrow">소리 없이도 한눈에</p>
+        <h3 id="digest-title" class="digest-title"></h3>
+        <ul id="digest" class="digest"></ul>
+      </section>
+    </section>
+
+    <section id="quiz" class="card" aria-labelledby="quiz-title">
+      <header class="section-head">
+        <p class="section-eyebrow">마무리 퀴즈</p>
+        <h2 id="quiz-title" class="section-title">얼마나 기억나나요?</h2>
+      </header>
+      <div class="quiz-bar">
+        <p id="quiz-score" class="quiz-score" role="status" aria-live="polite"></p>
+        <button type="button" id="quiz-retry" class="btn btn-small">다시 풀기</button>
+      </div>
+      <ol id="quiz-list" class="quiz-list"></ol>
+    </section>
+
+    <section id="misconceptions" class="card" aria-labelledby="mis-title">
+      <header class="section-head">
+        <p class="section-eyebrow">짚고 넘어가기</p>
+        <h2 id="mis-title" class="section-title">자주 하는 오해</h2>
+      </header>
+      <ul id="mis-list" class="mis-list"></ul>
+    </section>
+
+    <section id="references" class="card card-quiet" aria-labelledby="ref-title">
+      <header class="section-head">
+        <p class="section-eyebrow">더 읽을거리</p>
+        <h2 id="ref-title" class="section-title">참고 문헌</h2>
+      </header>
+      <ul id="ref-list" class="ref-list"></ul>
+      <p id="source-note" class="source-note"></p>
+    </section>
+  </main>
+
+  <footer class="colophon">
+    <p class="colophon-author">작성: %%AUTHOR%%</p>
+    <p>하나의 HTML 파일에 글꼴·해설 음성·분필 소리·재생 코드가 모두 들어 있어 인터넷 연결 없이 재생됩니다. 판서는 영상이 아니라 Canvas로 그리는 애니메이션입니다.</p>
+    <p>해설 음성: Microsoft Foundry(Azure AI Speech)의 MAI-Voice-2 ko-KR-Haena 로 만든 AI 합성 음성이며, 사람이 녹음한 것이 아닙니다.</p>
+    <p>분필 소리: digitale.de의 실제 칠판 필기 녹음 「Writing with Chalk / Chalkboard」(CC0 1.0)를 편집해 사용했습니다.</p>
+    <p>글꼴: 손글씨는 나눔손글씨 펜, 한자는 Noto Serif CJK KR 에서 이 강의에 쓰인 글자만 덜어 낸 것입니다 (둘 다 SIL Open Font License 1.1).</p>
+    <p>이 강의는 《손자병법》 원전과 공개된 자료를 바탕으로 한 일반 개요이며, 특정 영상의 내용을 요약하거나 인용한 것이 아닙니다.</p>
+  </footer>
+</div>
+
+<script>/*__LAYOUT__*/</script>
+<script>/*__DRAW__*/</script>
+<script>/*__SCENE__*/</script>
+<script>/*__PLAYER__*/</script>
+</body>
+</html>

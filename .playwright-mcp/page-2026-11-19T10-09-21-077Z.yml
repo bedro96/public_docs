@@ -1,0 +1,352 @@
+- generic [active] [ref=e1]:
+  - link "강의 본문으로 건너뛰기" [ref=e2] [cursor=pointer]:
+    - /url: "#lecture"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - paragraph [ref=e5]:
+        - generic [aria-hidden] [ref=e6]: §
+        - generic [ref=e7]: 인문 고전 · 손자병법
+        - generic [ref=e8]: · 23단계
+      - heading "손자병법 칠판 강의" [level=1] [ref=e9]
+      - paragraph [ref=e10]: 저자와 시대부터 열세 편의 핵심까지, 23단계
+      - paragraph [ref=e11]:
+        - generic [ref=e13]: 해설 음성
+        - generic [ref=e14]: ko-KR-Haena · MAI-Voice-2 (AI 합성)
+    - main [ref=e15]:
+      - region "판서 강의 칠판" [ref=e16]:
+        - heading "판서 강의 칠판" [level=2] [ref=e17]
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - generic [ref=e20]:
+              - paragraph [ref=e21]:
+                - generic [ref=e22]: 책의 개요
+                - generic [ref=e23]: 배경 · 책 소개
+              - heading "《손자병법》은 어떤 책일까?" [level=3] [ref=e24]
+              - paragraph [aria-hidden] [ref=e25]: 1 / 23
+            - generic [ref=e26]:
+              - 'img "칠판 1단계: 《손자병법》은 어떤 책일까? (孫子兵法)" [ref=e27]'
+              - generic [ref=e31] [cursor=pointer]: 눌러서 판서 시작
+          - list "칠판 범례" [ref=e33]:
+            - listitem [ref=e34]:
+              - generic [ref=e36]: 준비 (1~3편)
+              - generic [ref=e37]: (민트색)
+            - listitem [ref=e38]:
+              - generic [ref=e40]: 형세와 운용 (4~7편)
+              - generic [ref=e41]: (하늘색)
+            - listitem [ref=e42]:
+              - generic [ref=e44]: 상황 대응 (8~11편)
+              - generic [ref=e45]: (노란색)
+            - listitem [ref=e46]:
+              - generic [ref=e48]: 마무리 (12~13편)
+              - generic [ref=e49]: (분홍색)
+        - generic [ref=e51]: 칠판에 네 개의 세로 칸이 나란히 있어요. 왼쪽부터 준비 칸에 시계, 작전, 모공. 형세와 운용 칸에 군형, 병세, 허실, 군쟁. 상황 대응 칸에 구변, 행군, 지형, 구지. 마무리 칸에 화공, 용간이 위에서 아래로 놓여 있어요.
+        - group "재생 제어" [ref=e52]:
+          - generic [ref=e53]:
+            - status [ref=e54]: 재생 버튼을 누르면 판서와 해설 음성이 시작돼요
+            - paragraph [aria-hidden] [ref=e55]: 0:00 / 0:56
+          - progressbar "현재 단계 진행률" [ref=e56]
+          - generic [ref=e57]:
+            - button "이전 단계" [disabled] [ref=e58]
+            - button "재생" [ref=e62] [cursor=pointer]
+            - button "다음 단계" [ref=e69] [cursor=pointer]
+            - button "현재 단계 다시 재생" [ref=e73] [cursor=pointer]:
+              - generic [ref=e76]: 현재 단계 다시
+            - button "강의 처음부터 다시 재생" [ref=e77] [cursor=pointer]:
+              - generic [ref=e80]: 처음부터
+          - generic [ref=e81]:
+            - button "다음 단계로 자동 넘김 켬" [pressed] [ref=e82] [cursor=pointer]:
+              - generic [ref=e85]: 다음 단계로 자동 넘김
+              - generic [ref=e86]: 켬
+            - button "해설 음성 켬" [pressed] [ref=e87] [cursor=pointer]:
+              - generic [ref=e90]: 해설 음성
+              - generic [ref=e91]: 켬
+            - button "분필 소리 켬" [pressed] [ref=e92] [cursor=pointer]:
+              - generic [ref=e96]: 분필 소리
+              - generic [ref=e97]: 켬
+            - generic [ref=e98]:
+              - generic [ref=e99]: 분필 음량
+              - slider "분필 음량" [ref=e100]: "25"
+              - status [ref=e101]: 25%
+            - generic [ref=e102]:
+              - generic [ref=e103]: 재생 속도
+              - combobox "재생 속도" [ref=e104]:
+                - option "0.75배"
+                - option "1배" [selected]
+                - option "1.25배"
+                - option "1.5배"
+          - paragraph [ref=e105]: MAI-Voice-2 ko-KR-Haena (AI 합성)
+          - paragraph [ref=e106]: Space 재생/일시정지 · ← → 이전/다음 단계 · 1–9 단계 이동 · 소리는 재생 버튼을 누른 뒤에 시작합니다.
+        - navigation "단계 선택" [ref=e107]:
+          - paragraph [ref=e109]:
+            - generic [ref=e110]: 강의 전체 진행
+            - generic [ref=e111]: 1 / 23 단계
+          - generic [ref=e113]:
+            - generic [ref=e114]:
+              - paragraph [ref=e115]: 배경
+              - list [ref=e116]:
+                - listitem [ref=e117]:
+                  - button "1단계 책 소개 (배경)" [ref=e118] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e119]: "1"
+                    - generic [ref=e120]: 책 소개
+                - listitem [ref=e121]:
+                  - button "2단계 춘추 시대 (배경)" [ref=e122] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e123]: "2"
+                    - generic [ref=e124]: 춘추 시대
+                - listitem [ref=e125]:
+                  - button "3단계 손무 (배경)" [ref=e126] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e127]: "3"
+                    - generic [ref=e128]: 손무
+                - listitem [ref=e129]:
+                  - button "4단계 손무와 손빈 (배경)" [ref=e130] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e131]: "4"
+                    - generic [ref=e132]: 손무와 손빈
+                - listitem [ref=e133]:
+                  - button "5단계 전해진 길 (배경)" [ref=e134] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e135]: "5"
+                    - generic [ref=e136]: 전해진 길
+                - listitem [ref=e137]:
+                  - button "6단계 읽는 지도 (배경)" [ref=e138] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e139]: "6"
+                    - generic [ref=e140]: 읽는 지도
+            - generic [ref=e141]:
+              - paragraph [ref=e142]: 본론 · 열세 편
+              - list [ref=e143]:
+                - listitem [ref=e144]:
+                  - button "7단계 제1편 시계 (본론 · 열세 편)" [ref=e145] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e146]: "7"
+                    - generic [ref=e147]: 제1편 시계
+                - listitem [ref=e148]:
+                  - button "8단계 제2편 작전 (본론 · 열세 편)" [ref=e149] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e150]: "8"
+                    - generic [ref=e151]: 제2편 작전
+                - listitem [ref=e152]:
+                  - button "9단계 제3편 모공 (본론 · 열세 편)" [ref=e153] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e154]: "9"
+                    - generic [ref=e155]: 제3편 모공
+                - listitem [ref=e156]:
+                  - button "10단계 제4편 군형 (본론 · 열세 편)" [ref=e157] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e158]: "10"
+                    - generic [ref=e159]: 제4편 군형
+                - listitem [ref=e160]:
+                  - button "11단계 제5편 병세 (본론 · 열세 편)" [ref=e161] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e162]: "11"
+                    - generic [ref=e163]: 제5편 병세
+                - listitem [ref=e164]:
+                  - button "12단계 제6편 허실 (본론 · 열세 편)" [ref=e165] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e166]: "12"
+                    - generic [ref=e167]: 제6편 허실
+                - listitem [ref=e168]:
+                  - button "13단계 제7편 군쟁 (본론 · 열세 편)" [ref=e169] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e170]: "13"
+                    - generic [ref=e171]: 제7편 군쟁
+                - listitem [ref=e172]:
+                  - button "14단계 제8편 구변 (본론 · 열세 편)" [ref=e173] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e174]: "14"
+                    - generic [ref=e175]: 제8편 구변
+                - listitem [ref=e176]:
+                  - button "15단계 제9편 행군 (본론 · 열세 편)" [ref=e177] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e178]: "15"
+                    - generic [ref=e179]: 제9편 행군
+                - listitem [ref=e180]:
+                  - button "16단계 제10편 지형 (본론 · 열세 편)" [ref=e181] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e182]: "16"
+                    - generic [ref=e183]: 제10편 지형
+                - listitem [ref=e184]:
+                  - button "17단계 제11편 구지 (본론 · 열세 편)" [ref=e185] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e186]: "17"
+                    - generic [ref=e187]: 제11편 구지
+                - listitem [ref=e188]:
+                  - button "18단계 제12편 화공 (본론 · 열세 편)" [ref=e189] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e190]: "18"
+                    - generic [ref=e191]: 제12편 화공
+                - listitem [ref=e192]:
+                  - button "19단계 제13편 용간 (본론 · 열세 편)" [ref=e193] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e194]: "19"
+                    - generic [ref=e195]: 제13편 용간
+            - generic [ref=e196]:
+              - paragraph [ref=e197]: 마무리
+              - list [ref=e198]:
+                - listitem [ref=e199]:
+                  - button "20단계 관통하는 생각 (마무리)" [ref=e200] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e201]: "20"
+                    - generic [ref=e202]: 관통하는 생각
+                - listitem [ref=e203]:
+                  - button "21단계 오해 바로잡기 (마무리)" [ref=e204] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e205]: "21"
+                    - generic [ref=e206]: 오해 바로잡기
+                - listitem [ref=e207]:
+                  - button "22단계 오늘에 옮기기 (마무리)" [ref=e208] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e209]: "22"
+                    - generic [ref=e210]: 오늘에 옮기기
+                - listitem [ref=e211]:
+                  - button "23단계 다시 보기 (마무리)" [ref=e212] [cursor=pointer]:
+                    - generic [aria-hidden] [ref=e213]: "23"
+                    - generic [ref=e214]: 다시 보기
+        - region "단계 요약 · 설명" [ref=e215]:
+          - generic [ref=e216]:
+            - heading "단계 요약 · 설명" [level=3] [ref=e217]
+            - button "설명 접기" [expanded] [ref=e218] [cursor=pointer]
+          - generic [ref=e219]:
+            - figure "원문 한 구절" [ref=e220]:
+              - blockquote [ref=e222]: 兵者 國之大事 死生之地 存亡之道 不可不察也
+              - paragraph [ref=e223]:
+                - generic [ref=e224]: 독음
+                - text: 병자 국지대사 사생지지 존망지도 불가불찰야
+              - paragraph [ref=e225]:
+                - generic [ref=e226]: 뜻
+                - text: 전쟁은 나라의 큰일이다. 죽고 사는 땅이요 존망의 길이니, 살피지 않을 수 없다.
+              - paragraph [ref=e227]:
+                - generic [ref=e228]: 출처
+                - text: 제1편 시계
+            - paragraph [ref=e229]: 열세 편, 한자 육천 자 안팎의 짧은 병서예요. 이기는 비법보다 먼저 살피고 따지는 판단을 말하는 동아시아 고전이에요.
+            - list "설명 순서" [ref=e230]:
+              - listitem [ref=e231]: 손자병법은 전쟁에서 이기는 비법서일까요?
+              - listitem [ref=e232]: 열세 편을 네 덩어리로 묶어 읽어요.
+              - listitem [ref=e233]: 병자 국지대사, 전쟁은 나라의 큰일이에요.
+              - listitem [ref=e234]: 싸움을 부추기기보다 먼저 따지고 살피라는 책이에요.
+            - complementary [ref=e235]:
+              - paragraph [ref=e236]: 읽기 틀은 이 강의의 것
+              - paragraph [ref=e237]: 네 덩어리 구분은 원전에 있는 것이 아니라 읽기 쉽게 붙인 틀이에요. 글자 수도 판본마다 조금씩 달라요.
+            - group [ref=e238]:
+              - generic "해설 대본 보기 (소리를 못 들을 때)" [ref=e239] [cursor=pointer]
+        - region "한 장 요약 · 《손자병법》은 어떤 책일까?" [ref=e240]:
+          - paragraph [ref=e241]: 소리 없이도 한눈에
+          - heading "한 장 요약 · 《손자병법》은 어떤 책일까?" [level=3] [ref=e242]
+          - list [ref=e243]:
+            - listitem [ref=e244]:
+              - strong [ref=e245]: 어떤 책인가
+              - generic [ref=e246]: 열세 편, 한자로 육천 자 안팎의 짧은 책이에요. 판본에 따라 글자 수는 조금 달라요.
+            - listitem [ref=e247]:
+              - strong [ref=e248]: 무엇을 말하나
+              - generic [ref=e249]: 싸움 자체보다 따지고 살피는 일을 앞에 둬요. 싸우지 않고 이길 길도 먼저 찾으라고 해요.
+            - listitem [ref=e250]:
+              - strong [ref=e251]: 책의 자리
+              - generic [ref=e252]: 군사 교재이자 동아시아 고전으로 오래 읽혔어요. 송나라와 조선에서도 군사 교재로 썼어요.
+            - listitem [ref=e253]:
+              - strong [ref=e254]: 이 강의의 읽기
+              - generic [ref=e255]: 열세 편을 준비, 형세와 운용, 상황 대응, 마무리의 네 덩어리로 묶어 읽어요.
+      - region "얼마나 기억나나요?" [ref=e256]:
+        - generic [ref=e257]:
+          - paragraph [ref=e258]: 마무리 퀴즈
+          - heading "얼마나 기억나나요?" [level=2] [ref=e259]
+        - generic [ref=e260]:
+          - status [ref=e261]: 맞힌 문제 0 / 6 · 푼 문제 0 / 6
+          - button "다시 풀기" [ref=e262] [cursor=pointer]
+        - list [ref=e263]:
+          - listitem [ref=e264]:
+            - paragraph [ref=e265]: 《손자병법》의 저자와 성립에 대한 설명으로 가장 알맞은 것은?
+            - list [ref=e266]:
+              - listitem [ref=e267]:
+                - button "전국 시대 제나라의 손빈이 쓴 책이며, 이미 학계의 결론이 났다." [ref=e268] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e269]: ①
+              - listitem [ref=e271]:
+                - button "춘추 말 오나라의 손무가 지었다고 전해지지만, 생애와 성립 시기에는 학계 논쟁이 있다." [ref=e272] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e273]: ②
+              - listitem [ref=e275]:
+                - button "송나라 때 처음 만들어진 책이라서 그 전의 기록은 없다." [ref=e276] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e277]: ③
+            - button "배경 다시 보기" [ref=e279] [cursor=pointer]
+          - listitem [ref=e280]:
+            - paragraph [ref=e281]: 손무와 손빈에 대한 설명으로 맞는 것은?
+            - list [ref=e282]:
+              - listitem [ref=e283]:
+                - button "서로 다른 사람이고 책도 별개다. 은작산 죽간에서 두 책이 함께 나왔다." [ref=e284] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e285]: ①
+              - listitem [ref=e287]:
+                - button "한 사람의 두 이름이라서 책도 하나뿐이다." [ref=e288] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e289]: ②
+              - listitem [ref=e291]:
+                - button "손빈이 손무의 스승이며 두 사람은 같은 시대에 활동했다." [ref=e292] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e293]: ③
+            - button "배경 다시 보기" [ref=e295] [cursor=pointer]
+          - listitem [ref=e296]:
+            - paragraph [ref=e297]: 〈시계〉의 다섯 가지 점검(五事) 가운데 ‘지(地)’에 해당하는 것은?
+            - list [ref=e298]:
+              - listitem [ref=e299]:
+                - button "지혜·신뢰·어짊·용기·엄격함을 갖춘 장수의 자질" [ref=e300] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e301]: ①
+              - listitem [ref=e303]:
+                - button "군의 편제와 지휘 체계, 물자를 다루는 규정" [ref=e304] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e305]: ②
+              - listitem [ref=e307]:
+                - button "높낮이, 멀고 가까움, 험하고 평탄함, 넓고 좁음 같은 땅의 조건" [ref=e308] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e309]: ③
+            - button "제1편 다시 보기" [ref=e311] [cursor=pointer]
+          - listitem [ref=e312]:
+            - paragraph [ref=e313]: 〈모공〉이 방책의 가장 낮은 단계로 꼽는 것과 그 까닭으로 알맞은 것은?
+            - list [ref=e314]:
+              - listitem [ref=e315]:
+                - button "계략을 꺾는 일 — 속임수라서 떳떳하지 못하기 때문" [ref=e316] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e317]: ①
+              - listitem [ref=e319]:
+                - button "성을 공격하는 일 — 시간과 병력이 크게 들어 어쩔 수 없을 때의 방법이라서" [ref=e320] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e321]: ②
+              - listitem [ref=e323]:
+                - button "동맹을 끊는 일 — 싸움을 피하는 겁쟁이의 방법이라서" [ref=e324] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e325]: ③
+            - button "제3편 다시 보기" [ref=e327] [cursor=pointer]
+          - listitem [ref=e328]:
+            - paragraph [ref=e329]: 〈허실〉의 ‘致人而不致於人(치인이불치어인)’은 무슨 뜻일까요?
+            - list [ref=e330]:
+              - listitem [ref=e331]:
+                - button "상대를 내 뜻대로 움직이게 하고, 내가 상대에게 끌려 다니지 않는다." [ref=e332] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e333]: ①
+              - listitem [ref=e335]:
+                - button "상대에게 끝까지 이르러 정면으로 맞붙는다." [ref=e336] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e337]: ②
+              - listitem [ref=e339]:
+                - button "상대에게 이르지 않도록 늘 피해 다닌다." [ref=e340] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e341]: ③
+            - button "제6편 다시 보기" [ref=e343] [cursor=pointer]
+          - listitem [ref=e344]:
+            - paragraph [ref=e345]: 〈화공〉의 뒷부분이 군주와 장수에게 경계하는 것은?
+            - list [ref=e346]:
+              - listitem [ref=e347]:
+                - button "한번 시작한 전쟁은 어떤 일이 있어도 끝까지 밀어붙인다." [ref=e348] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e349]: ①
+              - listitem [ref=e351]:
+                - button "불은 바람이 부는 날에만 쓸 수 있으니 날씨만 맞추면 된다." [ref=e352] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e353]: ②
+              - listitem [ref=e355]:
+                - button "화가 난다고 군대를 일으키거나 싸우지 말고, 이로울 때만 움직인다." [ref=e356] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e357]: ③
+            - button "제12편 다시 보기" [ref=e359] [cursor=pointer]
+      - region "자주 하는 오해" [ref=e360]:
+        - generic [ref=e361]:
+          - paragraph [ref=e362]: 짚고 넘어가기
+          - heading "자주 하는 오해" [level=2] [ref=e363]
+        - list [ref=e364]:
+          - listitem [ref=e365]:
+            - paragraph [ref=e366]: 《손자병법》은 속임수 모음집이 아니에요
+            - paragraph [ref=e367]: 〈시계〉에 “병자 궤도야(전쟁은 속이는 길)”라는 말이 있는 건 맞아요. 하지만 같은 편이 전쟁을 “나라의 큰일”이라 하며 미리 따져 보라고 해요. 속임은 일부이고 책의 중심은 계산과 판단이에요.
+          - listitem [ref=e368]:
+            - paragraph [ref=e369]: 《삼십육계》는 《손자병법》이 아니에요
+            - paragraph [ref=e370]: 《삼십육계》는 후대에 알려진 별개의 책이에요. 《손자병법》 열세 편 본문과 섞어 읽으면 두 책을 모두 오해하기 쉬워요.
+          - listitem [ref=e371]:
+            - paragraph [ref=e372]: ‘싸우지 않는다’는 ‘피한다’나 ‘겁쟁이’가 아니에요
+            - paragraph [ref=e373]: 원문이 가장 좋게 치는 것은 싸우지 않고도 이길 조건을 만드는 일이에요. 〈모공〉은 힘의 차이에 따라 에워싸고, 치고, 맞서고, 지키고, 피하라고 가려서 말해요. 피하는 것도 판단의 하나일 뿐이에요.
+          - listitem [ref=e374]:
+            - paragraph [ref=e375]: 손무와 손빈은 같은 사람이 아니에요
+            - paragraph [ref=e376]: 《사기》는 손빈을 손무의 후손이라 전하고, 《한서》 예문지는 《오손자》와 《제손자》를 따로 적었어요. 1972년 은작산 한묘 죽간에서 두 책이 함께 나와 구별이 뒷받침됐어요. 다만 손무의 실존과 열세 편의 성립 시기는 학계 논쟁이 남아 있어요.
+      - region "참고 문헌" [ref=e377]:
+        - generic [ref=e378]:
+          - paragraph [ref=e379]: 더 읽을거리
+          - heading "참고 문헌" [level=2] [ref=e380]
+        - list [ref=e381]:
+          - listitem [ref=e382]: "司馬遷, 《史記》 卷六十五 〈孫子吳起列傳〉 — 손무·손빈·오기의 전기. 원문: https://zh.wikisource.org/zh-hant/%E5%8F%B2%E8%A8%98/%E5%8D%B7065"
+          - listitem [ref=e383]: 班固, 《漢書》 卷三十 〈藝文志〉 兵書略 — 《吳孫子兵法》 82편·圖 9권과 《齊孫子》 89편·圖 4권을 따로 기록
+          - listitem [ref=e384]: "銀雀山漢墓竹簡整理小組 編, 《銀雀山漢墓竹簡〔壹〕》, 北京: 文物出版社, 1985 — 1972년 임기(臨沂) 은작산 한묘에서 나온 《孫子兵法》·《孫臏兵法》 등의 석문과 주석"
+          - listitem [ref=e385]: "銀雀山漢墓竹簡整理小組 編, 《孫子兵法》(銀雀山漢墓竹簡), 北京: 文物出版社, 1976 — 죽간본 《손자병법》의 석문과 교주"
+          - listitem [ref=e386]: 《武經七書》 — 북송 원풍 3년(1080) 신종의 명으로 국자감 사업 주복(朱服) 등이 《孫子》를 포함한 일곱 병서를 교정·간행한 官定 병서 모음 (《續資治通鑑長編》 卷三〇三에 기록)
+          - listitem [ref=e387]: Chinese Text Project(中國哲學書電子化計劃), 《孫子兵法》 한문 원문 — https://ctext.org/art-of-war
+          - listitem [ref=e388]: 維基文庫(Wikisource), 《孫子兵法》 한문 원문 — https://zh.wikisource.org/wiki/%E5%AD%AB%E5%AD%90%E5%85%B5%E6%B3%95
+          - listitem [ref=e389]: "Lionel Giles 역, Sun Tzŭ on the Art of War: The Oldest Military Treatise in the World, London: Luzac & Co., 1910 — Project Gutenberg 전자책: https://www.gutenberg.org/ebooks/66706"
+          - listitem [ref=e390]: 손자 지음, 김원중 옮김, 《손자병법》, 글항아리, 2011 — 통행본과 죽간본의 차이를 함께 짚은 한국어 완역본
+        - paragraph [ref=e391]: "참고한 영상: 절대 지지 않는 법 ─ 《손자병법》 90분 완전 해설 · 인문학이랑. 이 강의는 위 영상의 요약이 아닙니다. 확인한 것은 영상의 제목과 채널뿐이며, 자막·설명·링크가 열리는 19분 3초 구간의 내용은 확인하지 못했습니다. 영상에서 영감을 받아 《손자병법》 원전과 공개된 자료를 바탕으로 구성한 일반 개요이고, 영상 속 발언을 인용하거나 요약하지 않았습니다."
+    - contentinfo [ref=e392]:
+      - paragraph [ref=e393]: "작성: Microsoft Korea STU"
+      - paragraph [ref=e394]: 하나의 HTML 파일에 글꼴·해설 음성·분필 소리·재생 코드가 모두 들어 있어 인터넷 연결 없이 재생됩니다. 판서는 영상이 아니라 Canvas로 그리는 애니메이션입니다.
+      - paragraph [ref=e395]: "해설 음성: Microsoft Foundry(Azure AI Speech)의 MAI-Voice-2 ko-KR-Haena 로 만든 AI 합성 음성이며, 사람이 녹음한 것이 아닙니다."
+      - paragraph [ref=e396]: "분필 소리: digitale.de의 실제 칠판 필기 녹음 「Writing with Chalk / Chalkboard」(CC0 1.0)를 편집해 사용했습니다."
+      - paragraph [ref=e397]: "글꼴: 손글씨는 나눔손글씨 펜, 한자는 Noto Serif CJK KR 에서 이 강의에 쓰인 글자만 덜어 낸 것입니다 (둘 다 SIL Open Font License 1.1)."
+      - paragraph [ref=e398]: 이 강의는 《손자병법》 원전과 공개된 자료를 바탕으로 한 일반 개요이며, 특정 영상의 내용을 요약하거나 인용한 것이 아닙니다.

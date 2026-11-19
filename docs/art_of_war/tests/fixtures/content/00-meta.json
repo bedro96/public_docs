@@ -1,0 +1,83 @@
+{
+  "schema": "art-of-war-lesson/1",
+  "lang": "ko",
+  "eyebrow": "시험용 장면 · 손자병법",
+  "title": "손자병법 칠판 강의 시험용 장면",
+  "subtitle": "재생기와 빌드 검사를 시험하기 위한 작은 예시입니다",
+  "author": "Microsoft Korea STU",
+  "source": {
+    "title": "시험용 출처 제목",
+    "channel": "시험용 채널",
+    "url": "https://example.invalid/video",
+    "note": "시험용 장면이라 실제 영상과 관계가 없어요."
+  },
+  "ui": { "hint": "눌러서 판서 시작" },
+  "references": [
+    "시험용 참고 문헌 하나. 실제 강의의 참고 문헌과 다릅니다.",
+    "시험용 참고 문헌 둘.",
+    "시험용 참고 문헌 셋.",
+    "시험용 참고 문헌 넷.",
+    "시험용 참고 문헌 다섯."
+  ],
+  "misconceptions": [
+    { "title": "손자병법은 싸움을 부추기는 책이다?", "text": "시험용 문장입니다. 전쟁의 비용과 위험을 먼저 따지라고 말하는 책으로 읽혀요." },
+    { "title": "손무와 손빈은 같은 사람이다?", "text": "시험용 문장입니다. 두 사람은 다른 인물로 구별해서 씁니다." },
+    { "title": "열세 편이 한 번에 완성되었다?", "text": "시험용 문장입니다. 성립 과정에는 학계의 논쟁이 있어요." }
+  ],
+  "quiz": [
+    {
+      "question": "시험 문제 하나. 싸우기 전에 가장 먼저 해야 할 일은?",
+      "chapterNo": 1,
+      "options": [
+        { "text": "먼저 따져 보고 정보를 모은다", "correct": true, "feedback": "맞아요. 싸우기 전에 따져 보는 것이 출발점입니다." },
+        { "text": "일단 군대를 보낸다", "correct": false, "feedback": "아니에요. 따져 보기 전에 움직이면 위험해요." },
+        { "text": "소문이 퍼지길 기다린다", "correct": false, "feedback": "아니에요. 기다리는 것은 계획이 아니에요." }
+      ]
+    },
+    {
+      "question": "시험 문제 둘. 가장 좋은 방법으로 꼽히는 것은?",
+      "chapterNo": 3,
+      "options": [
+        { "text": "성을 힘으로 공격한다", "correct": false, "feedback": "아니에요. 성 공격은 가장 아래 단계입니다." },
+        { "text": "상대의 계략을 먼저 꺾는다", "correct": true, "feedback": "맞아요. 벌모가 가장 높은 단계예요." },
+        { "text": "동맹을 모두 잃는다", "correct": false, "feedback": "아니에요. 동맹은 지키거나 끊는 대상입니다." }
+      ]
+    },
+    {
+      "question": "시험 문제 셋. 다섯 가지 점검에 들지 않는 것은?",
+      "chapterNo": 1,
+      "options": [
+        { "text": "도와 천", "correct": false, "feedback": "아니에요. 두 가지 모두 다섯 가지에 들어요." },
+        { "text": "지와 장", "correct": false, "feedback": "아니에요. 두 가지 모두 다섯 가지에 들어요." },
+        { "text": "소문과 행운", "correct": true, "feedback": "맞아요. 소문과 행운은 점검 항목이 아닙니다." }
+      ]
+    },
+    {
+      "question": "시험 문제 넷. 첩자를 쓰는 편의 이름은?",
+      "chapterNo": 13,
+      "options": [
+        { "text": "용간", "correct": true, "feedback": "맞아요. 용간은 정보를 다루는 열세 번째 편이에요." },
+        { "text": "시계", "correct": false, "feedback": "아니에요. 시계는 첫 번째 편입니다." },
+        { "text": "화공", "correct": false, "feedback": "아니에요. 화공은 불로 공격하는 편이에요." }
+      ]
+    },
+    {
+      "question": "시험 문제 다섯. 손무와 손빈을 바르게 말한 것은?",
+      "chapterNo": 3,
+      "options": [
+        { "text": "서로 다른 인물이다", "correct": true, "feedback": "맞아요. 시대도 책도 달라요." },
+        { "text": "같은 사람의 다른 이름이다", "correct": false, "feedback": "아니에요. 둘은 구별해서 씁니다." },
+        { "text": "둘 다 책을 남기지 않았다", "correct": false, "feedback": "아니에요. 각자의 이름으로 전해지는 책이 있어요." }
+      ]
+    },
+    {
+      "question": "시험 문제 여섯. 연대가 논쟁 중인 것은 어떻게 그리나요?",
+      "chapterNo": 1,
+      "options": [
+        { "text": "점선과 물음표로 그린다", "correct": true, "feedback": "맞아요. 불확실한 것은 점선으로 보여 줍니다." },
+        { "text": "굵은 실선으로 그린다", "correct": false, "feedback": "아니에요. 굵은 실선은 확실한 것에 써요." },
+        { "text": "그리지 않는다", "correct": false, "feedback": "아니에요. 논쟁이 있다는 사실도 알려 줍니다." }
+      ]
+    }
+  ]
+}
