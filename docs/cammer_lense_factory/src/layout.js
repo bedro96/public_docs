@@ -1,6 +1,6 @@
 // Where things stand on the plant line. Pure numbers (no kit, no DOM) so the model, the scene and the tests agree.
 // x runs along the flow line, y is across it (+y toward the viewer), z is up. One unit is roughly 6 cm.
-// All positions are a schematic [assumption]: no public source gives LG Innotek's real layout.
+// All positions are a schematic [assumption]: no public source gives reference manufacturer's real layout.
 
 export const BELT_Z = 9; // top of the line conveyor
 export const TRAY_W = 11; // carrier tray footprint on the line (schematic)

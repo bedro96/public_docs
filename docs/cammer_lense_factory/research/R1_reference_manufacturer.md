@@ -1,6 +1,6 @@
 
 **Confidence tags:**
-- **[verified]**: stated in a primary source (LG Innotek press release, sustainability report, DART-based filing) or a named news outlet.
+- **[verified]**: stated in a primary source (reference manufacturer press release, sustainability report, DART-based filing) or a named news outlet.
 - **[verified-secondary]**: from a secondary or derived site that repeats filing data.
 - **[estimate]**: my inference.
 - **[unverified]**: reported once, from a weak source, or not found.
@@ -9,13 +9,13 @@ Several 2026 items come from secondary sites (BigGo mirror, theinference.org, a 
 
 ---
 
-# R1 — LG Innotek (LG이노텍, KRX 011070): company, sites, shop layout, process, technology, timeline
+# R1 — reference manufacturer (기준 제조사, 비공개 식별 코드): company, sites, shop layout, process, technology, timeline
 
 ## 0. Executive summary
 
-- **Scale and dependence.** LG Innotek's consolidated revenue is about KRW 21.9T (2025). Optics Solutions is about 84% of it (KRW 18.3T, 2025). A single unnamed customer, universally read as Apple, is 79–81% of revenue.
+- **Scale and dependence.** reference manufacturer's consolidated revenue is about KRW 21.9T (2025). Optics Solutions is about 84% of it (KRW 18.3T, 2025). A single unnamed customer, universally read as Apple, is 79–81% of revenue.
 - **Apple share.** The company never names the customer. The share is 78–81% in recent years, not "70–80%".
-- **Supply history.** LG Innotek has supplied Apple camera modules since 2010 (iPhone 4 era), not as a front camera. Source: BusinessPost, and a Bizwatch article for the iPhone 4 rear 5MP (not directly fetched, 403).
+- **Supply history.** reference manufacturer has supplied Apple camera modules since 2010 (iPhone 4 era), not as a front camera. Source: BusinessPost, and a Bizwatch article for the iPhone 4 rear 5MP (not directly fetched, 403).
 - **Production split.**
   - Gumi (Korea) is the "mother factory". It handles R&D, new-model high-value modules and new-application optics.
   - Paju (Korea) does camera modules, 3D sensing, and now humanoid-robot cameras.
@@ -23,7 +23,7 @@ Several 2026 items come from secondary sites (BigGo mirror, theinference.org, a 
   - Yantai (China) is also an optics site.
   - Mexico, Wroclaw and Jakarta are not smartphone-camera plants.
 - **Shop/process facts are thin and dated.**
-  - The best public detail is a 2017 ETNews plant tour (Gwangju, LG G6 module) and a 2015 LG Innotek press piece (G4 OIS module).
+  - The best public detail is a 2017 ETNews plant tour (Gwangju, reference manufacturer G6 module) and a 2015 reference manufacturer press piece (G4 OIS module).
   - Together they give a verified line flow: die bond, wire bond, glass filter, singulation, active alignment (AA), cure, test.
   - They also give an AA tolerance and a "10-class" clean-room.
   - There is no public number for current tact time, yield, line count or AGV/OHT use. Do not present any as fact.
@@ -37,7 +37,7 @@ Several 2026 items come from secondary sites (BigGo mirror, theinference.org, a 
 
 | Item | 2023 | 2024 | 2025 | Source |
 |---|---|---|---|---|
-| Revenue | KRW 20.6053T | 21.2008T | 21.8966T (+3.3%) | lginnotek.com/news/pressView.do?idx=6459 / 6521 / 6575 [verified] |
+| Revenue | KRW 20.6053T | 21.2008T | 21.8966T (+3.3%) | [manufacturer source URL removed] / 6521 / 6575 [verified] |
 | Operating profit | 830.8B | 706.0B | 665.0B (−5.8%) | same [verified] |
 | Net profit | – | – | 341.3B | idx=6575 [verified] |
 | Optics Solutions revenue | 17.2948T | 17.8001T | 18.3185T (83.6% of total) | press releases; 2025 figure via DART-derived basarajm.github.io/llm-wiki [verified-secondary] |
@@ -51,13 +51,13 @@ Segment structure:
 
 Quarterly data (seasonality for the animation's demand curve):
 - Q4 2025 was a record quarter: revenue KRW 7.6098T, OP 324.7B. Optics was 6.6462T (+15.2% YoY).
-- Q3 2026: revenue 6.3671T (+18.6%), OP 94.8B (−53.4%). Optics was 5.4041T (+20.6%). Source: lg.co.kr/media/release/30719 [verified].
+- Q3 2026: revenue 6.3671T (+18.6%), OP 94.8B (−53.4%). Optics was 5.4041T (+20.6%). Source: [manufacturer source URL removed] [verified].
 - Optics is about 85% of Q3 2026 revenue (my arithmetic) [estimate].
 - Profit is back-loaded into Q3/Q4 because of the September iPhone launch.
 
 ### 1.2 Apple dependency
 
-LG Innotek discloses only "customer ≥10% of revenue". Apple is the presumed customer, and the company never names it [verified as disclosure practice].
+reference manufacturer discloses only "customer ≥10% of revenue". Apple is the presumed customer, and the company never names it [verified as disclosure practice].
 
 | Period | Share | Source |
 |---|---|---|
@@ -87,8 +87,8 @@ Source: Newsway 2026-03-13 and the DART-derived wiki.
   - Image sensors: Sony and STMicroelectronics (wiki); Hankyung says Sony/Samsung.
   - Lenses: Largan, Genius.
   - Actuators: Alps/Mitsumi (historic), Jahwa Electronics, and in-house.
-  - In 2015 the VCM came from Mitsumi with in-house development planned (visionsystem.kr, LG Innotek press material).
-- LG Innotek does **not** make the image sensor [verified].
+  - In 2015 the VCM came from Mitsumi with in-house development planned (visionsystem.kr, reference manufacturer press material).
+- reference manufacturer does **not** make the image sensor [verified].
 
 ### 1.4 Capex
 
@@ -97,7 +97,7 @@ Source: Newsway 2026-03-13 and the DART-derived wiki.
 - **2026 announcement.** On 2025-11-27 the board approved KRW 341.1B of optics facility investment through 2026-12-31 (etnews.com/20251127000455; tokenpost.kr/news/tech/308950).
   - The purpose is "response to new models of the main customer" and the amount is 9.26% below 2025 [verified].
 - **Gumi.** Two investment agreements with the city/province:
-  - KRW 1.4T MOU on 2022-07-06 through 2023, including the Gumi 4 plant purchase (lginnotek.com idx=6353; lg.co.kr/media/release/25037) [verified].
+  - KRW 1.4T MOU on 2022-07-06 through 2023, including the Gumi 4 plant purchase ([manufacturer source URL removed] idx=6353; [manufacturer source URL removed] [verified].
   - KRW 600B MOU on 2025-03-25, running Apr 2025–Dec 2026, "for high-value camera modules" (idx=6532; idx=6555) [verified].
 - **Vietnam.** July 2023 announcement of about KRW 1.3T (USD 1B) through Dec 2025, including V3 (idx=6555) [verified].
 - **3D sensing 2017.** About KRW 270B was invested from April 2017 for Apple 3D-sensing modules (BusinessPost, 2017-10-31) [verified, press].
@@ -114,7 +114,7 @@ The Optics ISO 9001 sites listed are Gumi 1, 1A, 2 and 4, Paju, Ansan, Hai Phong
 
 - **Gumi (Gyeongbuk).**
   - The campus has five plants: 1, 1A, 2, 3 and 4. Total site land is about 370,000 m² (about 52 football fields). Gumi 4 has about 230,000 m² of floor area and was acquired in 2022 [verified, company press].
-  - The company's own domestic campus page lists Gumi 1A, Gumi 3, Gwangju and "Paju Factory C7" (lginnotek.com/company/domestic_campus.lgit?locale=en) [verified].
+  - The company's own domestic campus page lists Gumi 1A, Gumi 3, Gwangju and "Paju Factory C7" ([manufacturer source URL removed] manufacturer?locale=en) [verified].
   - Gumi 1A completed in 2015 per the company history.
   - Role: "mother factory" for R&D, new-model high-value camera modules and optics for new applications (idx=6555) [verified].
   - Gumi also hosts FC-BGA substrates ("Dream Factory"; PC FC-BGA mass production from Dec 2024). That is not a camera line.
@@ -131,7 +131,7 @@ The Optics ISO 9001 sites listed are Gumi 1, 1A, 2 and 4, Paju, Ansan, Hai Phong
 
 ### 2.2 Overseas
 
-- **Hai Phong, Vietnam** (LG Innotek Vietnam Hai Phong Co., Ltd., Trang Due Industrial Park).
+- **Hai Phong, Vietnam** (reference manufacturer Vietnam Hai Phong Co., Ltd., Trang Due Industrial Park).
   - Established Sept 2016; mass production started Sept 2017 (BusinessPost 2017-10-31: "the new Vietnam plant has been running since September").
   - 2022: more than 3,500 employees and more than USD 1B invested; 2022 revenue VND 78.2T (en.haiphong.gov.vn) [verified, government].
   - Ten-year anniversary on 1 Oct 2026 (Digital Times dt.co.kr/article/12087530; BigGo mirror):
@@ -139,7 +139,7 @@ The Optics ISO 9001 sites listed are Gumi 1, 1A, 2 and 4, Paju, Ansan, Hai Phong
     - Floor area is 242,600 m².
     - Cumulative investment is about USD 1.9B and cumulative revenue about USD 25B (about KRW 33T).
     - 2025 revenue was about USD 4.1B; 99% of hires are local [verified-secondary].
-  - V3 plant (idx=6555 / lg.co.kr/media/release/29384, 2025-09-21): total floor area about 150,000 m² (45,000 pyeong, about 20 football fields), camera-module capacity at least doubled, and the 2024 Vietnam subsidiary revenue was KRW 5.4T, the largest of its overseas subsidiaries [verified].
+  - V3 plant (idx=6555 / [manufacturer source URL removed] 2025-09-21): total floor area about 150,000 m² (45,000 pyeong, about 20 football fields), camera-module capacity at least doubled, and the 2024 Vietnam subsidiary revenue was KRW 5.4T, the largest of its overseas subsidiaries [verified].
   - Product split:
     - Legacy models go to Vietnam; new and high-value models go to Gumi (idx=6532, March 2025).
     - Hankyung (2025-09-24) says Hai Phong output is general-purpose modules shipped to Foxconn in China [verified-secondary].
@@ -158,7 +158,7 @@ The Optics ISO 9001 sites listed are Gumi 1, 1A, 2 and 4, Paju, Ansan, Hai Phong
 
 ### 2.3 Apple's supplier list
 
-I could not retrieve the Apple Supplier List PDF. The URL returns an HTML page and bots are blocked. No Apple-published facility list was verified for LG Innotek. This is a gap.
+I could not retrieve the Apple Supplier List PDF. The URL returns an HTML page and bots are blocked. No Apple-published facility list was verified for reference manufacturer. This is a gap.
 
 ---
 
@@ -166,7 +166,7 @@ I could not retrieve the Apple Supplier List PDF. The URL returns an HTML page a
 
 ### 3.1 What is publicly documented
 
-**Source 1: ETNews, 2017-04-06 (etnews.com/20170406000212). A Gwangju plant tour; the module was for the LG G6.** [verified, dated, one plant]
+**Source 1: ETNews, 2017-04-06 (etnews.com/20170406000212). A Gwangju plant tour; the module was for the reference manufacturer G6.** [verified, dated, one plant]
 - All manufacturing except inspection and testing happens in a "10-zone" clean room: at most 10 particles of 0.5 µm per ft³ (ISO 4 / Class 10; the article phrases the size as "0.0005 mm"). It is cleaner than a surgical 100-class room.
 - Entry takes more than 5 minutes through 7 steps:
   1. Gown and boots.
@@ -177,17 +177,17 @@ I could not retrieve the Apple Supplier List PDF. The URL returns an HTML page a
   6. Second adhesive roll.
   7. Hand wash.
 - Process order: wafer-level sensor cleaning, then attach to the substrate (die attach), wire bonding, cleaning and inspection, then IR-filter attach. For the G6 this was automated with no human handling after cleaning.
-- Active Alignment (AA) is an LG Innotek-developed process that aligns lens/barrel to sensor including tilt. It is run separately in the 10-zone clean room and the article says it "determines yield".
+- Active Alignment (AA) is a reference manufacturer-developed process that aligns lens/barrel to sensor including tilt. It is run separately in the 10-zone clean room and the article says it "determines yield".
 - Final stage: equipment and visual inspection. The OIS test shakes the module hundreds of times while it shoots. The reliability lab covers shock, extreme temperature, thermal shock and dust.
 
-**Source 2: LG Innotek press release on the G4 OIS module (2015), reproduced at visionsystem.kr/issue-news?tpf=board/view&board_code=2&code=1489** [verified, company-sourced]:
+**Source 2: reference manufacturer press release on the G4 OIS module (2015), reproduced at visionsystem.kr/issue-news?tpf=board/view&board_code=2&code=1489** [verified, company-sourced]:
 - The "Advanced Active Align" process follows: **die bonding** (placing the CIS on the substrate), **wire bonding** (104 points connecting the substrate and CIS), **0.11 mm ultra-thin glass blue-filter mounting**, and **singulation** (25 units separated per substrate panel). Then the unit is joined with the barrel assembled onto the bidirectional VCM actuator.
 - Work happens in a "10-class clean room" (at most 10 particles of 0.0005 mm per cubic foot).
 - Tilt is adjusted in 3 µm steps from centre to edge for best resolution.
 - In the last 3–4 months of a roughly one-year development, the team devoted themselves to the AA process.
 - The VCM was supplied by Mitsumi, with in-house development planned.
 
-**Source 3: LG PRI (LG Production Engineering Research Institute) equipment page, lg-pri.com/page/solution/ca/1/?tab=2** [verified, group-company product page]. It lists camera-module equipment:
+**Source 3: the reference manufacturer's production-engineering equipment page [manufacturer source URL removed]** [verified, group-company product page]. It lists camera-module equipment:
 - **Active Align**: 6-axis mechanism, AI epoxy-dispense inspection, best-focus and tilt algorithm, particle-minimising sensor, UPH maximisation, batch or in-line configuration.
 - Laser soldering.
 - Attach with force control and dual dispense.
@@ -196,11 +196,11 @@ I could not retrieve the Apple Supplier List PDF. The URL returns an HTML page a
 - Calibration and tester platforms (actuator tester, CM tester and others).
 - Optical particle picker (four detection methods, in-line or batch).
 
-LG PRI shows what the group can build in-house. It does not prove that LG Innotek's iPhone lines use these tools.
+reference manufacturer PRI shows what the group can build in-house. It does not prove that reference manufacturer's iPhone lines use these tools.
 
-**Source 4: LG Chem "Active Align epoxy"** (future-mobility.lgchem.com): a UV/thermal hybrid-cure lens-to-PCB epoxy with low shrinkage and fast initial fixation [verified as a product page; use in LG Innotek lines is [unverified]].
+**Source 4: reference manufacturer Chem "Active Align epoxy"** ([manufacturer source URL removed] a UV/thermal hybrid-cure lens-to-PCB epoxy with low shrinkage and fast initial fixation [verified as a product page; use in reference manufacturer lines is [unverified]].
 
-**Source 5: Cure is the hardest step.** Aju Press (ajunews 20261021152635560): LG Innotek was selected for the 2026 "AI Factory" lead project for optical modules (Gumi budget KRW 34.6B, LG Innotek KRW 15.9B). It targets an unmanned AI plus robot curing line by 2029 [verified].
+**Source 5: Cure is the hardest step.** Aju Press (ajunews 20261021152635560): reference manufacturer was selected for the 2026 "AI Factory" lead project for optical modules (Gumi budget KRW 34.6B, reference manufacturer KRW 15.9B). It targets an unmanned AI plus robot curing line by 2029 [verified].
 
 **Source 6: AI process recipe** (idx=6477, 2024-05-30; idx=6555). Introduced in 2023:
 - Recipe search time cut from 72 h to 6 h or less.
@@ -223,7 +223,7 @@ Marked [estimate/inferred]. Order and steps are supported by Sources 1–3. SMT 
 
 ### 3.3 Not publicly available
 
-Tact time, UPH, line yield, line count, building layout, current iPhone clean-room class, AGV/OHT use, and the AA tool vendor are all absent from public sources. The user's vendor guesses (ASMPT, AMICRO, Hanwha) are not supported. Third-party AA vendors that exist in the market are TRIOPTICS (ProCam), Hyvision System and ASMPT. None is verified as an LG Innotek supplier [unverified]. LG PRI is the in-group candidate [estimate].
+Tact time, UPH, line yield, line count, building layout, current iPhone clean-room class, AGV/OHT use, and the AA tool vendor are all absent from public sources. The user's vendor guesses (ASMPT, AMICRO, Hanwha) are not supported. Third-party AA vendors that exist in the market are TRIOPTICS (ProCam), Hyvision System and ASMPT. None is verified as a reference manufacturer supplier [unverified]. reference manufacturer PRI is the in-group candidate [estimate].
 
 For the model, use clearly labelled placeholder values.
 
@@ -232,29 +232,29 @@ For the model, use clearly labelled placeholder values.
 ## 4. Technology
 
 ### 4.1 Actuators and OIS
-- **VCM autofocus.** 2005-07: world's smallest 6.4 mm 2MP AF module using a VCM (news.lginnotek.com/938).
+- **VCM autofocus.** 2005-07: world's smallest 6.4 mm 2MP AF module using a VCM ([manufacturer source URL removed]
 - **Bidirectional VCM.** The 2015 module puts the barrel at mid-travel so it focuses faster and uses 50% less power. Mitsumi supplied it (visionsystem.kr, press material).
-- **OIS.** 2012-08 → 2013: world's first 13MP OIS module (5.7 mm thick). Later the iPhone 17 main camera uses sensor-shift OIS (Apple spec). LG Innotek's role in the sensor-shift module itself is [unverified].
-- **Jahwa.** The Elec (2022-04-15, thelec.net idxno=3988): Jahwa Electronics (KRW 191B OIS facility) would supply OIS actuators to LG Innotek, previously Alps Alpine/Mitsumi. A Corephotonics patent dispute existed; Korean courts invalidated its Korean patents in 2020 [verified, press].
+- **OIS.** 2012-08 → 2013: world's first 13MP OIS module (5.7 mm thick). Later the iPhone 17 main camera uses sensor-shift OIS (Apple spec). reference manufacturer's role in the sensor-shift module itself is [unverified].
+- **Jahwa.** The Elec (2022-04-15, thelec.net idxno=3988): Jahwa Electronics (KRW 191B OIS facility) would supply OIS actuators to reference manufacturer, previously Alps Alpine/Mitsumi. A Corephotonics patent dispute existed; Korean courts invalidated its Korean patents in 2020 [verified, press].
 
 ### 4.2 Multi-camera and tele
 - 2015: dual camera with active alignment (optical 2×); 2016: Apple had it make the iPhone 7 dual camera (ETNews 2017).
 - 2018: first triple camera; V40 ThinQ five cameras.
-- **Folded zoom (tetraprism).** LG Innotek was the initial sole supplier for the iPhone 15 Pro Max (MacRumors citing ETNews 2026-04-16) [verified-secondary].
-- **Variable aperture (iPhone 18 Pro).** Per MacRumors 2026-04-16 and Korea Herald 2026-08-10, LG Innotek prepared production for June/July 2026 with dedicated Gumi equipment; Sunny Optical makes the aperture actuators and Cowell may also supply. Whether LG Innotek supplies the final module was confirmed only by press, not by the companies [verified-secondary].
-- **Foldable iPhone.** Reported LG Innotek supply, unconfirmed by either company [unverified].
-- iPhone 17 series: front 18MP Center Stage; Pro rears are all 48MP (main/UW/tetraprism tele); LG Innotek said V3 doubled capacity [verified, Apple spec; supply split [unverified]].
+- **Folded zoom (tetraprism).** reference manufacturer was the initial sole supplier for the iPhone 15 Pro Max (MacRumors citing ETNews 2026-04-16) [verified-secondary].
+- **Variable aperture (iPhone 18 Pro).** Per MacRumors 2026-04-16 and Korea Herald 2026-08-10, reference manufacturer prepared production for June/July 2026 with dedicated Gumi equipment; Sunny Optical makes the aperture actuators and Cowell may also supply. Whether reference manufacturer supplies the final module was confirmed only by press, not by the companies [verified-secondary].
+- **Foldable iPhone.** Reported reference manufacturer supply, unconfirmed by either company [unverified].
+- iPhone 17 series: front 18MP Center Stage; Pro rears are all 48MP (main/UW/tetraprism tele); reference manufacturer said V3 doubled capacity [verified, Apple spec; supply split [unverified]].
 
 ### 4.3 3D sensing
-- iPhone X (2017) TrueDepth: LG Innotek supplied the 3D sensing module for the first time (The Investor/ET News; BusinessPost 2017-10-31). The first ramp had yield and productivity problems, which improved sharply after Chuseok (Q3 2017 call). Sharp was the other qualified maker (BusinessPost) [verified].
+- iPhone X (2017) TrueDepth: reference manufacturer supplied the 3D sensing module for the first time (The Investor/ET News; BusinessPost 2017-10-31). The first ramp had yield and productivity problems, which improved sharply after Chuseok (Q3 2017 call). Sharp was the other qualified maker (BusinessPost) [verified].
 - ToF module in mass production for iPhone since Feb 2019 (BusinessPost) [verified-secondary]. The exclusive Vision Pro 3D-sensing supplier (2024, BusinessPost) [verified-secondary].
-- A 3D module needs a VCSEL, a DOE, an IR CIS, a lens and an FPC, plus active alignment, calibration and test (a Chinese teardown article I read; treat as [estimate] for LG Innotek specifics).
+- A 3D module needs a VCSEL, a DOE, an IR CIS, a lens and an FPC, plus active alignment, calibration and test (a Chinese teardown article I read; treat as [estimate] for reference manufacturer specifics).
 - totaltech.blog's "$238M" figure is [unverified] (looks AI-generated). Ignore it.
 
 ### 4.4 Packaging (COB versus flip-chip)
-- Patent KR101294419B1 (assignee **LG Innotek**, inventor 우재근; Google Patents): sensor chip on a PCB with epoxy and oven cure, wire bonding, a housing metal-bonded to the PCB, then the lens barrel. Its second embodiment is flip-chip. This is the closest public document to the COB flow, but it is a 2012-era patent. It is not proof of the iPhone line [verified patent; use in Apple lines [unverified]].
-- **Warning on KR20130119195A.** That patent describes a flip-chip package, a two-adhesive pre-cure/main-cure active-alignment method and an actuator holder. Its assignee is **Samsung Electro-Mechanics (삼성전기)**, not LG Innotek. Do not attribute it to LG Innotek. It is useful only as a generic description of the technique.
-- I found no public statements about Cu pillar, underfill or molded interconnect in LG Innotek camera modules. Those belong to the Package Solutions (FC-CSP/FC-BGA) business [unverified for camera modules].
+- Patent KR101294419B1 (assignee **reference manufacturer**, inventor 우재근; Google Patents): sensor chip on a PCB with epoxy and oven cure, wire bonding, a housing metal-bonded to the PCB, then the lens barrel. Its second embodiment is flip-chip. This is the closest public document to the COB flow, but it is a 2012-era patent. It is not proof of the iPhone line [verified patent; use in Apple lines [unverified]].
+- **Warning on KR20130119195A.** That patent describes a flip-chip package, a two-adhesive pre-cure/main-cure active-alignment method and an actuator holder. Its assignee is **Samsung Electro-Mechanics (삼성전기)**, not reference manufacturer. Do not attribute it to reference manufacturer. It is useful only as a generic description of the technique.
+- I found no public statements about Cu pillar, underfill or molded interconnect in reference manufacturer camera modules. Those belong to the Package Solutions (FC-CSP/FC-BGA) business [unverified for camera modules].
 - Package Solutions: FC-CSP, RF-SiP, FC-BGA. Target Package OP of KRW 1T by 2031 and revenue of 3T by 2030 [verified, company statement].
 
 ---
@@ -264,17 +264,17 @@ For the model, use clearly labelled placeholder values.
 | Year | Event | Source / confidence |
 |---|---|---|
 | 1970-08-22 | Founding (Geumseong Alps Electronics lineage); other sources vary (Wikipedia Feb 1970; Brand Atlas 1976 incorporation) | Sustainability Report [verified for the date given there] |
-| 1995 / 1998 / 1999 / 2000 | LG Electronic Components → LG C&D → merger with LG Precision → LG Innotek | company history [verified] |
-| 2003-02 / 06 | Mobile camera module development start / success | news.lginnotek.com/938 [verified] |
+| 1995 / 1998 / 1999 / 2000 | reference manufacturer Electronic Components → reference manufacturer C&D → merger with reference manufacturer Precision → reference manufacturer | company history [verified] |
+| 2003-02 / 06 | Mobile camera module development start / success | [manufacturer source URL removed] [verified] |
 | 2005-07 | World's smallest 6.4 mm 2MP AF module | same [verified] |
 | 2008 | Camera module sales exceed KRW 1T; Gumi audit anecdote | inews24 / Nate 2026-04-01 [customer unverified] |
-| 2009-07 | Merger with LG Micron | [verified] |
+| 2009-07 | Merger with reference manufacturer Micron | [verified] |
 | 2010 | First Apple camera supply (iPhone 4) | BusinessPost; Bizwatch [verified-secondary] |
 | 2010-10 | Paju LED plant completed | [verified] |
 | 2012–13 | First 13MP OIS module | company [verified] |
 | 2015 | Gumi 1A completed; dual camera with active alignment; G4 OIS with Advanced AA | company history, visionsystem.kr [verified] |
 | 2015-05 | 1 billion smartphone camera modules cumulative | company [verified] |
-| 2016 | Hai Phong established (Sept); module sales KRW 2.85T (#1 six years running); Sony exits camera modules, LG Innotek sole dual-camera supplier | ETNews 2017; BusinessPost [verified] |
+| 2016 | Hai Phong established (Sept); module sales KRW 2.85T (#1 six years running); Sony exits camera modules, reference manufacturer sole dual-camera supplier | ETNews 2017; BusinessPost [verified] |
 | 2017 | Hai Phong mass production (Sept); KRW 270B 3D-sensing investment from April; iPhone X 3D sensing | BusinessPost [verified] |
 | 2019 | ToF for iPhone | BusinessPost [verified-secondary] |
 | 2022-07 | Gumi KRW 1.4T MOU; Gumi 4 acquired | idx=6353 [verified] |
@@ -304,7 +304,7 @@ For the model, use clearly labelled placeholder values.
 
 | # | Value | Unit | Source | Confidence |
 |---|---|---|---|---|
-| 1 | 21.8966 | KRW T, 2025 revenue | lginnotek.com idx=6575 | verified |
+| 1 | 21.8966 | KRW T, 2025 revenue | [manufacturer source URL removed] idx=6575 | verified |
 | 2 | 21.2008 | KRW T, 2024 revenue | idx=6521 | verified |
 | 3 | 20.6053 | KRW T, 2023 revenue | idx=6459 | verified |
 | 4 | 665.0 | KRW B, 2025 operating profit | idx=6575 | verified |
@@ -318,7 +318,7 @@ For the model, use clearly labelled placeholder values.
 | 12 | 596.6 | KRW B, Optics OP 2024 | HuffPost / wiki | verified-secondary |
 | 13 | 663.1 | KRW B, Optics OP 2023 | same | verified-secondary |
 | 14 | 7.6098 | KRW T, Q4 2025 revenue (record) | press | verified |
-| 15 | 6.3671 | KRW T, Q3 2026 revenue | lg.co.kr/media/release/30719 | verified |
+| 15 | 6.3671 | KRW T, Q3 2026 revenue | [manufacturer source URL removed] | verified |
 | 16 | 94.8 | KRW B, Q3 2026 OP | same | verified |
 | 17 | 5.4041 | KRW T, Optics Q3 2026 | same | verified |
 | 18 | 79.6 / 80.5 / 81.1 | %, top customer 2023 / 24 / 25 | HuffPost KR | verified-secondary |
@@ -356,10 +356,10 @@ For the model, use clearly labelled placeholder values.
 | 50 | 0.11 | mm, glass blue-filter thickness, G4 | visionsystem.kr | verified |
 | 51 | 72 → ≤6 | hours, AI recipe search time | idx=6477 | verified (company claim) |
 | 52 | up to 90 | %, defect reduction on key inspections via AI | idx=6477 | verified (company claim) |
-| 53 | 34.6 / 15.9 | KRW B, AI Factory budget total / LG Innotek | Aju Press | verified |
+| 53 | 34.6 / 15.9 | KRW B, AI Factory budget total / reference manufacturer | Aju Press | verified |
 | 54 | 2029 | year, unmanned curing line target | Aju Press | verified (target) |
 | 55 | 2.85 | KRW T, camera-module revenue 2016 | ETNews 2017 | verified |
-| 56 | 6.4 | mm, 2005 smallest 2MP AF module | news.lginnotek.com/938 | verified |
+| 56 | 6.4 | mm, 2005 smallest 2MP AF module | [manufacturer source URL removed] | verified |
 | 57 | 5.7 | mm, 2013 13MP OIS module thickness | company | verified |
 | 58 | ~USD 1B, 98,000 pyeong | substrate plant, Hai Phong | idx=6593 | verified |
 | 59 | 97,000 | m², Gwangju after extension | idx=6574 | verified |
@@ -377,7 +377,7 @@ For the model, use clearly labelled placeholder values.
 6. **First Apple supply** was the iPhone 4 (2010) rear 5MP camera, not a front camera. It is reported by BusinessPost and Bizwatch only; the Apple-side confirmation is missing.
 7. **Founding** is August 1970, in the Geumseong Alps lineage. Sources differ (Wikipedia: Feb 1970; Brand Atlas: 1976).
 8. **Clean-room class.** Documented as "10-class" (ISO 4-equivalent, ≤10 particles/ft³ at 0.5 µm), not ISO 6–7. This is from 2015–17 and the Gwangju plant. It is likely lower-class (cleaner) in the AA zone only. Do not extrapolate to the whole line or to 2026.
-9. **Folded zoom** started on the iPhone 15 Pro Max, with LG Innotek the initial sole supplier.
-10. **Patent KR20130119195A** belongs to Samsung Electro-Mechanics. Use KR101294419B1 (LG Innotek) for the COB flow.
-11. **AA vendor guesses** (ASMPT, AMICRO, Hanwha) are unsupported. LG PRI publishes its own Active Align tool.
+9. **Folded zoom** started on the iPhone 15 Pro Max, with reference manufacturer the initial sole supplier.
+10. **Patent KR20130119195A** belongs to Samsung Electro-Mechanics. Use KR101294419B1 (reference manufacturer) for the COB flow.
+11. **AA vendor guesses** (ASMPT, AMICRO, Hanwha) are unsupported. reference manufacturer PRI publishes its own Active Align tool.
 12. **Sustainability Report vs press** differ slightly on Optics 2024 revenue (17.8001T vs 17.8002T). This is rounding.

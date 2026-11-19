@@ -13,7 +13,7 @@ delegated: one standalone HTML file. Isometric SVG drawn with the `anatomy` skil
 ASSUMED (nobody could answer an interview): Korean middle- and high-school students (13-18) in a technology class, university students in optics or manufacturing, and curious adults, alone on a laptop or phone, or projected by a teacher. Korean is the reader's language and English the reference vocabulary, so every label is a pair.
 
 ## Product Purpose
-An interactive model of a smartphone camera-module plant, modelled on LG Innotek's public information. One main camera module (81 named parts) is followed from incoming parts, SMT, die and wire bonding, lens and VCM/OIS assembly, active alignment, calibration and test, to packing, and finally into a phone. The learner sees how a lens, a sensor and an actuator become a camera, what clean room it is made in, why the lens is aligned to the sensor to micrometres, and what is public fact versus best guess. Success: the learner can put the eight stages in order, say what active alignment does and why, name three parts of the module, and tell a verified number from an estimate.
+An interactive model of a smartphone camera-module plant, modelled on reference manufacturer's public information. One main camera module (81 named parts) is followed from incoming parts, SMT, die and wire bonding, lens and VCM/OIS assembly, active alignment, calibration and test, to packing, and finally into a phone. The learner sees how a lens, a sensor and an actuator become a camera, what clean room it is made in, why the lens is aligned to the sensor to micrometres, and what is public fact versus best guess. Success: the learner can put the eight stages in order, say what active alignment does and why, name three parts of the module, and tell a verified number from an estimate.
 
 ## Positioning
 A crafted physical model of a factory floor, with a magnifying loupe: the plant is small precise machines on an isometric plan, and the module in the loupe really assembles itself, part by part, as the tour moves along the line.
@@ -28,7 +28,7 @@ Used on a laptop, a classroom projector or a phone (390 px portrait). One offlin
 - No eval, no inline handlers, no network, strict CSP; no logos or marks.
 
 ## Evidence on Hand
-`research/R1_lg_innotek.md` (public company data: revenue, modules, capex, sites, customer concentration, clean-room and AA history, teardown part lists) and `research/R2_process_competitors.md` (process steps, equipment classes, competitors, the corrections to earlier claims). Everything else is authored here and labelled.
+`research/R1_reference_manufacturer.md` (public company data: revenue, modules, capex, sites, customer concentration, clean-room and AA history, teardown part lists) and `research/R2_process_competitors.md` (process steps, equipment classes, competitors, the corrections to earlier claims). Everything else is authored here and labelled.
 
 ## Product Principles
 - The object is the explanation: the learner understands by watching the module assemble.

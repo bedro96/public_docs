@@ -13,7 +13,7 @@ export const TAG = {
 
 export const UI = {
   title: { ko: '카메라 모듈 공장', en: 'Camera Module Factory' },
-  sub: { ko: 'LG이노텍형 · 아이폰급 후면 카메라 모듈이 스마트폰에 들어가기까지', en: 'LG Innotek-style · how an iPhone-class rear camera module is made and fitted into the phone' },
+  sub: { ko: '업계형 · 아이폰급 후면 카메라 모듈이 스마트폰에 들어가기까지', en: 'industry-standard · how an iPhone-class rear camera module is made and fitted into the phone' },
   disclaimer: {
     ko: '비공식 교육용 모식도입니다. 실제 공장의 배치·치수·속도가 아니며, 특정 회사와 제휴·후원 관계가 없고 로고·상표를 쓰지 않습니다. 공개되지 않은 부분은 [추정]·[가정]으로 표시했습니다.',
     en: 'An unofficial educational schematic. It is not any real plant\'s layout, size or speed, has no affiliation with any company, and uses no logos or marks. Anything not public is tagged [estimate] or [assumption].',
@@ -150,7 +150,7 @@ export const STAGES = [
     readouts: ['gown', 'gmin', 'parts'],
     steps: [
       { f: 0, ko: '모듈 한 개 = 약 80개 부품. 분해도로 먼저 보여 줍니다.', en: 'One module is about 80 parts. Here is the exploded bill of materials first.' },
-      { f: 0.3, ko: '구매 비중은 센서 41%, 액추에이터 24%, 렌즈 13% [확인됨 2차]. 이미지 센서는 LG이노텍이 만들지 않고 사 옵니다.', en: 'Purchases by value: sensors 41%, actuators 24%, lenses 13% [verified, secondary]. The image sensor is bought in, not made by LG Innotek.' },
+      { f: 0.3, ko: '구매 비중은 센서 41%, 액추에이터 24%, 렌즈 13% [확인됨 2차]. 이미지 센서는 기준 제조사가 만들지 않고 사 옵니다.', en: 'Purchases by value: sensors 41%, actuators 24%, lenses 13% [verified, secondary]. The image sensor is bought in, not made by reference manufacturer.' },
       { f: 0.45, ko: '입장 7단계: 가운·덧신 → 끈끈이 롤러 → 정전기 점검 → 신발 세척 → 에어샤워 → 롤러 → 손 세척 (5분 이상) [확인됨 2017].', en: 'Seven entry steps: gown and boots, sticky roller, static test, shoe wash, air shower, second roller, hand wash (over 5 minutes) [verified, 2017].' },
       { f: 0.86, ko: '자재는 별도의 패스박스로 들어갑니다 [가정]. 캐리어 트레이가 라인에 오릅니다.', en: 'Material goes in through a separate pass-through box [assumption]. The carrier tray steps onto the line.' },
     ],
@@ -158,7 +158,7 @@ export const STAGES = [
       T('V2', '입장 7단계·5분 이상·"10급" 청정실은 2017년 광주 G6 라인 보도 기준입니다. 지금 아이폰 라인의 등급이 아닙니다.', 'The 7 steps, over 5 minutes and "class 10" come from a 2017 report on the Gwangju G6 line. They are not today\'s iPhone line rating.'),
       T('V2', '구매 비중(센서 41 / 액추에이터 24 / 렌즈 13 %)은 2025년 사업보고서 인용 2차 자료.', 'Purchase mix is from the 2025 business report as quoted by a secondary source.'),
       T('E', '부품 수 약 80개와 모듈 크기 ≈ 15 mm는 공개 분해 자료가 없어 이 페이지가 그린 모식입니다.', 'The part count of about 80 and the 15 mm size are this page\'s schematic; no public teardown gives them.'),
-      T('U', '렌즈 배럴을 LG이노텍이 직접 조립하는지는 확인되지 않았습니다. 업계 관행은 렌즈 업체가 배럴째 납품입니다.', 'Whether LG Innotek builds the lens barrel itself is unverified. Industry practice is that the lens maker delivers it assembled.'),
+      T('U', '렌즈 배럴을 기준 제조사가 직접 조립하는지는 확인되지 않았습니다. 업계 관행은 렌즈 업체가 배럴째 납품입니다.', 'Whether reference manufacturer builds the lens barrel itself is unverified. Industry practice is that the lens maker delivers it assembled.'),
     ],
     table: 'clean',
   },
@@ -220,7 +220,7 @@ export const STAGES = [
       { f: 0.86, ko: 'IR 필터 홀더와 유리 필터를 접착합니다.', en: 'The IR-filter holder and glass filter are bonded.' },
     ],
     notes: [
-      T('V', '순서(센서 세정 → 다이본딩 → 와이어본딩 → 세정·검사 → IR 필터)와 104점·0.11 mm 유리 필터는 LG이노텍 공개 자료.', 'The order (sensor clean, die bond, wire bond, clean and inspect, IR filter) and the 104 points and 0.11 mm glass are from LG Innotek releases.'),
+      T('V', '순서(센서 세정 → 다이본딩 → 와이어본딩 → 세정·검사 → IR 필터)와 104점·0.11 mm 유리 필터는 기준 제조사 공개 자료.', 'The order (sensor clean, die bond, wire bond, clean and inspect, IR filter) and the 104 points and 0.11 mm glass are from reference manufacturer releases.'),
       T('E', '와이어 수·정밀도·경화 온도는 추정. 센서는 웨이퍼에서 잘라 온 소니급 다이입니다.', 'Wire count, accuracy and cure temperature are estimates. The sensor is a Sony-class die cut from a wafer.'),
       T('U', '아이폰 모듈이 COB(와이어)인지 플립칩인지, 언더필 사용 여부는 공개되지 않았습니다.', 'Whether the iPhone module uses COB (wire) or flip-chip, and underfill, is not public.'),
     ],
@@ -252,7 +252,7 @@ export const STAGES = [
     ],
     notes: [
       T('V2', '7매 구성(F/1.78)과 센서시프트 OIS 2세대는 애플 사양. 자석 4개는 12 Pro Max 분해 자료.', 'The 7-element lens (f/1.78) and second-generation sensor-shift OIS are Apple specs; four magnets come from a 12 Pro Max teardown.'),
-      T('U', 'LG이노텍이 센서시프트 모듈을 직접 만드는지, 액추에이터를 누가 납품하는지는 미확인입니다.', 'Whether LG Innotek builds the sensor-shift stage itself, and who supplies the actuator, is unverified.'),
+      T('U', '기준 제조사가 센서시프트 모듈을 직접 만드는지, 액추에이터를 누가 납품하는지는 미확인입니다.', 'Whether reference manufacturer builds the sensor-shift stage itself, and who supplies the actuator, is unverified.'),
       T('E', 'OIS 스프링·VCM 내부 구조는 이 페이지의 모식(추정)입니다.', 'OIS spring and VCM interiors are this page\'s schematic (estimates).'),
     ],
   },
@@ -283,7 +283,7 @@ export const STAGES = [
       { f: 0.76, ko: '오븐에서 열경화(45–80 °C 범위) [벤더 자료].', en: 'Heat cure in an oven (45–80 °C range) [vendor data].' },
     ],
     notes: [
-      T('V2', 'AA가 "수율을 좌우"하는 LG이노텍 독자 공정이라는 점은 2017년 보도, 6축·차트 5곳(중심+모서리 4)은 장비 업체 자료.', 'AA being an in-house process that "determines yield" is from a 2017 report; 6 axes and 5 chart fields are from equipment vendors.'),
+      T('V2', 'AA가 "수율을 좌우"하는 기준 제조사 독자 공정이라는 점은 2017년 보도, 6축·차트 5곳(중심+모서리 4)은 장비 업체 자료.', 'AA being an in-house process that "determines yield" is from a 2017 report; 6 axes and 5 chart fields are from equipment vendors.'),
       T('E', '초점 허용 ±4.3 µm(F/1.78), 기울기 허용 0.04°는 계산으로 얻은 추정. MTF 숫자는 모식입니다.', 'The ±4.3 µm focus window (f/1.78) and 0.04° tilt tolerance are derived estimates. MTF numbers are illustrative.'),
       T('U', '장비 공급사·대수·UPH는 공개되지 않았습니다. 장비 업체의 "대당 1,000 UPH"는 벤더 주장입니다.', 'AA tool vendor, count and UPH are not public. "1,000 UPH per machine" is an equipment vendor\'s claim.'),
     ],
@@ -353,7 +353,7 @@ export const STAGES = [
     ],
     notes: [
       T('E', '기준 라인(4,000 UPH, 하루 약 9만 개, 22시간·가동률 90%)은 이 페이지의 가정입니다. 실제 그룹 생산량은 월 약 3,200–4,000만 개(2025 상반기 1.916억, 2026 상반기 2.4174억 개) [확인됨 2차].', 'The reference line (4,000 UPH, about 90 k a day at 22 h and 90% OEE) is this page\'s assumption. Real group output is about 32–40 M modules a month (191.6 M in H1 2025, 241.74 M in H1 2026) [verified, secondary].'),
-      T('V', '애플 공급업체 명단(FY2022)에는 파주, 구미, 하이퐁이 LG이노텍으로 올라 있습니다.', 'Apple\'s FY2022 supplier list shows Paju, Gumi and Hai Phong for LG Innotek.'),
+      T('V', '애플 공급업체 명단(FY2022)에는 파주, 구미, 하이퐁이 기준 제조사로 올라 있습니다.', 'Apple\'s FY2022 supplier list shows Paju, Gumi and Hai Phong for reference manufacturer.'),
       T('A', '포장 방식(트레이·릴·진공)과 물류 경로는 공개되지 않아 일반적 전자부품 포장으로 그렸습니다.', 'Packing method and logistics route are not public; drawn as generic electronic-component packing.'),
     ],
   },
@@ -419,7 +419,7 @@ export const SITES = [
 // ---------------- competitors ("다른 회사는? · How others do it"): only what the research supports ----------------
 export const COMPETITORS = [
   {
-    name: { ko: 'LG이노텍(기준)', en: 'LG Innotek (reference)' },
+    name: { ko: '기준 제조사(익명)', en: 'reference manufacturer (reference)' },
     role: { ko: '모듈 조립 + 자체 OIS 액추에이터·3D 센싱', en: 'Module assembly + own OIS actuators and 3D sensing' },
     claims: [
       { tag: 'V2', ko: '2026 상반기 모듈 2.4174억 개', en: '241.74 M modules in H1 2026' },
@@ -486,35 +486,35 @@ export const COMPETITORS = [
   },
 ];
 export const COMPETE_NOTE = {
-  ko: '전체 시장(2023): 상위 4곳(LG이노텍·Sunny·폭스콘/샤프·삼성전기)이 60% 이상이라는 시장조사 추정치가 있습니다 [추정]. 공정 레이아웃을 공개한 경쟁사는 없어, 이 표는 규모와 역할만 비교합니다.',
-  en: 'Market (2023): a market-research estimate says the top four (LG Innotek, Sunny, Foxconn/Sharp, SEMCO) hold over 60% [estimate]. No competitor publishes its layout, so this table compares scale and role only.',
+  ko: '전체 시장(2023): 상위 4곳(기준 제조사·Sunny·폭스콘/샤프·삼성전기)이 60% 이상이라는 시장조사 추정치가 있습니다 [추정]. 공정 레이아웃을 공개한 경쟁사는 없어, 이 표는 규모와 역할만 비교합니다.',
+  en: 'Market (2023): a market-research estimate says the top four (reference manufacturer, Sunny, Foxconn/Sharp, SEMCO) hold over 60% [estimate]. No competitor publishes its layout, so this table compares scale and role only.',
 };
 
 // ---------------- sources ----------------
 export const SRC = [
-  { id: 'R1-1', label: 'LG이노텍 보도자료(2023–2025 실적)', en: 'LG Innotek earnings releases (2023–2025)', tag: 'V' },
+  { id: 'R1-1', label: '기준 제조사 보도자료(2023–2025 실적)', en: 'reference manufacturer earnings releases (2023–2025)', tag: 'V' },
   { id: 'R1-7', label: 'DART 사업보고서(2차 인용): 광학 매출·비중·고객·생산능력·원재료', en: 'DART business report via secondary sources: optics revenue, share, customer, capacity, raw materials', tag: 'V2' },
   { id: 'R1-18', label: '언론 인용: 최대 고객 비중 79.6 / 80.5 / 81.1 %(2023–25)', en: 'Press: top-customer share 79.6 / 80.5 / 81.1 % (2023–25)', tag: 'V2' },
   { id: 'R1-22', label: '뉴스웨이 · DART 2차 인용: 2025 생산능력 591,411천 개, 생산 483,093천 개', en: 'Newsway and DART via secondary sources: 2025 capacity 591,411 k, output 483,093 k', tag: 'V2' },
   { id: 'R1-24', label: '뉴스웨이 2026-03-13: 가동률 2025 81.7 % · 2024 70.8 % · 2022 52.5 %', en: 'Newsway 2026-03-13: utilisation 81.7 % (2025), 70.8 % (2024), 52.5 % (2022)', tag: 'V' },
   { id: 'R1-27', label: '전자신문 2025-11-27: 광학 시설투자 3,411억 원', en: 'ETNews 2025-11-27: ₩341.1 B optics capex', tag: 'V' },
-  { id: 'R1-30', label: 'LG이노텍 보도자료: 구미 투자 MOU 2022 ₩1.4 T · 2025 ₩0.6 T, 베트남 ₩1.3 T(2023–25)', en: 'LG Innotek releases: Gumi investment MOUs 2022 ₩1.4 T and 2025 ₩0.6 T, Vietnam ₩1.3 T (2023–25)', tag: 'V' },
+  { id: 'R1-30', label: '기준 제조사 보도자료: 구미 투자 MOU 2022 ₩1.4 T · 2025 ₩0.6 T, 베트남 ₩1.3 T(2023–25)', en: 'reference manufacturer releases: Gumi investment MOUs 2022 ₩1.4 T and 2025 ₩0.6 T, Vietnam ₩1.3 T (2023–25)', tag: 'V' },
   { id: 'S11', label: '전자신문 2017-04-06: 광주 G6 라인 — 10급 청정실, 입장 7단계, AA 독자 개발', en: 'ETNews 2017-04-06: Gwangju G6 line: class 10 clean room, 7 entry steps, in-house AA', tag: 'V' },
-  { id: 'G4', label: 'LG이노텍 G4 OIS 모듈 보도자료(2015, visionsystem.kr 전재): 104점·25개 패널·3 µm 틸트·0.11 mm 유리', en: 'LG Innotek G4 OIS module release (2015, reposted): 104 points, 25 per panel, 3 µm tilt step, 0.11 mm glass', tag: 'V' },
+  { id: 'G4', label: '기준 제조사 G4 OIS 모듈 보도자료(2015, visionsystem.kr 전재): 104점·25개 패널·3 µm 틸트·0.11 mm 유리', en: 'reference manufacturer G4 OIS module release (2015, reposted): 104 points, 25 per panel, 3 µm tilt step, 0.11 mm glass', tag: 'V' },
   { id: 'S19', label: '장비 업체(Asue/Japan Finetech) AA 설비: 6축, 1,000 UPH, ±10 µm', en: 'Equipment vendor (Asue / Japan Finetech) AA: 6 axes, 1,000 UPH, ±10 µm', tag: 'V' },
   { id: 'S22', label: 'DELO 카메라 모듈 접착제: UV 0.5–1 s, 열경화 45–80 °C, 접착점 30+', en: 'DELO camera-module adhesives: UV 0.5–1 s, heat cure 45–80 °C, 30+ bond points', tag: 'V' },
   { id: 'S25', label: 'Luxvisions IPO 분석(Tencent News 2026): 18축 AA, 매출, 애플 71%', en: 'Luxvisions IPO analysis (Tencent News 2026): 18-axis AA, revenue, 71% Apple', tag: 'V2' },
   { id: 'S9', label: 'iFixit 아이폰 16 Pro 후면 카메라 교체: 나사 2개, 프레스핏 B2B 2개', en: 'iFixit iPhone 16 Pro rear camera replacement: 2 screws, 2 press-fit connectors', tag: 'V' },
   { id: 'S1', label: '애플 아이폰 16 Pro 사양: 149.6 × 71.5 × 8.25 mm, 199 g, 48 MP, F/1.78', en: 'Apple iPhone 16 Pro specs: 149.6 × 71.5 × 8.25 mm, 199 g, 48 MP, f/1.78', tag: 'V' },
   { id: 'S37', label: 'Gadgets360 / JerryRigEverything: 12 Pro Max 센서시프트 분해, 자석 4개', en: 'Gadgets360 / JerryRigEverything: 12 Pro Max sensor-shift teardown, 4 magnets', tag: 'V2' },
-  { id: 'S18', label: '애플 공급업체 명단 FY2022: 파주·구미·하이퐁(LG이노텍)', en: 'Apple supplier list FY2022: Paju, Gumi, Hai Phong (LG Innotek)', tag: 'V' },
+  { id: 'S18', label: '애플 공급업체 명단 FY2022: 파주·구미·하이퐁(기준 제조사)', en: 'Apple supplier list FY2022: Paju, Gumi, Hai Phong (reference manufacturer)', tag: 'V' },
   { id: 'S13', label: 'Korea Times 2025-09-21 · 디지털타임스: 하이퐁 V3 공장', en: 'Korea Times 2025-09-21 · Digital Times: Hai Phong V3 plant', tag: 'V2' },
-  { id: 'S16', label: 'ZDNet Korea: LG이노텍 2026 상반기 모듈 2.4174억 개, 이익률', en: 'ZDNet Korea: LG Innotek H1 2026 modules 241.74 M, margin', tag: 'V2' },
+  { id: 'S16', label: 'ZDNet Korea: 기준 제조사 2026 상반기 모듈 2.4174억 개, 이익률', en: 'ZDNet Korea: reference manufacturer H1 2026 modules 241.74 M, margin', tag: 'V2' },
   { id: 'S27', label: 'Sunny Optical FY2024 · 증권사 노트', en: 'Sunny Optical FY2024 and a broker note', tag: 'V2' },
   { id: 'S28-30', label: 'Cowell FY2024(MarketScreener) · Q Tech FY2024 · Largan(TWSE)', en: 'Cowell FY2024 (MarketScreener), Q Tech FY2024, Largan (TWSE)', tag: 'V' },
   { id: 'S33-34', label: 'THE ELEC · 삼성전기 글로벌 네트워크', en: 'THE ELEC; Samsung Electro-Mechanics global network', tag: 'V2' },
   { id: 'S31', label: 'Zeon COP: 굴절률 1.53, 아베수 56, 투과율 > 91 %', en: 'Zeon COP: n 1.53, Abbe 56, transmission > 91 %', tag: 'V' },
-  { id: 'AI', label: 'LG이노텍 보도자료(2024-05): AI 레시피 탐색 72시간 → 6시간 이하(회사 주장)', en: 'LG Innotek release (2024-05): AI recipe search 72 h → ≤ 6 h (company claim)', tag: 'V' },
+  { id: 'AI', label: '기준 제조사 보도자료(2024-05): AI 레시피 탐색 72시간 → 6시간 이하(회사 주장)', en: 'reference manufacturer release (2024-05): AI recipe search 72 h → ≤ 6 h (company claim)', tag: 'V' },
   { id: 'BEST', label: '이 페이지의 기준 라인(4,000 UPH, 단계 수율, 설비 대수): 조사 보고서 R2 §4의 가상 추정', en: 'This page\'s reference line (4,000 UPH, step yields, machine counts): best guesses in research report R2 §4', tag: 'E' },
 ];
 export const SOURCES_NOTE = {

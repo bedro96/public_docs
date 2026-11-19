@@ -1,7 +1,7 @@
 // Static plant equipment, part 1: ground, conveyors, receiving, SMT, die/wire bond. Part 2 (lens, AA, test, pack, dock, clean room)
 // is in shops2.js. Every builder adds items to a scene (see newScene in world.js). Anything that moves is a <g id=...> hook that
 // the live module drives from the model's state (heads, lamps, glows); the rest is build-time geometry.
-// Layout is a schematic [assumption]: LG Innotek publishes no floor plan.
+// Layout is a schematic [assumption]: reference manufacturer publishes no floor plan.
 import { k, S, L, D, P, at, slab, post, rollY, rollX, BAYS, BAY_ORDER, newScene, tag } from './world.js';
 import { ST, BELT_Z } from './layout.js';
 

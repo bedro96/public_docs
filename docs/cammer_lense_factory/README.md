@@ -1,6 +1,6 @@
 # Camera module factory · 카메라 모듈 공장
 
-An interactive, bilingual (한국어 + English) model of a **smartphone camera-module plant**, modelled on what is publicly known about LG Innotek (LG이노텍), a supplier of iPhone-class camera modules. A guided tour follows **one main (wide) camera module** from incoming parts, through SMT, die and wire bonding, lens and VCM/OIS assembly, **active alignment**, calibration and test, to packing, and then drops it into a generic phone. It is one standalone offline HTML file (`camera-module-factory.html`, ~1.8 MB: no network, no CDN, Korean fonts inlined), drawn with the `anatomy` skill's isometric SVG kit.
+An interactive, bilingual (한국어 + English) model of a **smartphone camera-module plant**, modelled on what is publicly known about reference manufacturer (기준 제조사), a supplier of iPhone-class camera modules. A guided tour follows **one main (wide) camera module** from incoming parts, through SMT, die and wire bonding, lens and VCM/OIS assembly, **active alignment**, calibration and test, to packing, and then drops it into a generic phone. It is one standalone offline HTML file (`camera-module-factory.html`, ~1.8 MB: no network, no CDN, Korean fonts inlined), drawn with the `anatomy` skill's isometric SVG kit.
 
 The page has **two pictures side by side**: the *plant* (a schematic factory on an isometric plan, the module is a small carrier on the line) and the *loupe* (the same module magnified, 81 named parts, assembling stage by stage from the same model). The loupe is for understanding, not to scale: the module is real-size about 15 mm (an estimate; no public iPhone module dimension was found) and is drawn far larger, with a 5 mm bar and a 15 mm-vs-phone strip at the end.
 
@@ -37,7 +37,7 @@ Open `camera-module-factory.html` directly in a browser (double-click); nothing 
 | `src/live.js`, `liveloupe.js`, `panels.js`, `main.js` | Runtime: tour, plant camera, loupe camera and HUD, cards and dialogs, keyboard, reduced motion; exposes `window.__camfactory` |
 | `template.html`, `style.css` | Page chrome and styling |
 | `build.mjs` | esbuild bundle + font subsetting + CSP hash + scene render at build time + `--audit` |
-| `research/` | R1 (LG Innotek: public facts) and R2 (process and competitors), the sources behind every tag |
+| `research/` | R1 (reference manufacturer: public facts) and R2 (process and competitors), the sources behind every tag |
 | `tests/functional.py`, `tests/shots.py` | Tests and screenshots |
 | `PRODUCT.md`, `DESIGN.md` | Product and design notes |
 
@@ -48,7 +48,7 @@ The built page carries `Content-Security-Policy: default-src 'none'; script-src 
 
 ## Honesty notes (read these)
 - **Unofficial, educational, not to scale, no affiliation, no logos or marks.** The plant is a schematic of this page's own drawing, not any real plant's layout, size or speed. The phone is generic (no brand mark).
-- **What is public fact and what is best guess is tagged per item.** Public facts (LG Innotek's revenue, module output, capex; the iPhone camera module's parts from teardowns; the 2015-17 Gwangju "Class 10" clean room and in-house active alignment) come from research R1/R2. The process order, the bay layout, machine counts, cycle times, yield funnel (about 93 % cumulative) and the AA numbers shown (centre MTF 72 %, corners 48 %) are **best guesses** or illustrative.
+- **What is public fact and what is best guess is tagged per item.** Public facts (reference manufacturer's revenue, module output, capex; the iPhone camera module's parts from teardowns; the 2015-17 Gwangju "Class 10" clean room and in-house active alignment) come from research R1/R2. The process order, the bay layout, machine counts, cycle times, yield funnel (about 93 % cumulative) and the AA numbers shown (centre MTF 72 %, corners 48 %) are **best guesses** or illustrative.
 - **Module size**: the module body is drawn at about 15 x 15 mm [estimate]; research found no public iPhone module dimension, so the "8-12 mm class" of the brief is not used as a fact. The page never prints a literal magnification ("x40"): it says "drawn magnified, not to scale" and gives a 5 mm bar.
 - **Clean room**: "Class 10" is claimed only for the bond-to-AA core and only as the 2015-17 Gwangju secondary-source fact. Overpressure arrows are **not** drawn (no source). Test-cabinet and AA-cell counts are schematic [assumption].
 - **Not claimed**: Hai Phong investment or monthly-output figures, any AA-machine vendor, and any competitor's layout (none is published). FIT / Truly / AAC are a data gap.
