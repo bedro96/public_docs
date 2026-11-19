@@ -1,0 +1,11 @@
+{
+  "name": "shipyard-model",
+  "private": true,
+  "type": "module",
+  "description": "Interactive bilingual (EN/KO) isometric model of a modern shipyard and a container ship. One standalone HTML file.",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "python3 tests/functional.py",
+    "shots": "python3 tests/shots.py"
+  }
+}

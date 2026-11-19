@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko" data-motion="full">
+<head>
+<meta charset="utf-8">
+<!--__CSP__-->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automobile factory · 자동차 공장</title>
+<style>/*__STYLES__*/</style>
+</head>
+<body class="iso" data-theme="light">
+<div class="app">
+  <header class="head">
+    <h1 class="title"><span class="ko" lang="ko">자동차는 이렇게 만들어진다</span><span class="en" lang="en">How a car is made</span></h1>
+    <p class="sub" data-ui="sub"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></p>
+  </header>
+
+  <div class="controls" role="group" aria-label="Tour controls · 투어 조작">
+    <button type="button" class="btn" id="ctl-prev" aria-label="Previous stage · 이전 공정">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2.4v14H6zM20 5v14L9.5 12z"/></svg>
+      <span data-ui="prev"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></span>
+    </button>
+    <button type="button" class="btn primary" id="ctl-play" data-state="paused" aria-pressed="false" aria-label="Play or pause the tour · 투어 재생 또는 일시정지">
+      <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15L20 12z"/></svg>
+      <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4.2v14H6zM13.8 5H18v14h-4.2z"/></svg>
+      <span class="lbl-play" data-ui="play"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></span>
+      <span class="lbl-pause" data-ui="pause"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></span>
+    </button>
+    <button type="button" class="btn" id="ctl-next" aria-label="Next stage · 다음 공정">
+      <span data-ui="next"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.6 5H20v14h-2.4zM4 5v14l10.5-7z"/></svg>
+    </button>
+    <button type="button" class="btn icon" id="ctl-skip" aria-label="Skip to the next stage · 다음 공정으로 건너뛰기" title="Skip · 건너뛰기">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5v14l8-7zM12 5v14l8-7z"/></svg>
+    </button>
+    <button type="button" class="btn icon" id="ctl-restart" aria-label="Restart from the coil · 처음부터 다시" title="Restart · 처음부터">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 0 7.6 10.5l-2.3-.8A5.6 5.6 0 1 1 12 6.4c1.4 0 2.6.5 3.6 1.4L13 10.5h7V3.5l-2.2 2.2A8 8 0 0 0 12 4z"/></svg>
+    </button>
+    <button type="button" class="btn icon toggle" id="ctl-over" aria-pressed="false" aria-label="Whole plant view · 공장 전체 보기" title="Whole plant · 공장 전체">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h7v7H3zM14 4h7v7h-7zM3 13h7v7H3zM14 13h7v7h-7z"/></svg>
+    </button>
+  </div>
+
+  <div class="main">
+    <figure class="fig" id="fig" tabindex="0" role="group" aria-label="Factory model: with focus here use the arrow keys, 1 to 7, Home and End · 공장 모형: 여기에 초점이 있을 때 방향키, 숫자 1~7, Home, End 사용">
+<!--__SCENE__-->
+      <div class="chips" id="chips"></div>
+      <dl class="hud" id="readouts" aria-label="Live numbers · 실시간 수치"></dl>
+      <p class="fail" id="fail" role="alert" hidden><span class="ko" lang="ko"></span><span class="en" lang="en"></span></p>
+    </figure>
+    <div class="cap" id="cap" aria-live="off">
+      <span class="cap-label" data-ui="now"><span class="ko" lang="ko" style="display:inline;color:inherit"></span> / <span class="en" lang="en" style="display:inline;color:inherit;font-size:1em"></span></span>
+      <p class="ko" id="cap-ko" lang="ko"></p>
+      <p class="en" id="cap-en" lang="en"></p>
+    </div>
+    <div class="scrubrow">
+      <label for="scrub" data-ui="stage"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></label>
+      <input type="range" id="scrub" min="0" max="7000" step="1" value="0" aria-label="Scrub through the whole tour · 전체 여정 탐색">
+    </div>
+  </div>
+
+  <aside class="side" aria-label="Stage details · 공정 정보">
+    <nav class="routebox" aria-label="Route · 공정 순서">
+      <h2 data-ui="route"><span class="ko" lang="ko"></span><span class="en" lang="en"></span> <span id="stage-count" class="num"></span></h2>
+      <ol class="route" id="route"></ol>
+    </nav>
+    <article class="card" aria-labelledby="card-name">
+      <div class="cardhead">
+        <h2 id="card-name"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></h2>
+        <span class="num" id="card-num"></span>
+      </div>
+      <p class="what" id="card-what"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></p>
+      <dl class="facts">
+        <div class="f"><dt data-ui="equipment"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></dt><dd><ul id="card-equip"></ul></dd></div>
+        <div class="f"><dt data-ui="key"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></dt><dd class="keyrow"><strong id="card-keyvalue"></strong><span id="card-keytext"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></span></dd></div>
+        <div class="f"><dt data-ui="inLabel"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></dt><dd id="card-in"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></dd></div>
+        <div class="f"><dt data-ui="outLabel"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></dt><dd id="card-out"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></dd></div>
+      </dl>
+    </article>
+    <p class="rmnote" id="rm-note" hidden data-ui="reduced"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></p>
+    <p class="foot" data-ui="hint"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></p>
+    <p class="foot" data-ui="note"><span class="ko" lang="ko"></span><span class="en" lang="en"></span></p>
+  </aside>
+</div>
+<div id="status" class="sr" role="status" aria-live="polite"></div>
+<script>/*__SCRIPT__*/</script>
+</body>
+</html>

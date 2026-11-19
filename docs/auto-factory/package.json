@@ -1,0 +1,12 @@
+{
+  "name": "auto-factory-model",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "audit": "node build.mjs --audit",
+    "lines": "node ${ANATOMY_SKILL:-$HOME/.agents/skills/anatomy}/scripts/lines.mjs auto-factory.html",
+    "test": "python3 tests/functional.py"
+  },
+  "devDependencies": { "esbuild": "^0.25.0" }
+}

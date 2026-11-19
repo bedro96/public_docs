@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!--__CSP__-->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>조선소 모형 · Shipyard Model</title>
+<style>
+/*__STYLES__*/
+</style>
+</head>
+<body>
+<a class="skip" href="#main"><span lang="ko">본문으로 건너뛰기</span> <span lang="en">Skip to content</span></a>
+<header class="top">
+  <div class="brand">
+    <h1><span lang="ko" data-ui-kr="title">조선소 모형</span><span lang="en" data-ui-en="title">Shipyard Model</span></h1>
+    <p class="tagline"><span lang="ko" data-ui-kr="sub">철판에서 컨테이너선까지</span> · <span lang="en" data-ui-en="sub">From steel plate to container ship</span></p>
+  </div>
+  <div class="tabs" role="tablist" aria-label="View · 보기">
+    <button id="tab-yard" class="tab" role="tab" type="button" aria-selected="true" aria-controls="panel-yard" data-view="yard"><span lang="ko" data-ui-kr="tabYard">야드</span><span lang="en" data-ui-en="tabYard">Yard</span></button>
+    <button id="tab-vessel" class="tab" role="tab" type="button" aria-selected="false" aria-controls="panel-vessel" data-view="vessel" tabindex="-1"><span lang="ko" data-ui-kr="tabVessel">선박</span><span lang="en" data-ui-en="tabVessel">Vessel</span></button>
+  </div>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+</header>
+<main id="main" class="layout">
+  <section class="stage" aria-label="Model · 모형">
+    <div id="viewport" class="viewport">
+      <div id="panel-yard" class="panel" role="tabpanel" aria-labelledby="tab-yard"><!--__YARD__--></div>
+      <div id="panel-vessel" class="panel" role="tabpanel" aria-labelledby="tab-vessel" hidden><!--__VESSEL__--></div>
+      <div id="tags" class="tags"></div>
+      <p id="note" class="note"></p>
+      <p id="fallback" class="fallback" hidden><span lang="ko">그림을 그리는 중 문제가 생겼습니다. 페이지를 새로 고쳐 주세요.</span> <span lang="en">Something went wrong while drawing. Please reload the page.</span></p>
+    </div>
+
+    <div id="controls-yard" class="controls" role="group" aria-label="Build the ship · 배 만들기">
+      <div class="row buttons">
+        <button id="b-prev" class="btn" type="button"><span lang="ko" data-ui-kr="prev">이전</span><span lang="en" data-ui-en="prev">Prev</span></button>
+        <button id="b-play" class="btn primary" type="button" aria-pressed="false"><span lang="ko" data-ui-kr="play">재생</span><span lang="en" data-ui-en="play">Play</span></button>
+        <button id="b-next" class="btn" type="button"><span lang="ko" data-ui-kr="next">다음</span><span lang="en" data-ui-en="next">Next</span></button>
+        <button id="b-skip" class="btn quiet" type="button"><span lang="ko" data-ui-kr="skip">단계 끝으로</span><span lang="en" data-ui-en="skip">Skip to end of step</span></button>
+        <button id="b-reset" class="btn quiet" type="button"><span lang="ko" data-ui-kr="reset">처음부터</span><span lang="en" data-ui-en="reset">Restart</span></button>
+      </div>
+      <ol id="stepper" class="stepper" aria-label="Build stages · 건조 단계"></ol>
+      <div id="caption" class="caption" aria-live="off"></div>
+    </div>
+
+    <div id="controls-vessel" class="controls" role="group" aria-label="Ship systems · 선박 시스템" hidden>
+      <div id="layers" class="row layers"></div>
+      <div class="row sliders">
+        <label class="slider"><span class="lab"><span lang="ko" data-ui-kr="explode">분해</span><span lang="en" data-ui-en="explode">Explode</span></span>
+          <input id="r-explode" type="range" min="0" max="100" value="0" step="1"><output id="o-explode">0%</output></label>
+        <label class="slider"><span class="lab"><span lang="ko" data-ui-kr="power">엔진 출력</span><span lang="en" data-ui-en="power">Engine power</span></span>
+          <input id="r-power" type="range" min="0" max="100" value="100" step="1"><output id="o-power">100%</output></label>
+        <label class="slider"><span class="lab"><span lang="ko" data-ui-kr="ballast">밸러스트 물</span><span lang="en" data-ui-en="ballast">Ballast water</span></span>
+          <input id="r-ballast" type="range" min="0" max="100" value="0" step="1"><output id="o-ballast">0%</output></label>
+      </div>
+      <div id="vreadout" class="caption" aria-live="off"></div>
+    </div>
+  </section>
+
+  <aside class="side" aria-label="Details · 설명">
+    <article id="card" class="card" tabindex="-1" aria-live="polite"></article>
+    <nav id="chips" class="chips" aria-label="Pick a part · 부분 선택"></nav>
+  </aside>
+</main>
+<script>/*__SCRIPT__*/</script>
+</body>
+</html>
