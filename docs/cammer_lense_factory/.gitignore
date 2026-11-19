@@ -1,0 +1,5 @@
+node_modules/
+.shots/
+.impeccable/
+/kit
+__pycache__

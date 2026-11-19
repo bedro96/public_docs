@@ -1,5 +1,15 @@
 # Lessons
 
+## 2026-11-19 — SUCCESS PATTERN: fleet-build two anatomy-kit factory modules (research agents → builder agents), `docs/aircraft_assembly`, `docs/cammer_lense_factory`
+
+**Goal:** two bilingual isometric factory models (737 final assembly ending in take-off; LG Innotek-style camera module ending in a phone) from scratch, with deep research.
+**Pattern that worked:**
+- 4 `research` agents in parallel (2 per topic: supply/structure vs. line/test; company/sites vs. process/competitors). They cannot write files: they return the report inline, and the lead saves it (`sed -n '5,$p'` of the saved tool output) to `<module>/research/`. Each report ends with a KEY NUMBERS TABLE and a CORRECTIONS list; builders were told to trust CORRECTIONS over the brief. It caught real errors (737 fuselage sections are joined in Wichita not Renton; 3 Renton lines not 2; first flights take off from Renton RNT 1,640 m then land at Boeing Field; 8.6 psi unverified; clean-room class 10 not ISO 6-7).
+- 2 `senior-fullstack-coder` builders in parallel, one shared `BRIEF_COMMON.md` (session `files/`) + per-module prompt. Each copied `docs/auto-factory`'s architecture (pure `model.js`, `data.js`, `live.js` with a `window.__x` test hook, build.mjs with CSP hash, functional.py). ~2.3 h each; one builder wrote 500 tool calls of geometry before producing any HTML, so demand a full build within the first hour (a nudge via `write_agent` fixed it).
+- Gates that were actually run: `node build.mjs --audit`, `lines.mjs` (camera first run: 717 of 1148 line ends floating, fixed by ending rollers/slats/seams on strokes), `tests/functional.py` (flaky timing on loaded software GL: poll real frames, never sleep).
+- Do not commit another session's half-done edits: `docs/index.html` was being edited concurrently by another session; check `git log`/`git diff HEAD` right before staging so only your own hunks go in.
+Full story: `docs/aircraft_assembly/README.md`, `docs/cammer_lense_factory/README.md`.
+
 ## 2026-11-19 — FAILURE ROUTE + SUCCESS PATTERN: bonupai v2.1 still "repair → unsuccessful" in PowerPoint; differential census found `ellipse` + `<a:gd name="adj">` (`pptx-tools/`, `bonupai/deck/dg.js`)
 
 **Symptom:** `Bonupai_Tech_Guide_KO_v2.1.pptx` (and v1/v2) show the repair prompt and the repair fails; ~30 other pptxgenjs decks open fine. Zip, XML, XSD (`validate.py`), `pptx_audit.py`, Open XML SDK, LibreOffice and python-pptx were all green, so the QA process could not see it.
