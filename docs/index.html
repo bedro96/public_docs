@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>학습 자료 목차 · docs</title>
+<meta name="description" content="docs 폴더의 HTML 학습 자료 5개를 분야별로 정리한 목차입니다. 인체 장기 모형, 자동차 공장, 조선소 모형, 일차함수 칠판 강의.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23111e3b'/%3E%3Cpath d='M16 4v24' stroke='%2312773d' stroke-width='5'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%23f6f9fb' stroke='%23ba4a00' stroke-width='3'/%3E%3C/svg%3E">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+/* Station: NanumSquare Bold, subset to the masthead and line-name glyphs (SIL OFL 1.1). Other text uses the system Korean stack. */
+@font-face{font-family:"Station";font-weight:700;font-style:normal;font-display:swap;src:url(data:font/woff;base64,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) format("woff")}
+
+:root{
+  --paper:#f6f9fb;
+  --panel:#eaf1f6;
+  --ink:#0f182b;
+  --ink-2:#3e485b;
+  --muted:#535b6c;
+  --navy:#111e3b;
+  --navy-ink:#c3d0e4;
+  --rule:#c9d4e0;
+  --field:#6f7c92;
+  --focus:#0064be;
+  --sci:#12773d;  --sci-ink:#0a562b;
+  --eng:#ba4a00;  --eng-ink:#8d3700;
+  --math:#0064be; --math-ink:#004d9a;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR","Nanum Barun Gothic",system-ui,sans-serif;
+  --display:"Station",var(--sans);
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;
+  --rc:22px;   /* rail centre, measured from the left edge of a line */
+  --gut:46px;  /* space reserved for the rail beside every station */
+  --dot:24px;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--paper);-webkit-text-size-adjust:100%;scroll-padding-top:24px;scrollbar-color:#8a97ad var(--paper)}
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;background:var(--paper);color:var(--ink);font:400 1rem/1.7 var(--sans);word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+::selection{background:#bcd7f5;color:var(--ink)}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+a{color:inherit;text-underline-offset:.22em}
+.wrap{width:100%;max-width:1200px;margin-inline:auto;padding-inline:clamp(20px,4vw,48px)}
+.i{width:1.25rem;height:1.25rem;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+
+.skip{position:absolute;left:12px;top:-64px;z-index:10;padding:10px 16px;border-radius:10px;background:var(--ink);color:#fff;font-weight:700;text-decoration:none}
+.skip:focus-visible{top:12px}
+
+/* Masthead */
+.mast{background:var(--navy);color:#fff}
+.mast__in{display:grid;gap:20px clamp(32px,6vw,96px);padding-block:clamp(40px,7vw,84px) clamp(36px,5.5vw,68px);align-items:end}
+.mast h1{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(2.75rem,7.5vw,5rem);line-height:1.08;letter-spacing:-.02em;text-wrap:balance}
+.mast p{margin:0;max-width:30em;color:var(--navy-ink);font-size:1.0625rem;line-height:1.75;text-wrap:pretty}
+@media (min-width:860px){.mast__in{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}}
+
+/* Layout */
+.layout{padding-block:clamp(28px,4vw,48px) 0;flex:1}
+.js .layout{display:grid;gap:28px}
+@media (min-width:960px){
+  .js .layout{grid-template-columns:minmax(250px,290px) minmax(0,1fr);gap:clamp(32px,5vw,72px);align-items:start}
+  .js .tools{position:sticky;top:24px}
+}
+
+/* Search and filter */
+.tools{display:none}
+.js .tools{display:block;padding:20px;border-radius:16px;background:var(--panel)}
+.tools__h{display:block;margin:0 0 8px;font-size:.875rem;font-weight:700;color:var(--ink-2)}
+.tools__h--cats{margin-top:22px;margin-bottom:6px}
+.field{position:relative}
+.field .i{position:absolute;left:13px;top:50%;translate:0 -50%;color:var(--ink-2);pointer-events:none}
+.field input{width:100%;height:48px;padding:0 46px 0 42px;border:1.5px solid var(--field);border-radius:12px;background:#fff;color:var(--ink);font:inherit;caret-color:var(--math);-webkit-appearance:none;appearance:none}
+.field input::placeholder{color:var(--ink-2);opacity:1}
+.field input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.field input:focus-visible{border-color:var(--ink);outline-offset:2px}
+.field button{position:absolute;right:4px;top:50%;translate:0 -50%;width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:10px;background:transparent;color:var(--ink-2);cursor:pointer}
+.field button:hover{background:var(--panel);color:var(--ink)}
+.hint{margin:8px 0 0;font-size:.875rem;line-height:1.55;color:var(--muted)}
+.cats{display:grid;gap:4px}
+.cat{--c:var(--ink);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;width:100%;min-height:48px;padding:4px 12px 4px 6px;border:2px solid transparent;border-radius:12px;background:transparent;color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:background-color .16s}
+.cat:hover{background:color-mix(in srgb,var(--c) 10%,var(--panel))}
+.cat[aria-pressed="true"]{border-color:var(--c);background:#fff;font-weight:700}
+.cat__n{font-size:.875rem;color:var(--muted)}
+.cat--sci{--c:var(--sci)}.cat--eng{--c:var(--eng)}.cat--math{--c:var(--math)}
+.status{margin:18px 0 0;font-size:.875rem;line-height:1.55;color:var(--ink-2);min-height:1.55em}
+@media (max-width:959px){
+  .cats{display:flex;flex-wrap:wrap;gap:8px}
+  .cat{width:auto;gap:8px;min-height:44px;padding:4px 14px 4px 4px;border-radius:999px;background:#fff}
+  .tools__h--cats{margin-top:18px}
+}
+
+/* Roundel: one syllable stands for a subject, the way a number stands for a line */
+.roundel{display:grid;place-items:center;flex:none;width:calc(var(--rc)*2);height:calc(var(--rc)*2);border-radius:50%;background:var(--c);color:#fff;font:700 1.375rem/1 var(--display)}
+.roundel--s{width:32px;height:32px;font-size:.9375rem}
+.cat .roundel{background:var(--c)}
+.cat--all{--c:var(--ink)}
+
+/* Lines */
+.line{--c:var(--ink);--c-ink:var(--ink);position:relative;container-type:inline-size}
+.line + .line{margin-top:clamp(40px,6vw,64px)}
+.line--sci{--c:var(--sci);--c-ink:var(--sci-ink)}
+.line--eng{--c:var(--eng);--c-ink:var(--eng-ink)}
+.line--math{--c:var(--math);--c-ink:var(--math-ink)}
+.line::before{content:"";position:absolute;z-index:0;left:calc(var(--rc) - 5px);top:var(--rc);bottom:18px;width:10px;border-radius:5px;background:var(--c)}
+.line::after{content:"";position:absolute;z-index:0;left:calc(var(--rc) - 15px);bottom:12px;width:30px;height:6px;border-radius:3px;background:var(--c)}
+.line__head{position:relative;z-index:1;display:flex;align-items:center;flex-wrap:wrap;gap:4px 16px;min-height:calc(var(--rc)*2)}
+.line__head h2{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,3vw,1.75rem);line-height:1.2;color:var(--c-ink);letter-spacing:-.01em}
+.line__count{margin:0;font-size:.875rem;color:var(--muted)}
+.stops{list-style:none;margin:6px 0 44px;padding:0}
+
+/* Stations */
+.stop{position:relative;margin-left:var(--gut);padding:16px 18px 16px 20px;border-radius:14px;display:grid;gap:6px 40px;transition:background-color .18s}
+.stop::before{content:"";position:absolute;z-index:1;left:calc(var(--rc) - var(--gut) - var(--dot)/2);top:22px;width:var(--dot);height:var(--dot);border-radius:50%;border:4px solid var(--c);background:var(--paper);transition:background-color .18s,transform .3s var(--ease)}
+.stop:hover{background:color-mix(in srgb,var(--c) 9%,var(--paper))}
+.stop:hover::before,.stop:focus-within::before{background:var(--c);transform:scale(1.18)}
+.stop__name{margin:0;font-size:clamp(1.25rem,2.4vw,1.4375rem);line-height:1.4;font-weight:700;letter-spacing:-.01em}
+.stop__name a{text-decoration:none;color:var(--ink)}
+.stop__name a::after{content:"";position:absolute;inset:0;border-radius:14px}
+.stop__name a:focus-visible{outline:0}
+.stop__name a:focus-visible::after{outline:3px solid var(--focus);outline-offset:2px}
+.stop:hover .stop__name a{text-decoration:underline;text-decoration-color:var(--c);text-decoration-thickness:2px}
+.go{margin-left:8px;vertical-align:-.2em;color:var(--c-ink);opacity:0;transform:translateX(-6px);transition:opacity .18s,transform .3s var(--ease)}
+.stop:hover .go,.stop:focus-within .go{opacity:1;transform:none}
+@media (hover:none){.go{opacity:1;transform:none}}
+.stop__sub{margin:0;font-size:.9375rem;color:var(--ink-2)}
+.stop__sum{margin:8px 0 0;max-width:34em;color:var(--ink);text-wrap:pretty}
+.twin{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;font-size:.875rem;line-height:1.55;color:var(--c-ink)}
+.twin .i{width:1rem;height:1rem;margin-top:.25rem}
+.facts{margin:10px 0 0;display:flex;flex-wrap:wrap;gap:2px 22px;font-size:.875rem;line-height:1.6;color:var(--ink-2)}
+.facts div{display:flex;gap:8px;min-width:0}
+.facts dt{flex:none;color:var(--muted)}
+.facts dd{margin:0;min-width:0}
+code{font:.8125rem/1.55 var(--mono);color:var(--ink);overflow-wrap:anywhere;word-break:normal}
+@container (min-width:640px){
+  .stop{grid-template-columns:minmax(0,1fr) 15.5rem}
+  .facts{margin-top:4px;display:grid;gap:6px;align-content:start}
+  .facts div{display:grid;grid-template-columns:2.6em minmax(0,1fr)}
+}
+@media (max-width:559px){:root{--rc:19px;--gut:40px}.roundel{font-size:1.1875rem}.stop{padding:14px 10px 14px 14px}}
+
+.empty{padding:28px 20px;border-radius:14px;background:var(--panel)}
+.empty p{margin:0}
+.empty strong{display:block;margin-bottom:4px;font-size:1.125rem}
+.empty button{margin-top:14px;min-height:44px;padding:0 18px;border:0;border-radius:10px;background:var(--ink);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.empty button:hover{background:var(--ink-2)}
+
+.foot{margin-top:clamp(48px,8vw,88px);border-top:1px solid var(--rule)}
+.foot .wrap{padding-block:26px 56px}
+.foot p{margin:0;max-width:46em;font-size:.875rem;line-height:1.7;color:var(--muted)}
+.foot p + p{margin-top:6px}
+
+/* The one authored moment: each line runs down the page and its stations dock in order */
+@keyframes run{from{clip-path:inset(0 0 100% 0 round 5px)}to{clip-path:inset(0 0 0 0 round 5px)}}
+@keyframes cap{from{opacity:0;transform:scaleX(.2)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+@keyframes dock{from{opacity:0;transform:translateY(12px);filter:blur(3px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes arrive{0%{background:var(--c);transform:scale(1.4)}100%{background:var(--paper);transform:none}}
+.line{--t:calc(var(--n)*340ms + 120ms)}
+.line__head .roundel{animation:pop 520ms var(--ease) var(--t) backwards}
+.line::before{animation:run 1200ms var(--ease) calc(var(--t) + 80ms) backwards}
+.line::after{animation:cap 500ms var(--ease) calc(var(--t) + 900ms) backwards}
+.line__head h2,.line__count{animation:dock 600ms var(--ease) calc(var(--t) + 60ms) backwards}
+.stop{--s:calc(var(--t) + 320ms + var(--i)*190ms);animation:dock 640ms var(--ease) var(--s) backwards}
+.stop::before{animation:arrive 800ms var(--ease) calc(var(--s) + 160ms) backwards}
+.settled .line::before,.settled .line::after,.settled .stop,.settled .stop::before,.settled .roundel,.settled .line__head h2,.settled .line__count{animation:none}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .stop:hover::before,.stop:focus-within::before{transform:none}
+}
+@media print{.skip,.tools{display:none!important}.mast{background:none;color:#000}.mast p{color:#000}}
+</style>
+</head>
+<body>
+<a class="skip" href="#lines">자료 목록으로 건너뛰기</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-arrow" viewBox="0 0 20 20"><path d="M3.5 10h12M11 5.5 15.5 10 11 14.5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.5"/><path d="m13.2 13.2 4 4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 20 20"><path d="m5.5 5.5 9 9m0-9-9 9"/></symbol>
+  <symbol id="i-twin" viewBox="0 0 20 20"><rect x="3.5" y="7.5" width="9" height="9" rx="2"/><path d="M7.5 7.5v-2a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/></symbol>
+</svg>
+
+<header class="mast">
+  <div class="wrap mast__in">
+    <h1>학습 자료 목차</h1>
+    <p>docs 폴더의 HTML 자료 5개를 분야별 노선으로 묶었습니다. 각 자료는 파일 하나로 열리며, 이름을 누르면 바로 이동합니다.</p>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <section class="tools" aria-label="자료 찾기와 분야 선택" data-tools>
+    <form role="search" onsubmit="return false">
+      <label class="tools__h" for="q">자료 찾기</label>
+      <div class="field">
+        <svg class="i" aria-hidden="true" focusable="false"><use href="#i-search"/></svg>
+        <input id="q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search" placeholder="이름·내용·경로로 찾기" aria-describedby="q-hint">
+        <button type="button" data-clear hidden aria-label="검색어 지우기"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-x"/></svg></button>
+      </div>
+      <p class="hint" id="q-hint">초성만 입력해도 찾습니다. 예: ㅈㄷㅊ</p>
+    </form>
+    <h2 class="tools__h tools__h--cats" id="cats-h">분야</h2>
+    <div class="cats" role="group" aria-labelledby="cats-h">
+      <button type="button" class="cat cat--all" data-cat="all" aria-pressed="true"><span class="roundel roundel--s" aria-hidden="true">전</span><span>전체</span><span class="cat__n">5</span></button>
+      <button type="button" class="cat cat--sci" data-cat="sci" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">과</span><span>과학</span><span class="cat__n">1</span></button>
+      <button type="button" class="cat cat--eng" data-cat="eng" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">공</span><span>기술·공학</span><span class="cat__n">2</span></button>
+      <button type="button" class="cat cat--math" data-cat="math" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">수</span><span>수학</span><span class="cat__n">2</span></button>
+    </div>
+    <p class="status" role="status" aria-live="polite" data-status></p>
+  </section>
+
+  <main id="lines" tabindex="-1">
+
+    <section class="line line--sci" id="line-sci" aria-labelledby="h-sci" style="--n:0">
+      <header class="line__head">
+        <span class="roundel" aria-hidden="true">과</span>
+        <h2 id="h-sci">과학</h2>
+        <p class="line__count">자료 <span data-count>1</span>개</p>
+      </header>
+      <ol class="stops">
+        <li class="stop" data-cat="sci" style="--i:0">
+          <div class="stop__main">
+            <h3 class="stop__name"><a href="anatomy/human-organs.html" aria-describedby="p-organs">인체 장기 모형<svg class="i go" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a></h3>
+            <p class="stop__sub" lang="en">Human Organ Model</p>
+            <p class="stop__sum">몸을 열어 장기를 꺼내 확대·회전해 보고, 음식 한 입이 소화되는 길을 따라가 보는 3D 모형입니다.</p>
+          </div>
+          <dl class="facts">
+            <div><dt>형식</dt><dd>체험형 3D 모형</dd></div>
+            <div><dt>언어</dt><dd>한국어 · English</dd></div>
+            <div><dt>크기</dt><dd>약 0.9 MB</dd></div>
+            <div><dt>경로</dt><dd><code id="p-organs">anatomy/<wbr>human-organs.html</code></dd></div>
+          </dl>
+        </li>
+      </ol>
+    </section>
+
+    <section class="line line--eng" id="line-eng" aria-labelledby="h-eng" style="--n:1">
+      <header class="line__head">
+        <span class="roundel" aria-hidden="true">공</span>
+        <h2 id="h-eng">기술·공학</h2>
+        <p class="line__count">자료 <span data-count>2</span>개</p>
+      </header>
+      <ol class="stops">
+        <li class="stop" data-cat="eng" style="--i:0">
+          <div class="stop__main">
+            <h3 class="stop__name"><a href="auto-factory/auto-factory.html" aria-describedby="p-factory">자동차 공장<svg class="i go" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a></h3>
+            <p class="stop__sub">자동차는 이렇게 만들어진다 · <span lang="en">Automobile factory</span></p>
+            <p class="stop__sum">철판 코일이 완성차가 되기까지 프레스·차체·도장·엔진·조립 공장을 차례로 따라가는 공장 모형입니다.</p>
+          </div>
+          <dl class="facts">
+            <div><dt>형식</dt><dd>체험형 공장 모형</dd></div>
+            <div><dt>언어</dt><dd>한국어 · English</dd></div>
+            <div><dt>크기</dt><dd>약 1.1 MB</dd></div>
+            <div><dt>경로</dt><dd><code id="p-factory">auto-factory/<wbr>auto-factory.html</code></dd></div>
+          </dl>
+        </li>
+        <li class="stop" data-cat="eng" style="--i:1">
+          <div class="stop__main">
+            <h3 class="stop__name"><a href="shipyard/shipyard.html" aria-describedby="p-yard">조선소 모형<svg class="i go" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a></h3>
+            <p class="stop__sub" lang="en">Shipyard Model</p>
+            <p class="stop__sum">철판이 배가 되는 일곱 단계의 건조 과정과 컨테이너선의 내부 시스템을 살펴보는 모형입니다.</p>
+          </div>
+          <dl class="facts">
+            <div><dt>형식</dt><dd>체험형 조선소·선박 모형</dd></div>
+            <div><dt>언어</dt><dd>한국어 · English</dd></div>
+            <div><dt>크기</dt><dd>약 0.6 MB</dd></div>
+            <div><dt>경로</dt><dd><code id="p-yard">shipyard/<wbr>shipyard.html</code></dd></div>
+          </dl>
+        </li>
+      </ol>
+    </section>
+
+    <section class="line line--math" id="line-math" aria-labelledby="h-math" style="--n:2">
+      <header class="line__head">
+        <span class="roundel" aria-hidden="true">수</span>
+        <h2 id="h-math">수학</h2>
+        <p class="line__count">자료 <span data-count>2</span>개</p>
+      </header>
+      <ol class="stops">
+        <li class="stop" data-cat="math" style="--i:0">
+          <div class="stop__main">
+            <h3 class="stop__name"><a href="linear-function/%EC%9D%BC%EC%B0%A8%ED%95%A8%EC%88%98_%EC%B9%A0%ED%8C%90%EA%B0%95%EC%9D%98.html" aria-describedby="p-lin t-lin">일차함수 칠판 강의<svg class="i go" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a></h3>
+            <p class="stop__sub">직선을 읽는 두 가지 숫자</p>
+            <p class="stop__sum">분필 판서와 음성 해설로 기울기와 y절편을 배우고, 실험과 확인 문제로 점검하는 칠판 강의입니다.</p>
+            <p class="twin" id="t-lin"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-twin"/></svg><span><code>middle_school_math/</code> 폴더에도 내용이 똑같은 파일이 있습니다.</span></p>
+          </div>
+          <dl class="facts">
+            <div><dt>형식</dt><dd>칠판 강의 · 8장 · 약 4분</dd></div>
+            <div><dt>언어</dt><dd>한국어 음성 해설</dd></div>
+            <div><dt>크기</dt><dd>약 8.5 MB (음성 포함)</dd></div>
+            <div><dt>경로</dt><dd><code id="p-lin">linear-function/<wbr>일차함수_칠판강의.html</code></dd></div>
+          </dl>
+        </li>
+        <li class="stop" data-cat="math" style="--i:1">
+          <div class="stop__main">
+            <h3 class="stop__name"><a href="middle_school_math/%EC%9D%BC%EC%B0%A8%ED%95%A8%EC%88%98_%EC%B9%A0%ED%8C%90%EA%B0%95%EC%9D%98.html" aria-describedby="p-msm t-msm">일차함수 칠판 강의<svg class="i go" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a></h3>
+            <p class="stop__sub">직선을 읽는 두 가지 숫자</p>
+            <p class="stop__sum">분필 판서와 음성 해설로 기울기와 y절편을 배우고, 실험과 확인 문제로 점검하는 칠판 강의입니다.</p>
+            <p class="twin" id="t-msm"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-twin"/></svg><span><code>linear-function/</code> 폴더의 파일과 내용이 똑같습니다.</span></p>
+          </div>
+          <dl class="facts">
+            <div><dt>형식</dt><dd>칠판 강의 · 8장 · 약 4분</dd></div>
+            <div><dt>언어</dt><dd>한국어 음성 해설</dd></div>
+            <div><dt>크기</dt><dd>약 8.5 MB (음성 포함)</dd></div>
+            <div><dt>경로</dt><dd><code id="p-msm">middle_school_math/<wbr>일차함수_칠판강의.html</code></dd></div>
+          </dl>
+        </li>
+      </ol>
+    </section>
+
+    <div class="empty" data-empty hidden>
+      <p><strong>조건에 맞는 자료가 없습니다.</strong>검색어를 지우거나 분야를 ‘전체’로 바꿔 보세요.</p>
+      <button type="button" data-reset>필터 초기화</button>
+    </div>
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>이 목록은 docs/ 아래의 모든 HTML 파일(template.html 제외)을 담고 있습니다. 같은 파일이 두 경로에 있으면 둘 다 적었습니다.</p>
+    <p>분야와 한 줄 설명은 각 자료의 제목과 README를 읽고 정리했습니다. 새 자료를 추가하면 이 파일에도 항목을 더해 주세요.</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const tools = document.querySelector('[data-tools]');
+  if (!tools) return;
+
+  const input = document.getElementById('q');
+  const clearBtn = tools.querySelector('[data-clear]');
+  const catBtns = [...tools.querySelectorAll('.cat')];
+  const statusEl = tools.querySelector('[data-status]');
+  const empty = document.querySelector('[data-empty]');
+  const lines = [...document.querySelectorAll('.line')];
+
+  // Hangul initials (초성) let "ㅈㄷㅊ" find "자동차".
+  const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+  const norm = s => s.normalize('NFC').toLowerCase();
+  const initials = s => [...s].map(ch => {
+    const n = ch.charCodeAt(0) - 0xAC00;
+    return n >= 0 && n < 11172 ? CHO[Math.floor(n / 588)] : ch;
+  }).join('');
+  const isJamo = t => /^[\u3131-\u314e]+$/.test(t);
+
+  const items = [...document.querySelectorAll('.stop')].map(el => {
+    const parts = el.querySelectorAll('.stop__name, .stop__sub, .stop__sum, .facts dd');
+    const lineName = el.closest('.line').querySelector('h2').textContent;
+    const hay = norm([...parts].map(p => p.textContent).join(' ') + ' ' + lineName).replace(/\s+/g, ' ');
+    return { el, cat: el.dataset.cat, hay, ini: initials(hay) };
+  });
+  const total = items.length;
+  const state = { cat: 'all' };
+
+  const apply = () => {
+    const tokens = norm(input.value).split(/\s+/).filter(Boolean);
+    let shown = 0;
+    for (const it of items) {
+      const ok = (state.cat === 'all' || it.cat === state.cat) &&
+        tokens.every(t => (isJamo(t) ? it.ini : it.hay).includes(t));
+      it.el.hidden = !ok;
+      if (ok) shown++;
+    }
+    for (const line of lines) {
+      const n = line.querySelectorAll('.stop:not([hidden])').length;
+      line.hidden = n === 0;
+      line.querySelector('[data-count]').textContent = n;
+    }
+    for (const b of catBtns) b.setAttribute('aria-pressed', String(b.dataset.cat === state.cat));
+    clearBtn.hidden = !input.value;
+    empty.hidden = shown !== 0;
+    const filtered = state.cat !== 'all' || tokens.length > 0;
+    statusEl.textContent = shown === 0
+      ? '조건에 맞는 자료가 없습니다.'
+      : filtered ? `조건에 맞는 자료 ${shown}개 (전체 ${total}개)` : `자료 ${total}개를 모두 보여 줍니다.`;
+  };
+
+  const reset = () => { state.cat = 'all'; input.value = ''; apply(); input.focus(); };
+
+  input.addEventListener('input', apply);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && input.value) { input.value = ''; apply(); }
+  });
+  clearBtn.addEventListener('click', () => { input.value = ''; apply(); input.focus(); });
+  catBtns.forEach(b => b.addEventListener('click', () => { state.cat = b.dataset.cat; apply(); }));
+  empty.querySelector('[data-reset]').addEventListener('click', reset);
+
+  // Once the entrance has played (or the reader acts), stop it from replaying when items reappear.
+  const settle = () => root.classList.add('settled');
+  setTimeout(settle, 3600);
+  ['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, settle, { once: true, passive: true }));
+
+  apply();
+})();
+</script>
+</body>
+</html>
