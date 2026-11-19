@@ -4,14 +4,14 @@
 
 ## 공개 문서 목차
 
-게시된 문서의 **이름, 요약, 바로가기 링크**는 [`docs/index.html`](docs/index.html)에서 한눈에 확인할 수 있습니다. 새 문서가 게시되면 이 목차에 추가됩니다.
+게시된 문서의 **이름, 요약, 바로가기 링크**는 [https://bedro96.github.io/public_docs](https://bedro96.github.io/public_docs)에서 한눈에 확인할 수 있습니다. 새 문서가 게시되면 이 목차에 추가됩니다.
 
 ## 저장소 구성
 
 | 경로 | 설명 |
 |---|---|
 | [`docs/`](docs/) | 공개 게시되는 문서가 위치하는 폴더입니다. 게시 문서는 이 폴더에서 제공됩니다. |
-| [`docs/index.html`](docs/index.html) | 게시된 문서의 디렉터리(카탈로그) 페이지입니다. |
+| [`docs/index.html`](https://bedro96.github.io/public_docs) | 게시된 문서의 디렉터리(카탈로그) 페이지입니다. |
 
 `docs/` 외의 폴더와 파일(도구, 설정 등)은 문서를 만들고 관리하기 위한 보조 자료이며, 게시 대상 문서가 아닙니다.
 
