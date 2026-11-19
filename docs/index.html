@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
 <title>학습 자료 목차 · docs</title>
-<meta name="description" content="docs 폴더의 HTML 학습 자료 4개를 분야별로 정리한 목차입니다. 인체 장기 모형, 자동차 공장, 조선소 모형, 일차함수 칠판 강의.">
+<meta name="description" content="docs 폴더의 HTML 학습 자료 5개를 분야별로 정리한 목차입니다. 인체 장기 모형, 자동차 공장, 조선소 모형, 일차함수 칠판 강의, 타원곡선과 Ed25519 칠판 강의.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23111e3b'/%3E%3Cpath d='M16 4v24' stroke='%2312773d' stroke-width='5'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%23f6f9fb' stroke='%23ba4a00' stroke-width='3'/%3E%3C/svg%3E">
 <script>document.documentElement.classList.add('js')</script>
 <style>
@@ -181,7 +181,6 @@ code{font:.8125rem/1.55 var(--mono);color:var(--ink);overflow-wrap:anywhere;word
 <header class="mast">
   <div class="wrap mast__in">
     <h1>학습 자료 목차</h1>
-    <p>docs 폴더의 HTML 자료 4개를 분야별 노선으로 묶었습니다. 각 자료는 파일 하나로 열리며, 이름을 누르면 바로 이동합니다.</p>
   </div>
 </header>
 
@@ -198,10 +197,10 @@ code{font:.8125rem/1.55 var(--mono);color:var(--ink);overflow-wrap:anywhere;word
     </form>
     <h2 class="tools__h tools__h--cats" id="cats-h">분야</h2>
     <div class="cats" role="group" aria-labelledby="cats-h">
-      <button type="button" class="cat cat--all" data-cat="all" aria-pressed="true"><span class="roundel roundel--s" aria-hidden="true">전</span><span>전체</span><span class="cat__n">4</span></button>
+      <button type="button" class="cat cat--all" data-cat="all" aria-pressed="true"><span class="roundel roundel--s" aria-hidden="true">전</span><span>전체</span><span class="cat__n">5</span></button>
       <button type="button" class="cat cat--sci" data-cat="sci" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">과</span><span>과학</span><span class="cat__n">1</span></button>
       <button type="button" class="cat cat--eng" data-cat="eng" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">공</span><span>기술·공학</span><span class="cat__n">2</span></button>
-      <button type="button" class="cat cat--math" data-cat="math" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">수</span><span>수학</span><span class="cat__n">1</span></button>
+      <button type="button" class="cat cat--math" data-cat="math" aria-pressed="false"><span class="roundel roundel--s" aria-hidden="true">수</span><span>수학</span><span class="cat__n">2</span></button>
     </div>
     <p class="status" role="status" aria-live="polite" data-status></p>
   </section>
@@ -271,7 +270,7 @@ code{font:.8125rem/1.55 var(--mono);color:var(--ink);overflow-wrap:anywhere;word
       <header class="line__head">
         <span class="roundel" aria-hidden="true">수</span>
         <h2 id="h-math">수학</h2>
-        <p class="line__count">자료 <span data-count>1</span>개</p>
+        <p class="line__count">자료 <span data-count>2</span>개</p>
       </header>
       <ol class="stops">
         <li class="stop" data-cat="math" style="--i:0">
@@ -287,6 +286,18 @@ code{font:.8125rem/1.55 var(--mono);color:var(--ink);overflow-wrap:anywhere;word
             <div><dt>경로</dt><dd><code id="p-lin">linear-function/<wbr>일차함수_칠판강의.html</code></dd></div>
           </dl>
         </li>
+        <li class="stop" data-cat="math" style="--i:1">
+          <div class="stop__main">
+            <h3 class="stop__name"><a href="elliptic_curve/elliptic-curve.html" aria-describedby="p-ecc">타원곡선과 Ed25519<svg class="i go" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a></h3>
+            <p class="stop__sub">점의 덧셈에서 디지털 서명까지</p>
+            <p class="stop__sum">타원곡선의 방정식과 점의 덧셈(군 법칙), 이산로그 문제의 어려움, 그리고 Edwards 곡선 Ed25519의 디지털 서명 원리를 단계별로 풀어 보는 칠판 강의입니다.</p>
+          </div>
+          <dl class="facts">
+            <div><dt>형식</dt><dd>칠판 강의 · 8단계</dd></div>
+            <div><dt>언어</dt><dd>한국어</dd></div>
+            <div><dt>경로</dt><dd><code id="p-ecc">elliptic_curve/<wbr>elliptic-curve.html</code></dd></div>
+          </dl>
+        </li>
       </ol>
     </section>
 
@@ -299,8 +310,6 @@ code{font:.8125rem/1.55 var(--mono);color:var(--ink);overflow-wrap:anywhere;word
 
 <footer class="foot">
   <div class="wrap">
-    <p>이 목록은 docs/ 아래의 모든 HTML 파일(template.html 제외)을 담고 있습니다.</p>
-    <p>분야와 한 줄 설명은 각 자료의 제목과 README를 읽고 정리했습니다. 새 자료를 추가하면 이 파일에도 항목을 더해 주세요.</p>
   </div>
 </footer>
 
