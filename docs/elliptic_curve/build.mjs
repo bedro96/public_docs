@@ -10,7 +10,11 @@
  *   - 칠판(Canvas)에 그려질 글자가 내장 글꼴에 없음 (조용히 빈 네모가 되는 것을 막습니다)
  *   - 외부 URL / 외부 글꼴 / 네트워크 호출 / innerHTML 같은 위험한 코드
  *   - 이 폴더에 elliptic-curve.html 말고 다른 .html(템플릿 제외)이 있음
+ *   - 소리: 해설 MP3(단계마다 1개)가 없거나 길이가 durations.json 과 다름, 대본(narration)이 바뀌어 MP3 가 오래됨(scriptSha256),
+ *           목소리가 ko-KR-Haena:MAI-Voice-2 가 아님, 분필 녹음이 CC0 실제 녹음이 아님, 오디오에 URL 이 들어 있음
+ *   빌드는 해설 MP3 8개 + CC0 분필 녹음 1개를 data URI 로 HTML 에 넣고, 출처 JSON 의 URL·MP3 꼬리표는 걷어 냅니다.
  */
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -174,6 +178,10 @@ export function validateScene(scene) {
 
     chalkText('title', step.title);
     rich('summary', step.summary);
+    // 해설 대본: TTS 가 그대로 읽는 평문. 서식 토큰·자리표시자가 있으면 소리 내어 읽게 되므로 막습니다.
+    if (!isStr(step.narration)) err(W + '.narration', '해설 대본(narration) 문자열이 필요합니다');
+    else if (step.narration.length < 100 || step.narration.length > 1200 || !/[가-힣]/.test(step.narration)) err(W + '.narration', '한국어 100~1200자여야 합니다 (현재 ' + step.narration.length + '자)');
+    else if (/\[\[|\]\]|\^\{|_\{|\*\*|https?:|www\.|[<>]/.test(step.narration)) err(W + '.narration', '서식 토큰·URL·꺾쇠는 읽을 수 없는 대본입니다');
     if (!step.tag || !TONES.includes(step.tag.tone) || !isStr(step.tag.text)) err(W + '.tag', 'tone(' + TONES.join('|') + ')과 text가 필요합니다');
     else rich('tag.text', step.tag.text);
     if (!isStr(step.alt)) err(W + '.alt', '대체 텍스트(alt)가 필요합니다');
@@ -329,13 +337,176 @@ export function validateScene(scene) {
 }
 
 /* ---------------------------------------------------------------------
+ * 소리 (해설 MP3 8개 + CC0 분필 녹음 1개) 내장
+ *
+ *   audio/<단계 id>.mp3         narrate.py 가 만든 ko-KR-Haena 해설 (24 kHz 모노 MP3)
+ *   audio/durations.json        클립 길이(초)        audio/provider.json  목소리·모델·대본 해시
+ *   assets/chalk-writing.mp3    실제 칠판 녹음(CC0)   assets/chalk-writing-source.json  출처(감사용, URL 포함)
+ *
+ * 빌드는 MP3 를 base64 data URI 로 장면에 넣습니다. 원본 JSON/MP3 파일은 고치지 않습니다.
+ * 출처 JSON 의 URL 과 MP3 꼬리표(ID3)는 산출물에 넣지 않습니다 — 산출물에는 외부 URL 이 한 글자도 없어야 합니다.
+ * ------------------------------------------------------------------- */
+export const AUDIO_MIME = 'data:audio/mpeg;base64,';
+export const EXPECTED_VOICE = { voice: 'ko-KR-Haena:MAI-Voice-2', model: 'MAI-Voice-2', language: 'ko-KR' };
+const CLIP_MIN_SECONDS = 10;
+const CHALK_MIN_SECONDS = 4; // 분필 소리는 이 녹음을 4초 안팎 조각으로 나눠 돌려 쓴다 (player.js 의 CHALK_SEGMENT)
+const DURATION_TOLERANCE = 0.1;
+const URL_BYTES_RE = /https?:\/\/|\bwww\.|\bftp:\/\//i;
+const MP3_BITRATES = { 1: [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320], 2: [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160] };
+const MP3_RATES = { 3: [44100, 48000, 32000], 2: [22050, 24000, 16000], 0: [11025, 12000, 8000] };
+
+/** 맨 앞 ID3v2 꼬리표의 전체 길이(없으면 0). */
+function id3v2Length(buf, off = 0) {
+  if (buf.length < off + 10 || buf.toString('latin1', off, off + 3) !== 'ID3') return 0;
+  if ((buf[off + 6] | buf[off + 7] | buf[off + 8] | buf[off + 9]) & 0x80) return 0; // 동기화 안전 정수가 아님 → 꼬리표가 아님
+  const size = (buf[off + 6] << 21) | (buf[off + 7] << 14) | (buf[off + 8] << 7) | buf[off + 9];
+  return 10 + size + (buf[off + 5] & 0x10 ? 10 : 0);
+}
+
+/** MP3 프레임 머리 하나를 해석합니다. MPEG Layer III 가 아니면 null. */
+function mp3Header(buf, off) {
+  if (off + 4 > buf.length || buf[off] !== 0xff || (buf[off + 1] & 0xe0) !== 0xe0) return null;
+  const ver = (buf[off + 1] >> 3) & 3; // 3: MPEG1, 2: MPEG2, 0: MPEG2.5, 1: 예약
+  const layer = (buf[off + 1] >> 1) & 3; // 1: Layer III
+  if (ver === 1 || layer !== 1) return null;
+  const bitrate = MP3_BITRATES[ver === 3 ? 1 : 2][buf[off + 2] >> 4]; // 0(자유 형식)·15(불량) 은 거부
+  const sampleRate = MP3_RATES[ver][(buf[off + 2] >> 2) & 3];
+  if (!bitrate || !sampleRate) return null;
+  const samples = ver === 3 ? 1152 : 576;
+  const channels = (buf[off + 3] >> 6) === 3 ? 1 : 2;
+  const size = Math.floor(((samples / 8) * bitrate * 1000) / sampleRate) + ((buf[off + 2] >> 1) & 1);
+  return { size, sampleRate, samples, channels, ver };
+}
+
+/**
+ * MP3 를 프레임 단위로 걸어 길이를 셉니다 (디코더 없이). Xing/Info 머리 프레임은 소리가 아니므로 세지 않습니다.
+ * 반환: { frames, duration(초), sampleRate, channels, junkBytes(프레임 밖 바이트: 잘림·손상) }
+ */
+export function mp3Info(input) {
+  const buf = Buffer.isBuffer(input) ? input : Buffer.from(input);
+  let off = id3v2Length(buf);
+  let frames = 0;
+  let samples = 0;
+  let junkBytes = 0;
+  let sampleRate = 0;
+  let channels = 0;
+  let first = true;
+  while (off < buf.length) {
+    const h = mp3Header(buf, off);
+    if (!h || off + h.size > buf.length) {
+      if (buf.length - off === 128 && buf.toString('latin1', off, off + 3) === 'TAG') break; // ID3v1 은 프레임이 아니다
+      junkBytes++;
+      off++;
+      continue;
+    }
+    if (first) {
+      first = false;
+      const side = h.ver === 3 ? (h.channels === 1 ? 17 : 32) : h.channels === 1 ? 9 : 17;
+      const tag = buf.toString('latin1', off + 4 + side, off + 8 + side);
+      if (tag === 'Xing' || tag === 'Info') { off += h.size; continue; }
+    }
+    frames++;
+    samples += h.samples;
+    sampleRate = h.sampleRate;
+    channels = h.channels;
+    off += h.size;
+  }
+  return { frames, duration: sampleRate ? samples / sampleRate : 0, sampleRate, channels, junkBytes };
+}
+
+/** 맨 앞 ID3v2 와 맨 끝 ID3v1 꼬리표(제작 도구·출처 URL 이 들어갈 수 있는 곳)를 걷어 냅니다. */
+export function stripMp3Tags(input) {
+  let buf = Buffer.isBuffer(input) ? input : Buffer.from(input);
+  for (let n = id3v2Length(buf); n > 0 && n <= buf.length; n = id3v2Length(buf)) buf = buf.subarray(n);
+  if (buf.length >= 128 && buf.toString('latin1', buf.length - 128, buf.length - 125) === 'TAG') buf = buf.subarray(0, buf.length - 128);
+  return Buffer.from(buf);
+}
+
+/** 출처 메타데이터 문자열에서 URL 을 지웁니다. */
+const scrubUrls = (v) => String(v).replace(/(?:https?:\/\/|www\.)\S*/gi, '').replace(/\s{2,}/g, ' ').trim();
+
+/**
+ * 해설·분필 소리를 읽어 검증하고 장면에 넣을 값을 돌려줍니다. 문제는 problems 에 모읍니다.
+ * 반환: { clips: {id: {audio, duration}}, provider, chalk }
+ */
+export function loadAudio(root, scene, problems) {
+  const out = { clips: {}, provider: null, chalk: null };
+  const readJson = (rel) => {
+    try { return JSON.parse(fs.readFileSync(path.join(root, rel), 'utf8')); } catch (e) { problems.push(rel + ' 을(를) 읽을 수 없습니다: ' + e.message); return null; }
+  };
+  const readMp3 = (rel) => {
+    let raw;
+    try { raw = fs.readFileSync(path.join(root, rel)); } catch { problems.push(rel + ' 이(가) 없습니다 (해설은 python narrate.py, 분필은 assets/ 의 녹음을 확인하세요)'); return null; }
+    const body = stripMp3Tags(raw);
+    const info = mp3Info(body);
+    if (info.frames === 0) { problems.push(rel + ': MP3 프레임을 찾을 수 없습니다 (MP3 파일이 아니거나 비어 있음)'); return null; }
+    if (info.junkBytes > 0) problems.push(rel + ': 프레임 밖 바이트 ' + info.junkBytes + '개 — 잘렸거나 손상된 MP3 입니다');
+    const hit = URL_BYTES_RE.exec(body.toString('latin1'));
+    if (hit) problems.push(rel + ': 오디오 본문에 URL(' + hit[0] + ')이 들어 있어 내장할 수 없습니다 — 다시 인코딩하세요');
+    return { body, info };
+  };
+
+  const provider = readJson('audio/provider.json');
+  const durations = readJson('audio/durations.json');
+  if (provider) {
+    if (provider.voice !== EXPECTED_VOICE.voice) problems.push('audio/provider.json: 해설 목소리(voice)가 ' + EXPECTED_VOICE.voice + ' 이어야 합니다 (현재 ' + provider.voice + ')');
+    if (provider.model !== EXPECTED_VOICE.model) problems.push('audio/provider.json: model 이 ' + EXPECTED_VOICE.model + ' 이어야 합니다 (현재 ' + provider.model + ')');
+    if (provider.language !== EXPECTED_VOICE.language) problems.push('audio/provider.json: language 가 ' + EXPECTED_VOICE.language + ' 이어야 합니다');
+    if (provider.synthetic !== true) problems.push('audio/provider.json: synthetic 이 true 여야 합니다 — AI 합성 음성임을 화면에 알려야 합니다');
+    if (!provider.scriptSha256 || typeof provider.scriptSha256 !== 'object') problems.push('audio/provider.json: scriptSha256(단계별 대본 해시)가 없습니다');
+    out.provider = {};
+    for (const k of ['provider', 'model', 'voice', 'language', 'format']) if (typeof provider[k] === 'string') out.provider[k] = scrubUrls(provider[k]);
+    out.provider.synthetic = provider.synthetic === true;
+  }
+
+  for (const step of scene.steps || []) {
+    if (!step || typeof step.id !== 'string') continue;
+    const id = step.id;
+    const rel = 'audio/' + id + '.mp3';
+    if (provider && provider.scriptSha256 && typeof step.narration === 'string') {
+      const sha = crypto.createHash('sha256').update(step.narration).digest('hex');
+      if (provider.scriptSha256[id] !== sha) problems.push(id + ': 해설 대본이 바뀌어 ' + rel + ' 이(가) 오래되었습니다 — python narrate.py 로 해설을 다시 생성하세요');
+    }
+    const mp3 = readMp3(rel);
+    if (!mp3) continue;
+    const want = durations ? durations[id] : undefined;
+    if (!durations || !(want > 0)) problems.push(id + ': audio/durations.json 에 길이가 없습니다');
+    else if (Math.abs(mp3.info.duration - want) > DURATION_TOLERANCE) problems.push(rel + ': 길이 불일치 — MP3 프레임 ' + mp3.info.duration.toFixed(2) + '초, durations.json ' + want + '초');
+    if (mp3.info.duration < CLIP_MIN_SECONDS) problems.push(rel + ': 길이 ' + mp3.info.duration.toFixed(1) + '초는 해설로 너무 짧습니다 (' + CLIP_MIN_SECONDS + '초 이상)');
+    out.clips[id] = { audio: AUDIO_MIME + mp3.body.toString('base64'), duration: want > 0 ? want : mp3.info.duration };
+  }
+
+  const src = readJson('assets/chalk-writing-source.json');
+  const chalk = readMp3('assets/chalk-writing.mp3');
+  if (src) {
+    if (src.license !== 'CC0-1.0') problems.push('assets/chalk-writing-source.json: 분필 녹음의 license 는 CC0-1.0 이어야 합니다 (현재 ' + src.license + ')');
+    if (src.recorded !== true) problems.push('assets/chalk-writing-source.json: recorded 가 true(실제 녹음)여야 합니다 — 합성 분필 소리는 쓸 수 없습니다');
+    if (!isStr(src.title) || !isStr(src.creator)) problems.push('assets/chalk-writing-source.json: title, creator 가 필요합니다');
+  }
+  if (chalk && chalk.info.duration < CHALK_MIN_SECONDS) problems.push('assets/chalk-writing.mp3: 길이 ' + chalk.info.duration.toFixed(1) + '초는 너무 짧습니다 (' + CHALK_MIN_SECONDS + '초 이상 필요 — 짧은 조각 순환)');
+  if (src && chalk) {
+    out.chalk = {
+      title: scrubUrls(src.title || ''),
+      creator: scrubUrls(src.creator || ''),
+      license: src.license,
+      recorded: src.recorded === true,
+      edits: scrubUrls(src.edits || ''),
+      duration: Math.round(chalk.info.duration * 1000) / 1000,
+      audio: AUDIO_MIME + chalk.body.toString('base64'),
+    };
+  }
+  return out;
+}
+
+/* ---------------------------------------------------------------------
  * 출력 검사
  * ------------------------------------------------------------------- */
 const FONT_DATA_RE = /url\(data:font\/ttf;base64,[A-Za-z0-9+/=]+\)/g;
+const AUDIO_DATA_RE = /data:audio\/mpeg;base64,[A-Za-z0-9+/=]+/g;
 
 /** 외부 자원/네트워크/위험 API 사용 흔적을 문자열 목록으로 돌려줍니다. */
 export function findForbidden(html) {
-  const text = html.replace(FONT_DATA_RE, 'url(data:font)');
+  const text = html.replace(FONT_DATA_RE, 'url(data:font)').replace(AUDIO_DATA_RE, 'data:audio');
   const problems = [];
   const rules = [
     [/https?:\/\//i, '외부 URL (http/https)'],
@@ -362,13 +533,13 @@ export function findForbidden(html) {
   return problems;
 }
 
-function listHtmlFiles(dir) {
+function listHtmlFiles(dir, base = dir) {
   const found = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     if (entry.name === 'node_modules' || entry.name.startsWith('.')) continue;
     const p = path.join(dir, entry.name);
-    if (entry.isDirectory()) found.push(...listHtmlFiles(p));
-    else if (/\.html?$/i.test(entry.name)) found.push(path.relative(ROOT, p));
+    if (entry.isDirectory()) found.push(...listHtmlFiles(p, base));
+    else if (/\.html?$/i.test(entry.name)) found.push(path.relative(base, p));
   }
   return found;
 }
@@ -409,11 +580,21 @@ export function build(opts = {}) {
   for (const token of ['/*__STYLES__*/', '/*__ECMATH__*/', '/*__SCENE__*/', '/*__PLAYER__*/', '%%TITLE%%', '%%AUTHOR%%']) {
     if (!template.includes(token)) problems.push('template.html 에 ' + token + ' 가 없습니다');
   }
+
+  // 소리: 원본 장면은 건드리지 않고 복사본에 MP3 와 (URL 을 걷어 낸) 출처를 넣는다.
+  const audio = loadAudio(root, scene, problems);
   if (problems.length) {
     const e = new Error('빌드 실패 (' + problems.length + '건)\n - ' + problems.join('\n - '));
     e.problems = problems;
     throw e;
   }
+  const lesson = JSON.parse(JSON.stringify(scene));
+  for (const step of lesson.steps) {
+    step.audio = audio.clips[step.id].audio;
+    step.audioDuration = audio.clips[step.id].duration;
+  }
+  lesson.narrationProvider = audio.provider;
+  lesson.chalkSound = audio.chalk;
 
   const fontFace = '@font-face{font-family:ChalkKorean;src:url(data:font/ttf;base64,' + font.toString('base64') + ') format("truetype");font-weight:400;font-style:normal;font-display:block}\n';
   const html = template
@@ -421,12 +602,13 @@ export function build(opts = {}) {
     .replace('%%AUTHOR%%', () => escapeHtml(scene.author))
     .replace('/*__STYLES__*/', () => fontFace + styles)
     .replace('/*__ECMATH__*/', () => ecmath)
-    .replace('/*__SCENE__*/', () => 'window.LESSON_DATA = ' + jsonForScript(scene) + ';')
+    .replace('/*__SCENE__*/', () => 'window.LESSON_DATA = ' + jsonForScript(lesson) + ';')
     .replace('/*__PLAYER__*/', () => player);
 
-  const leftovers = html.replace(FONT_DATA_RE, '').match(/\/\*__[A-Z]+__\*\/|%%[A-Z]+%%/g);
+  const leftovers = html.replace(FONT_DATA_RE, '').replace(AUDIO_DATA_RE, '').match(/\/\*__[A-Z]+__\*\/|%%[A-Z]+%%/g);
   if (leftovers) problems.push('치환되지 않은 토큰: ' + leftovers.join(', '));
   problems.push(...findForbidden(html).map((p) => '금지된 항목: ' + p));
+  if ((html.match(AUDIO_DATA_RE) || []).length !== lesson.steps.length + 1) problems.push('내장된 오디오가 ' + (lesson.steps.length + 1) + '개(해설 ' + lesson.steps.length + ' + 분필 1)가 아닙니다');
 
   const htmlFiles = listHtmlFiles(root).filter((f) => f !== TEMPLATE_NAME && f !== OUTPUT_NAME);
   if (htmlFiles.length) problems.push('이 폴더에는 ' + OUTPUT_NAME + ' 외의 HTML을 둘 수 없습니다: ' + htmlFiles.join(', '));
@@ -440,20 +622,22 @@ export function build(opts = {}) {
   const summary = scene.steps.map((s, i) => ({
     id: s.id,
     animEnd: result.steps[i].timeline.animEnd,
-    holdEnd: result.steps[i].timeline.holdEnd,
+    holdEnd: result.steps[i].timeline.holdEnd, // 읽는 시간 추정치(참고용). 실제 넘김은 해설이 끝난 뒤 0.9초
+    audioDuration: audio.clips[s.id].duration,
   }));
   if (opts.write !== false) fs.writeFileSync(path.join(root, OUTPUT_NAME), html);
-  return { html, scene, summary, stats: { bytes: Buffer.byteLength(html), glyphs: cmap.size } };
+  return { html, scene: lesson, summary, stats: { bytes: Buffer.byteLength(html), glyphs: cmap.size, audioClips: lesson.steps.length, chalkSeconds: audio.chalk.duration } };
 }
 
 function main() {
   try {
     const { html, summary, stats } = build();
     const total = summary.reduce((n, s) => n + s.animEnd, 0);
+    const narr = summary.reduce((n, s) => n + s.audioDuration, 0);
     console.log('빌드 성공: ' + OUTPUT_NAME + ' (' + (Buffer.byteLength(html) / 1048576).toFixed(2) + ' MB)');
-    console.log('단계 ' + summary.length + '개, 판서 합계 ' + total.toFixed(1) + '초 (속도 1배, 자동 넘김 대기 제외)');
-    for (const s of summary) console.log('  - ' + s.id.padEnd(10) + ' 판서 ' + s.animEnd.toFixed(1).padStart(5) + '초 / 머무름 ' + s.holdEnd.toFixed(1).padStart(5) + '초');
-    console.log('글꼴 글자 수 ' + stats.glyphs + ' · 외부 URL 0건 · 글리프 누락 0건');
+    console.log('단계 ' + summary.length + '개, 판서 합계 ' + total.toFixed(1) + '초, 해설 합계 ' + (narr / 60).toFixed(1) + '분 (속도 1배, 단계 사이 0.9초 간격 제외)');
+    for (const s of summary) console.log('  - ' + s.id.padEnd(10) + ' 판서 ' + s.animEnd.toFixed(1).padStart(5) + '초 / 해설 ' + s.audioDuration.toFixed(1).padStart(5) + '초');
+    console.log('글꼴 글자 수 ' + stats.glyphs + ' · 해설 MP3 ' + stats.audioClips + '개 + 분필 녹음(CC0) ' + stats.chalkSeconds.toFixed(1) + '초 내장 · 외부 URL 0건 · 글리프 누락 0건');
   } catch (e) {
     console.error(e.message);
     process.exitCode = 1;

@@ -6,8 +6,14 @@ Playwright + 시스템 Chrome으로 다음을 확인합니다.
   * 페이지 오류/콘솔 오류 없음, 가로 넘침 없음, 외부 요청 없음
   * 단계마다 캔버스가 비어 있지 않고, 좌표평면 가로·세로 배율이 같고(등축), 배치 경고가 없음
   * 재생/일시정지/이전/다음/키보드/해시/자동 넘김/속도 조작
+  * 해설 음성·분필 소리 토글, 분필 음량 기본 25%, 해설 자막(음성 칩·대본) 표시
+  * 자동 넘김: 해설이 끝난 뒤 0.9초 간격을 두고 넘어가며, 끄면 완료 상태에서 멈추고 다시 켜면 이어서 넘어감
+  * 줄어든 동작: 완성된 칠판 + 해설 재생, 해설을 끈 경우 '다음 단계 보기'와 자동 넘김 불가 표시
   * 손글씨 글꼴이 내장 글꼴로 로드되고, 화면에 서식 토큰(^{ }, _{ }, [[ ]])이 남지 않음
   * 푸터 작성자 "Microsoft Korea STU", window.ellipticPlayer 노출
+
+실제 소리가 나오는 재생·활성화·수명주기 검증은 verify_media.py, 분필 소리 신호 검증은 verify_chalk.py 가 맡습니다.
+이 파일의 가짜 시계 시험은 해설 음성을 끄고(시계는 오디오가 아니라 판서) 자동 넘김의 시간 규칙을 봅니다.
 
 스크린샷과 report.json은 --artifacts 폴더에 저장합니다(저장소 밖 경로를 권장).
 사용법:  python3 verify_browser.py --artifacts <폴더> [--html elliptic-curve.html]
@@ -26,6 +32,8 @@ from playwright.sync_api import sync_playwright
 HERE = Path(__file__).resolve().parent
 VIEWPORTS = [("1440", 1440, 900), ("1024", 1024, 768), ("390", 390, 844)]
 CHROME_PATHS = ["/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/usr/bin/chromium", "/usr/bin/chromium-browser"]
+# 실제 브라우저처럼 '사용자 동작이 있어야 소리를 낼 수 있음' 정책을 지킨다(버튼 클릭으로만 재생).
+LAUNCH_ARGS = ["--no-sandbox", "--autoplay-policy=document-user-activation-required"]
 
 results: list[dict] = []
 
@@ -39,8 +47,8 @@ def check(name: str, ok: bool, detail: str = "") -> bool:
 def launch(pw):
     for path in CHROME_PATHS:
         if Path(path).exists():
-            return pw.chromium.launch(executable_path=path, headless=True, args=["--no-sandbox"])
-    return pw.chromium.launch(headless=True, args=["--no-sandbox"])
+            return pw.chromium.launch(executable_path=path, headless=True, args=LAUNCH_ARGS)
+    return pw.chromium.launch(headless=True, args=LAUNCH_ARGS)
 
 
 class Watcher:
@@ -116,7 +124,9 @@ def per_step(tag: str, page, art: Path, shots: bool) -> None:
         st = state(page)
         pct = ink(page)
         check(f"[{tag}] {i + 1}단계 {sid}: 캔버스가 비어 있지 않음", pct > 1.0, f"ink={pct:.2f}%")
-        check(f"[{tag}] {i + 1}단계 {sid}: 완료 상태·재생 멈춤", st["complete"] and not st["playing"], json.dumps(st)[:160])
+        # seek 는 정지 화면을 만들므로 판서가 끝난 상태이고, 해설은 아직 시작 전이라 '완료'(판서+음성)는 아니다
+        check(f"[{tag}] {i + 1}단계 {sid}: 판서 끝 상태·재생 멈춤·소리 없음",
+              st["drawDone"] and not st["playing"] and not st["complete"] and st["audioTime"] == 0, json.dumps(st)[:160])
         check(f"[{tag}] {i + 1}단계 {sid}: 배치 경고 없음", not st["warnings"], json.dumps(st["warnings"], ensure_ascii=False))
         if st["plot"]:
             px, py = st["plot"]["xPxPerUnit"], st["plot"]["yPxPerUnit"]
@@ -135,8 +145,39 @@ def mid_frames(tag: str, page, art: Path) -> None:
         page.evaluate("([i]) => { const p = window.ellipticPlayer; p.seek(i, 0); const end = p.getState().animEnd; p.seek(i, end * 0.45); }", [i])
         page.wait_for_timeout(100)
         st = state(page)
-        check(f"[{tag}] {i + 1}단계 중간 프레임(t={st['t']}): 분필이 그리는 중", 0 < st["t"] < st["animEnd"] and not st["complete"])
+        check(f"[{tag}] {i + 1}단계 중간 프레임(t={st['t']}): 분필이 그리는 중", 0 < st["t"] < st["animEnd"] and not st["drawDone"] and not st["complete"])
         page.locator(".board-frame").screenshot(path=str(art / f"{tag}-step{i + 1}-mid.png"))
+
+
+def audio_controls(tag: str, page) -> None:
+    """해설 음성·분필 토글, 분필 기본 25%, 해설 자막(음성 칩·대본)을 확인합니다. 소리 자체는 verify_media.py 가 잰다."""
+    page.evaluate("() => { const p = window.ellipticPlayer; p.pause(); p.goTo(0, { play: false }); p.setVoiceEnabled(true); p.setChalkEnabled(true); }")
+    st = state(page)
+    check(f"[{tag}] 해설 음성·분필 소리 기본 켬", st["voiceEnabled"] and st["chalkEnabled"], json.dumps(st)[:160])
+    check(f"[{tag}] 분필 음량 기본 25% (슬라이더·표시·상태 일치)",
+          st["chalkVolume"] == 25 and page.input_value("#chalk-volume") == "25" and page.inner_text("#chalk-volume-value").strip() == "25%",
+          f"{st['chalkVolume']} / {page.input_value('#chalk-volume')} / {page.inner_text('#chalk-volume-value')}")
+    chip = page.inner_text("#voice-chip-label")
+    check(f"[{tag}] 음성 칩에 해설 음성 이름 표시", "Haena" in chip or "해나" in chip, chip)
+    narration = page.evaluate("() => document.getElementById('transcript-text').textContent.trim()")
+    check(f"[{tag}] 해설 대본이 화면에 있음(자막)", len(narration) > 40, narration[:40])
+    # 해설 음성 토글
+    page.click("#voice-toggle")
+    check(f"[{tag}] 해설 음성 끄기 (aria-pressed·상태 글자·API)",
+          page.get_attribute("#voice-toggle", "aria-pressed") == "false" and page.inner_text("#voice-state").strip() == "끔" and state(page)["voiceEnabled"] is False)
+    page.click("#voice-toggle")
+    check(f"[{tag}] 해설 음성 다시 켜기", page.get_attribute("#voice-toggle", "aria-pressed") == "true" and state(page)["voiceEnabled"] is True)
+    # 분필 소리 토글
+    page.click("#chalk-toggle")
+    check(f"[{tag}] 분필 소리 끄기 (aria-pressed·상태 글자·API)",
+          page.get_attribute("#chalk-toggle", "aria-pressed") == "false" and page.inner_text("#chalk-state").strip() == "끔" and state(page)["chalkEnabled"] is False)
+    page.click("#chalk-toggle")
+    check(f"[{tag}] 분필 소리 다시 켜기", page.get_attribute("#chalk-toggle", "aria-pressed") == "true" and state(page)["chalkEnabled"] is True)
+    # 슬라이더
+    page.evaluate("() => { const s = document.getElementById('chalk-volume'); s.value = '60'; s.dispatchEvent(new Event('input', { bubbles: true })); }")
+    check(f"[{tag}] 분필 슬라이더 60% 반영", state(page)["chalkVolume"] == 60 and page.inner_text("#chalk-volume-value").strip() == "60%", page.inner_text("#chalk-volume-value"))
+    page.evaluate("() => window.ellipticPlayer.setChalkVolume(25)")
+    check(f"[{tag}] 분필 음량을 25%로 되돌림", state(page)["chalkVolume"] == 25 and page.inner_text("#chalk-volume-value").strip() == "25%")
 
 
 def interactions(tag: str, page) -> None:
@@ -194,13 +235,18 @@ def interactions(tag: str, page) -> None:
 
 
 def auto_advance(browser, url: str) -> None:
-    """가짜 시계로 자동 넘김을 확인합니다 (실제 40초를 기다리지 않음)."""
+    """가짜 시계로 자동 넘김의 시간 규칙(0.9초 간격)을 확인합니다 (실제 40초를 기다리지 않음).
+
+    가짜 시계는 실제 오디오를 돌리지 못하므로 해설 음성을 끄고(시계=판서) 확인합니다.
+    음성이 있는 실제 재생의 자동 넘김은 verify_media.py 가 맡습니다.
+    """
     ctx = browser.new_context(viewport={"width": 1024, "height": 768}, offline=True, locale="ko-KR")
     page = ctx.new_page()
     w = Watcher(page)
     page.clock.install(time=0)
     page.goto(url, wait_until="load")
     page.wait_for_function("() => window.ellipticPlayer && window.ellipticPlayer.getState().ready")
+    page.evaluate("() => { const p = window.ellipticPlayer; p.setVoiceEnabled(false); p.setChalkEnabled(false); }")
     page.evaluate("() => { const p = window.ellipticPlayer; p.seek(5, 0); p.setAuto(true); p.setSpeed(1.5); }")
     page.evaluate("() => window.ellipticPlayer.play()")
     page.clock.run_for(2000)
@@ -212,26 +258,69 @@ def auto_advance(browser, url: str) -> None:
     page.evaluate("() => { const p = window.ellipticPlayer; p.seek(7, 0); p.setAuto(true); p.play(); }")
     page.clock.run_for(90000)
     st = state(page)
-    check("[auto] 마지막 단계는 끝나면 멈춤", st["index"] == 7 and not st["playing"] and st["complete"], json.dumps(st)[:140])
+    check("[auto] 마지막 단계는 끝나면 멈춤", st["index"] == 7 and not st["playing"] and st["complete"] and st["ended"], json.dumps(st)[:140])
     page.evaluate("() => { const p = window.ellipticPlayer; p.seek(2, 0); p.setAuto(false); p.play(); }")
     page.clock.run_for(40000)
     st = state(page)
     check("[auto] 자동 넘김을 끄면 판서가 끝난 뒤 멈춤", st["index"] == 2 and not st["playing"] and st["complete"], json.dumps(st)[:140])
+    check("[auto] 멈춘 상태 문구가 '판서 중'이 아니라 완료를 알림", "판서 중" not in page.inner_text("#status") and "완료" in page.inner_text("#status"), page.inner_text("#status"))
+    # 다시 켜면 완료된 마지막 상태에서 이어서 넘어간다
+    page.evaluate("() => window.ellipticPlayer.setAuto(true)")
+    page.clock.run_for(2000)
+    st = state(page)
+    check("[auto] 자동 넘김을 다시 켜면 완료된 단계에서 이어서 다음 단계로", st["index"] == 3 and st["auto"] and st["playing"], json.dumps(st)[:140])
+
+    # 0.9초 간격: 판서가 끝나고 0.9초가 지나기 전에는 넘어가지 않고, 지난 뒤에는 넘어간다
+    page.evaluate("() => { const p = window.ellipticPlayer; p.seek(0, 0); p.setAuto(true); p.setSpeed(1); p.play(); }")
+    anim_end = state(page)["animEnd"]
+    page.clock.run_for(int(anim_end * 1000) + 300)
+    st = state(page)
+    check("[auto] 판서 완료 직후(0.3초)에는 아직 같은 단계", st["index"] == 0 and st["drawDone"] and st["complete"], json.dumps(st)[:160])
+    check("[auto] 그 사이 상태 문구는 완료·다음 단계 안내(판서 중 아님)", "판서 중" not in page.inner_text("#status") and "다음 단계" in page.inner_text("#status"), page.inner_text("#status"))
+    check("[auto] 대기 시간(hold)이 0.9초 미만", 0.2 < st["hold"] < 0.9, str(st["hold"]))
+    page.clock.run_for(800)
+    st = state(page)
+    check("[auto] 0.9초 뒤에는 다음 단계로 넘어가 재생", st["index"] == 1 and st["playing"], json.dumps(st)[:160])
+
+    # 긴 프레임 지연(탭 지연·렌더 지연)이 시계에서 사라지지 않는다 — 시계는 rAF 타임스탬프 기준
+    page.evaluate("() => { const p = window.ellipticPlayer; p.seek(0, 0); p.setAuto(true); p.setSpeed(1); p.play(); }")
+    page.clock.run_for(1000)
+    t_a = state(page)["t"]
+    page.clock.run_for(2000)
+    t_b = state(page)["t"]
+    check("[auto] 재생 시간이 실제 경과와 같은 속도로 흐름 (2초 → 약 2초)", 1.7 <= t_b - t_a <= 2.3, f"{t_a}->{t_b}")
     check("[auto] 오류 없음", not w.errors, "; ".join(w.errors)[:200])
     ctx.close()
 
 
 def reduced_motion(browser, url: str, art: Path) -> None:
+    """줄어든 동작: 완성된 칠판을 보여 주고, 해설이 켜져 있으면 소리만 재생합니다(실제 오디오는 verify_media.py)."""
     ctx, page, w = open_page(browser, url, 1024, 768, reduced=True)
     st = state(page)
     check("[reduced] 줄어든 동작 감지", st["reduced"] is True)
-    check("[reduced] 시작부터 완성된 칠판", st["complete"] and not st["playing"] and ink(page) > 1.0, json.dumps(st)[:140])
+    check("[reduced] 시작부터 완성된 칠판 (판서 끝·재생 안 함)", st["drawDone"] and not st["playing"] and ink(page) > 1.0, json.dumps(st)[:140])
     check("[reduced] 안내 문구 표시", page.is_visible("#reduced-note"))
-    check("[reduced] 재생 버튼 이름 '다음 단계 보기'", page.inner_text("#play-label") == "다음 단계 보기")
+    check("[reduced] 해설이 켜져 있어 자동 넘김 사용 가능", st["voiceEnabled"] and st["autoAvailable"] and st["auto"], json.dumps(st)[:160])
+    check("[reduced] 재생 버튼 이름 '이 단계 재생' (해설을 들려 줌)", page.inner_text("#play-label") == "이 단계 재생", page.inner_text("#play-label"))
     check("[reduced] 시작 안내 오버레이 숨김", not page.is_visible("#board-hint"))
     page.click("#play")
+    page.wait_for_timeout(900)
     st = state(page)
-    check("[reduced] 재생 버튼은 다음 단계를 완성된 모습으로 보여 줌", st["index"] == 1 and st["complete"] and not st["playing"], json.dumps(st)[:140])
+    check("[reduced] 재생하면 같은 단계에서 해설이 재생되고 판서 애니메이션은 없음", st["index"] == 0 and st["playing"] and st["drawDone"] and st["audioTime"] > 0.3, json.dumps(st)[:180])
+    check("[reduced] 해설 중 상태 문구는 '판서 중'이 아님", "판서 중" not in page.inner_text("#status"), page.inner_text("#status"))
+    page.click("#play")  # 일시정지
+    check("[reduced] 일시정지하면 멈춤", not state(page)["playing"])
+
+    # 해설을 끈 줄어든 동작: 자동 넘김은 쓸 수 없고, 버튼이 정직하게 '다음 단계 보기'가 된다
+    page.click("#voice-toggle")
+    st = state(page)
+    check("[reduced] 해설을 끄면 자동 넘김 사용 불가", st["voiceEnabled"] is False and st["autoAvailable"] is False, json.dumps(st)[:160])
+    check("[reduced] 자동 넘김 버튼이 aria-disabled 와 '불가'로 표시", page.get_attribute("#auto-toggle", "aria-disabled") == "true" and "불가" in page.inner_text("#auto-state"), page.inner_text("#auto-state"))
+    check("[reduced] 재생 버튼 이름 '다음 단계 보기'", page.inner_text("#play-label") == "다음 단계 보기", page.inner_text("#play-label"))
+    page.evaluate("() => window.ellipticPlayer.goTo(0)")
+    page.click("#play")
+    st = state(page)
+    check("[reduced] 재생 버튼은 다음 단계를 완성된 모습으로 보여 줌", st["index"] == 1 and st["drawDone"] and not st["playing"], json.dumps(st)[:140])
     for i in range(8):
         page.evaluate("([i]) => window.ellipticPlayer.goTo(i)", [i])
         st = state(page)
@@ -239,11 +328,12 @@ def reduced_motion(browser, url: str, art: Path) -> None:
             check(f"[reduced] {i + 1}단계 정적 표시", False, json.dumps(st)[:140])
             break
     else:
-        check("[reduced] 8단계 모두 정적으로 완성 표시", True)
+        check("[reduced] 8단계 모두 정적으로 완성 표시(음성 끔)", True)
     page.evaluate("() => window.ellipticPlayer.goTo(3)")
     page.screenshot(path=str(art / "reduced-step4-full.png"), full_page=True)
     page.keyboard.press("Space")
-    check("[reduced] 스페이스 바도 애니메이션을 시작하지 않음", not state(page)["playing"])
+    st = state(page)
+    check("[reduced] 스페이스 바도 애니메이션을 시작하지 않음(다음 단계 보기)", not st["playing"] and st["index"] == 4, json.dumps(st)[:140])
     check("[reduced] 오류 없음", not w.errors, "; ".join(w.errors)[:200])
     ctx.close()
 
@@ -280,6 +370,7 @@ def main() -> int:
                 if tag != "390":
                     mid_frames(tag, page, art)
                 interactions(tag, page)
+                audio_controls(tag, page)
                 common_checks(tag + "/after", page, watcher, w)
                 check(f"[{tag}] 페이지·콘솔 오류 없음", not watcher.errors, "; ".join(watcher.errors)[:300])
                 check(f"[{tag}] 외부 요청 없음", not watcher.external, ", ".join(watcher.external)[:300])

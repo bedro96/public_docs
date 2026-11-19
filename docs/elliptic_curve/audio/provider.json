@@ -1,0 +1,20 @@
+{
+  "provider": "Microsoft Foundry / Azure AI Speech",
+  "model": "MAI-Voice-2",
+  "voice": "ko-KR-Haena:MAI-Voice-2",
+  "synthetic": true,
+  "language": "ko-KR",
+  "format": "audio-24khz-96kbitrate-mono-mp3",
+  "auth": "Microsoft Entra ID (Azure CLI); no keys stored",
+  "script": "elliptic-curve.scene.json steps[].narration",
+  "scriptSha256": {
+    "shape": "4cb914b57f8df6daf4b716c905b9638f723a7063da58a7b7fcddc0baf6df2146",
+    "chord": "24c93e02c9855f67a9b677834dd4c4262d30ccbc83855d82f843ad2bfe18e712",
+    "scalar": "575740fa7ecfaa6eaf855db6c9d7c53bb72f89fc01df2131ffa629a554b9f8c9",
+    "finite": "023b4f66fdcffe526b973a7941a6834c9496363800eb27abf34e12edaa861b60",
+    "ecdlp": "bca705a7bc234d47594d244053a2509534a68d7a2d5a9b4a6df49023c12fe445",
+    "edwards": "a70479f15397c8bb324bba6830366fb40d3e4f8181ea17a4c9a3d595bef5509c",
+    "ed25519": "41cc49a3cc0c5a40851d4d43c64e87f5513584922254d2b6abb3f8106d7c462c",
+    "x509": "a809c1c0432c1e63f2b8365acfb14ac97de35ad338ce3a73e94dc5fa8711b846"
+  }
+}

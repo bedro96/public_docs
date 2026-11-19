@@ -96,13 +96,14 @@ sup, sub { line-height: 0; font-size: 0.72em; }
   word-break: keep-all; text-wrap: balance;
 }
 .lesson-subtitle { margin: 10px 0 0; font: 400 clamp(1rem, 2.2vw, 1.25rem)/1.5 var(--serif); color: var(--ink-soft); font-style: italic; word-break: keep-all; }
-.silent-chip {
+.voice-chip {
   margin: 16px 0 0; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; max-width: 100%;
   padding: 6px 14px; border: 1.5px solid var(--accent-ink); border-radius: 999px; background: #e6f3ea; font-size: 0.88rem;
 }
 .chip-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px rgba(31, 111, 85, 0.22); flex: none; }
 .chip-key { font-weight: 700; color: var(--accent-ink); }
 .chip-val { color: var(--ink); }
+.chip-val:empty { display: none; }
 
 /* ---------- 칠판 ---------- */
 .lecture { outline: none; }
@@ -210,6 +211,9 @@ sup, sub { line-height: 0; font-size: 0.72em; }
 .btn-toggle[aria-pressed="false"] .state { background: #6b6f69; }
 
 .select { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; }
+.chalk-volume { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; font-size: 0.9rem; font-weight: 700; }
+.chalk-volume input { width: 100px; accent-color: var(--accent); }
+.chalk-volume output { min-width: 3.2em; font-variant-numeric: tabular-nums; }
 .select select {
   min-height: 46px; padding: 0 0.7em; font: 700 0.95rem var(--sans); color: var(--ink); background: var(--card);
   border: 1.5px solid var(--ink); border-radius: 10px; box-shadow: 0 3px 0 var(--ink);
@@ -217,6 +221,12 @@ sup, sub { line-height: 0; font-size: 0.72em; }
 
 .note { margin: 10px 0 0; padding: 10px 14px; font-size: 0.92rem; font-weight: 600; color: #0f3d2e; background: #e1f2e8; border-left: 5px solid var(--accent); border-radius: 6px; }
 .note[hidden] { display: none; }
+.voice-label { margin: 12px 0 0; font-size: 0.88rem; color: var(--ink-soft); }
+.voice-label:empty { display: none; }
+.voice-note { margin: 8px 0 0; padding: 0; font-size: 0.92rem; font-weight: 600; }
+.voice-note:empty { display: none; }
+.voice-note.is-error { padding: 10px 14px; color: #6b1212; background: #fde1e1; border-left: 5px solid var(--bad); border-radius: 6px; }
+.voice-note.is-info { padding: 10px 14px; color: #0f3d2e; background: #e1f2e8; border-left: 5px solid var(--accent); border-radius: 6px; }
 .keys { margin: 10px 0 0; font-size: 0.82rem; color: var(--ink-soft); }
 kbd { font: 700 0.78rem var(--sans); padding: 1px 6px; border: 1px solid var(--ink-soft); border-bottom-width: 2px; border-radius: 5px; background: #fff; }
 
@@ -267,6 +277,9 @@ kbd { font: 700 0.78rem var(--sans); padding: 1px 6px; border: 1px solid var(--i
 .callout[data-tone="ok"] { border-color: var(--accent-ink); background: #dff1e6; }
 .callout-title { margin: 0; font: 800 0.98rem/1.5 var(--sans); }
 .callout-text { margin: 4px 0 0; line-height: 1.75; word-break: keep-all; }
+.transcript { margin: 14px 0 0; border: 1.5px dashed var(--rule); border-radius: 8px; background: rgba(255, 255, 255, 0.55); }
+.transcript summary { cursor: pointer; padding: 10px 14px; min-height: 44px; display: flex; align-items: center; font: 700 0.9rem var(--sans); color: var(--ink-soft); }
+.transcript-text { margin: 0; padding: 2px 16px 14px; line-height: 1.85; word-break: keep-all; color: var(--ink); }
 
 /* ---------- 카드(오해·참고 문서) ---------- */
 .card { margin-top: 40px; padding: clamp(18px, 3vw, 30px); background: var(--card); border: 1.5px solid var(--ink); border-radius: 16px; box-shadow: 6px 6px 0 rgba(29, 42, 36, 0.12); }
@@ -300,6 +313,8 @@ kbd { font: 700 0.78rem var(--sans); padding: 1px 6px; border: 1px solid var(--i
   .transport .btn-play { order: -1; flex: 1 1 100%; max-width: none; }
   .options .btn { flex: 1 1 100%; }
   .options .select { flex: 1 1 100%; justify-content: space-between; }
+  .chalk-volume { flex: 1 1 100%; }
+  .chalk-volume input { flex: 1 1 auto; min-width: 80px; }
   .options .select select { flex: 1 1 auto; max-width: 220px; }
   .card { margin-top: 28px; }
   .caption { padding: 14px 14px 16px; }

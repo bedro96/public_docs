@@ -1,5 +1,11 @@
 # Lessons
 
+## 2026-11-19 — SUCCESS PATTERN: narrated chalk lessons use one master clock and real pen-contact audio
+
+**Symptom:** `docs/elliptic_curve` appeared not to auto-advance; it silently held for 22–40 seconds while labelling the wait as drawing, and reset timing on every animation frame.
+**Fix / pattern to reuse:** Use narration `currentTime` as the drawing clock while voice plays; otherwise advance from rAF timestamps without resetting the baseline in the scheduler. Complete a step only after drawing and usable narration finish, show the 0.9-second gap, and reject stale media events. Trigger CC0 recorded chalk only on real pen contacts, with a 25% default and no synthetic fallback.
+Full story: `docs/elliptic_curve/player.js`, `docs/elliptic_curve/verify_media.py`, `docs/elliptic_curve/verify_chalk.py`.
+
 ## 2026-11-19 — SUCCESS PATTERN: fleet-build two anatomy-kit factory modules (research agents → builder agents), `docs/aircraft_assembly`, `docs/cammer_lense_factory`
 
 **Goal:** two bilingual isometric factory models (737 final assembly ending in take-off; LG Innotek-style camera module ending in a phone) from scratch, with deep research.
