@@ -1,5 +1,12 @@
 # Lessons
 
+## 2026-11-20 — FAILURE ROUTE: SVG `<use>` instances lose styles that require an outer ancestor
+
+**Symptom:** The KSTAR cutaway's deck rendered black, while the referenced SVG's highlighted meshes rendered correctly and its bounding box was valid.
+**Root cause:** SVG `<use>` instantiates the referenced subtree in a shadow tree. Selectors requiring the original `<svg>` ancestor (`.machine .iso-edge`) did not match in the instance.
+**Fix / pattern to reuse:** Select classes inside the reused subtree directly, and pass per-instance highlights via inherited CSS custom properties. Inspect rendered pixels in both instances, not just the DOM or bounds.
+Full story: `docs/kstar/geometry.mjs`, `docs/kstar/style.css`, `docs/kstar/functional.py`.
+
 ## 2026-11-19 — SUCCESS PATTERN: narrated chalk lessons use one master clock and real pen-contact audio
 
 **Symptom:** `docs/elliptic_curve` appeared not to auto-advance; it silently held for 22–40 seconds while labelling the wait as drawing, and reset timing on every animation frame.
