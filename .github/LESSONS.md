@@ -1,5 +1,11 @@
 # Lessons
 
+## 2026-11-20 — SUCCESS PATTERN: poll playback in Playwright without weakening the page CSP
+
+**Symptom:** A playback check failed with `unsafe-eval` even though the same standalone HTML played in Chrome.
+**Fix / pattern to reuse:** Pass an arrow function with an explicit argument to `wait_for_function`, rather than a bare expression such as `video.currentTime > 0`. Keep CSP enforced and check decoded audio and real `ended` transitions in the built artifact.
+Full story: `docs/kstar/functional.py`.
+
 ## 2026-11-20 — FAILURE ROUTE: SVG `<use>` instances lose styles that require an outer ancestor
 
 **Symptom:** The KSTAR cutaway's deck rendered black, while the referenced SVG's highlighted meshes rendered correctly and its bounding box was valid.

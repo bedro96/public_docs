@@ -1,0 +1,58 @@
+{
+  "vessel": {
+    "narrationSha256": "e6f82c663f70debb8da0db673d149ed2b4d2c0a013d127de9972487d025b5a91",
+    "videoSha256": "b849f598d8aed1bc5398c0e91a2a3f51ecd4a45f76cf6bf68f238a1af4eba59f"
+  },
+  "tf": {
+    "narrationSha256": "e04027987b125c82839d4ef1cd078f5e66d86462304fd3838c5a01249d8263bb",
+    "videoSha256": "8aa8be2a89860201b127ad69728d3bd1d646d2665461f9a3c3659c52c636e59e"
+  },
+  "pf": {
+    "narrationSha256": "24a0a20bb0c5e65d46ba91db2e83d379aba1cd3414d4a56c51faf42553e18f4f",
+    "videoSha256": "1a1c9fa0b0304c6be1e8af76cacddc7806d76db2aca7d86f465f4548402458b9"
+  },
+  "cs": {
+    "narrationSha256": "9df903eb978921c0c4ddcb698ffd5f058f81c4d161439a0569aedf22006857a2",
+    "videoSha256": "99f3e86c43c0d99ad9d1a136a502400561f7b293a01487c6eadce0dee202841b"
+  },
+  "plasma": {
+    "narrationSha256": "0d047c3c6ef5fc20666ff336293a6147d1a1cc7e2dd232696e7fabe5afa857f9",
+    "videoSha256": "69956e9e0d8400da4cc22899456548b6a08cd4b4a492d1ad18fc032ecc8870da"
+  },
+  "divertor": {
+    "narrationSha256": "63a55e03dd9749738a755814963df0d318c5b5b9b3b5d3d3bb33856b152f0f7e",
+    "videoSha256": "8507c38c657b514052aefc04f45ab9fdb55a29fea3815f43500ea7ac8d748f66"
+  },
+  "seed": {
+    "narrationSha256": "4ad6e0247ce338fb8f8e996fd3ac502153ebcf79f64236b4075b40f87cacdff4",
+    "videoSha256": "d261783f3c2fa4d5ce8447202876b95cd922e2af0557e7784e50684460e79c54"
+  },
+  "toroidal": {
+    "narrationSha256": "2bf4700d46571086520da47c8a6129cc1fcb009973b38e438f494bc5f49d8366",
+    "videoSha256": "f73996e5b59f34889fc7a2ba2c1bc65a35083a3e142d02bca79e6f9a26f8d627"
+  },
+  "helical": {
+    "narrationSha256": "bba95425dc3b130334cd9138fbb029ff760c8882d33c5572a9c27b1a5795df78",
+    "videoSha256": "1be6a7b43f77e769d113840b75e8c192008848d50f876debfd4033e241b6f1eb"
+  },
+  "control": {
+    "narrationSha256": "66a975c83f70d92e181d0017607acca7540ab59d354b8642d4f3dbf168ea356c",
+    "videoSha256": "842f07e810a2125bae6a888538aff1d1173d0ebc437cf63b24b92340514e75df"
+  },
+  "exhaust": {
+    "narrationSha256": "d500c97df23be6ba25fdb60b45563b7a37158d8296198070265ce57b3fb96bde",
+    "videoSha256": "5f5fefbb9927bf024646ea7ffd783a518ea6d1231b5dcce7365999bd67b84433"
+  },
+  "record": {
+    "narrationSha256": "d1f22a63d5221da98ea96a4fcdb1928df1becc3e90730c9c45d42c9d9ee9f514",
+    "videoSha256": "520e7b13021f8fdab33752aca093e37cd5ccb21b0328175c185f42355093d4b2"
+  },
+  "comparison": {
+    "narrationSha256": "e43c912b178c9a8273c74121560fc7476169716c0e2612914581a99cb9af5b98",
+    "videoSha256": "22f38786ab96652f05e4759a3915877bf5c891de7fcb5e124af2623365e05810"
+  },
+  "meaning": {
+    "narrationSha256": "f64e8febe2658bb8435206fdd845a3beda2133d4472a1d1a28f130023614f0c7",
+    "videoSha256": "5ee0d9ceab6dbe897c3e47790e4f24136221fecfecf127db1d1819d92ceab295"
+  }
+}

@@ -42,6 +42,12 @@ export const records = [
 ];
 export const hMode = 102;
 
+export const summaries = [
+  { id: "record", short: "48초와 102초", title: "무엇을 얼마나 오래 유지했을까?", info: "이온온도 유지 시간과 고가둠 유지 시간은 다릅니다. 300초는 이온온도 목표입니다.", refs: ["record", "results"] },
+  { id: "comparison", short: "다른 토카막과 비교", title: "측정 조건이 다르면 순위를 매길 수 없다", info: "KSTAR는 고온 플라스마 제어와 텅스텐 표적의 열 관리를 한 장치에서 시험합니다. EAST와 WEST의 방전 길이, JET의 핵융합 에너지, ITER의 설계 이득은 서로 다른 지표입니다.", refs: ["record", "east", "west", "jet", "iter"] },
+  { id: "meaning", short: "300초의 의미", title: "300초는 오래 제어할 수 있는지 보는 실험", info: "고온 플라스마를 유지하고 열을 처리하는 기술을 검증합니다. 전기를 생산하거나 순이득을 입증하는 실험은 아닙니다.", refs: ["record", "overview", "iter"] },
+];
+
 export const peers = [
   { name: "KSTAR", site: "한국 · KFE", stat: "48초", metric: "중심 이온온도 1억 °C · 2024", note: "초전도 자석, 고온 플라스마 운전과 제어, 텅스텐 디버터를 한 장치에서 시험합니다. 별도의 고가둠(H-모드) 기록은 102초입니다.", refs: ["record", "nature"] },
   { name: "EAST", site: "중국 · ASIPP", stat: "1,066초", metric: "H-모드 · 2025", note: "KSTAR와 같은 초전도 토카막입니다. ITER가 전한 이 방전의 온도는 약 7천만 °C입니다. 이온온도 1억 °C 유지 기록과 같은 조건이 아닙니다.", refs: ["east"] },

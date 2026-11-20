@@ -40,7 +40,7 @@ const warm = (t, p) => profile(t, p, 37, 46);
 const shell = (t, p) => profile(t, p, 61, 71);
 const inner = (t, p) => profile(t, p, 57, 67);
 
-function renderMachine() {
+function renderMachine(orbit = false) {
   const faces = [];
   const push = (part, points, shadeShift = 0) => {
     const n = normalize(cross(sub(points[1], points[0]), sub(points[2], points[1])));
@@ -73,6 +73,8 @@ function renderMachine() {
   // The missing sector is a museum cut, not an opening in the working machine.
   const arc = angles(front - cut, front + TAU - cut, 112);
   surface("plasma", arc, angles(0, TAU, 28), warm, 0.75);
+  if (!orbit) machineParts();
+  function machineParts() {
   const rear = angles(first, last, 68);
   surface("vessel", rear, angles(0, TAU, 32), shell);
   const open = angles(front - cut, first, 40);
@@ -170,8 +172,9 @@ function renderMachine() {
         p.map((x, i) => x + a[i]), [p[0], p[1], p[2] - 0.65]], 1);
     }
   }
+  }
 
-  const foundation = `<path class="iso-halo" d="${haloOf(base, -150, 12, P)}"/>` +
+  const foundation = orbit ? "" : `<path class="iso-halo" d="${haloOf(base, -150, 12, P)}"/>` +
     [[-145, -145], [-145, 145], [145, -145], [145, 145]].sort((a, b) => depth([...a, 0]) - depth([...b, 0]))
       .map(([x, y]) => solidSvg(slabOf({ x: x - 31, y: y - 31, w: 62, d: 62, r: 12 }, -149, 14, P, 6, 2), { tone: "lo" })).join("") +
     solidSvg(slabOf(base, -138, 13, P, 10, 2), { tone: "mid",
@@ -227,6 +230,13 @@ export function shadingCss() {
   return Array.from({ length: TONES }, (_, i) =>
     `.mesh.shade-${i}{--light:${(16 + 73 * i / (TONES - 1)).toFixed(2)}%}`
   ).join("");
+}
+
+export function plasmaOrbitGraphic() {
+  const guide = outline(angles(front, front + TAU, 300).map((t) => warm(t, 0.88)), true);
+  return `<svg class="machine" data-focus="plasma" viewBox="90 12 580 340" aria-hidden="true">
+    ${renderMachine(true)}<path data-orbit="cycle" fill="none" stroke="#fff4d0" opacity=".46" stroke-width="1.25" d="${guide}"/>
+  </svg>`;
 }
 
 export function fieldGraphic() {

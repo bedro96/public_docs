@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src '{{SCRIPT_HASH}}'; style-src '{{STYLE_HASH}}'; base-uri 'none'; form-action 'none'">
-  <meta name="description" content="KSTAR 토카막을 절개 모형으로 살펴보고 자기 가둠, 이온온도 1억 °C, 300초 실험 목표의 의미를 알아봅니다.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src '{{SCRIPT_HASH}}'; style-src '{{STYLE_HASH}}'; media-src data:; img-src data:; frame-src https://www.youtube-nocookie.com; base-uri 'none'; form-action 'none'">
+  <meta name="description" content="한국어 음성 영상으로 KSTAR 토카막의 구조, 플라스마의 자기 가둠, 이온온도 1억 °C급 300초 실험 목표의 의미를 알아봅니다.">
   <title>KSTAR — 1억 도를 가두는 법</title>
   <style>{{STYLE}}</style>
 </head>
@@ -24,6 +24,7 @@
           <h1>KSTAR<span>1억 도를 가두는 법</span></h1>
           <p>어떤 용기도 1억 도의 플라스마를 벽에 닿게 담을 수는 없습니다. 한국핵융합에너지연구원의 KSTAR는 도넛 안에 꼬인 자기장을 만들어 뜨거운 플라스마를 벽에서 떼어 가둡니다.</p>
           <p class="long-name">한국형 초전도 핵융합 연구장치<br><span lang="en">Korea Superconducting Tokamak Advanced Research</span></p>
+          <button type="button" class="js-only" id="play-all" aria-pressed="false">전체 영상 자동 재생</button>
         </div>
         <figure class="figure-plate">
           <div class="plate-head"><span class="plate-index">FIG. 01</span><strong>토카막 절개 모형</strong></div>
@@ -38,18 +39,23 @@
           <h2>도넛을 감싼 자석</h2>
           <p>안쪽부터 플라스마, 진공 용기, 초전도 자석, 자석을 차갑게 유지하는 극저온 용기가 자리합니다. 모형에는 가장 바깥 용기와 보조 설비를 생략했습니다.{{REF_MACHINE}}</p>
         </div>
-        <div class="anatomy-grid">
-          <figure class="figure-plate" id="inspector-plate">
-            <div class="plate-head"><span class="plate-index">FIG. 02</span><strong>부품별로 보기</strong></div>
-            <div class="plate-stage">{{INSPECTOR}}</div>
-            <figcaption class="plate-foot"><span>모형에서 밝게 표시된 부품</span><strong id="part-readout">진공 용기</strong></figcaption>
-          </figure>
-          <div>
-            <div class="component-list js-only" role="group" aria-label="토카막 부품">{{PART_CONTROLS}}</div>
-            <div class="component-note js-only" id="component-note" aria-live="polite">{{FIRST_PART}}</div>
-            <dl class="static-components">{{PART_DETAILS}}</dl>
+        {{MACHINE_LESSON}}
+        <aside class="footage" aria-labelledby="footage-heading">
+          <div><h3 id="footage-heading">KSTAR 실험 현장 영상</h3>
+          <p>한국핵융합에너지연구원(KFE)의 실험 현장 원본입니다. 위 영상에서 주황색 고리를 도는 점은 순환 방향을 설명하는 모형이며, KSTAR 입자를 직접 촬영한 것이 아닙니다.</p></div>
+          <div class="footage-actions">
+            <button type="button" class="js-only footage-load" data-video="Sp99eLMRMDE" data-title="KFE KSTAR 플라스마 실험 현장" aria-controls="footage-kstar" aria-expanded="false">공식 영상 불러오기</button>
+            <a href="https://www.youtube.com/watch?v=Sp99eLMRMDE">KFE 원본 영상 ↗</a>
           </div>
-        </div>
+          <div class="footage-mount" id="footage-kstar" hidden></div>
+          <div><h3>실제 순환 경로 촬영 · ST40</h3>
+          <p>KSTAR가 아닌 ST40의 고속 촬영입니다. Tokamak Energy가 공개한 영상에서 플라스마 가장자리의 빛과 이온화된 리튬이 자기력선을 따라가는 모습을 볼 수 있습니다.</p></div>
+          <div class="footage-actions">
+            <button type="button" class="js-only footage-load" data-video="0MW8nkIeCUI" data-title="Tokamak Energy ST40 플라스마 고속 촬영" aria-controls="footage-st40" aria-expanded="false">고속 영상 불러오기</button>
+            <a href="https://www.youtube.com/watch?v=0MW8nkIeCUI">ST40 원본 영상 ↗</a>
+          </div>
+          <div class="footage-mount" id="footage-st40" hidden></div>
+        </aside>
         <p class="build-note">KFE에 따르면 장치는 2007년 완공됐고 2008년 첫 플라스마를 만들었습니다. 장치 전체는 지름 <strong>9.4 m</strong>, 높이 <strong>9.6 m</strong>이며, 이 값은 내부 플라스마 고리의 크기가 아닙니다.{{REF_DEVICE}}</p>
         <p class="claim-strip"><strong>KSTAR의 특징은 초전도 자석 하나가 아닙니다.</strong> 초전도 자석은 EAST·WEST도 씁니다. KSTAR가 쌓아 온 강점은 1억 °C급 이온온도를 만드는 운전법을, 장시간 제어와 텅스텐 표적의 열 관리까지 함께 시험할 수 있다는 점입니다. 빠른 이온과 열 수송을 줄이는 내부 장벽을 활용한 연구도 이 장치에서 나왔습니다.{{REF_DIFFERENCE}}</p>
       </section>
@@ -59,26 +65,7 @@
           <h2>플라스마는 어떻게<br>한곳에 머물까?</h2>
           <p>토카막은 전하를 안쪽으로 당겨 모으지 않습니다. 두 방향의 자기장을 합쳐 뜨거운 입자가 벽 쪽으로 쉽게 흩어지지 않게 합니다.</p>
         </div>
-        <div class="flow-layout" id="flow" data-step="helical">
-          <figure class="figure-plate" id="field-plate">
-            <div class="plate-head"><span class="plate-index">FIG. 03</span><strong>자기력선과 플라스마 경계</strong></div>
-            <div class="plate-stage">{{FIELD}}</div>
-            <figcaption class="plate-foot"><span>방향 설명용 · 실측 아님</span><strong id="step-readout">토로이달 + 폴로이달 · 나선형</strong></figcaption>
-          </figure>
-          <div>
-            <div class="js-only">
-              <ol class="flow-controls" aria-label="자기 가둠 단계">{{STEP_CONTROLS}}</ol>
-              <article class="step-card" id="step-card" aria-live="polite">{{FIRST_STEP}}</article>
-              <div class="transport" role="group" aria-label="단계 이동과 재생">
-                <button type="button" id="previous" disabled>이전</button>
-                <button type="button" id="next">다음</button>
-                <button type="button" id="play" aria-pressed="false">재생</button>
-                <button type="button" id="reset">처음으로</button>
-              </div>
-            </div>
-            <ol class="static-flow">{{STEP_DETAILS}}</ol>
-          </div>
-        </div>
+        {{FIELD_LESSON}}
       </section>
 
       <section id="record" class="spread">
@@ -86,6 +73,7 @@
           <h2>48초와 102초는<br>다른 기록이다</h2>
           <p>48초는 플라스마 중심부의 이온온도 1억 °C를 유지한 시간입니다. 102초는 가장자리의 열 손실이 줄어드는 고가둠 운전 상태(H-모드)의 유지 시간입니다. 하나의 방전이 두 조건을 함께 충족했다는 뜻이 아닙니다.{{REF_RECORD}}</p>
         </div>
+        {{SUMMARY_LESSON}}
         <div class="record">
           <figure>
             {{RECORDS}}

@@ -1,148 +1,189 @@
-(() => {
+function setupLessons(videos) {
   const root = document.documentElement;
-  const $ = (selector) => document.querySelector(selector);
-  const $$ = (selector) => [...document.querySelectorAll(selector)];
-  const theme = $(".theme");
+  const theme = document.querySelector(".theme");
   theme.addEventListener("click", () => {
     const dark = root.dataset.theme !== "dark";
     root.dataset.theme = dark ? "dark" : "light";
     theme.setAttribute("aria-pressed", String(dark));
   });
 
-  const parts = $$(".component");
-  const partCards = $$(".static-components > div");
-  const partNote = $("#component-note");
-  const partReadout = $("#part-readout");
-  const machine = $("#inspector-plate .machine");
+  const activeVideos = [...document.querySelectorAll(".lesson video")];
+  const footage = [...document.querySelectorAll(".footage-load")].map((button) => ({
+    button,
+    mount: document.getElementById(button.getAttribute("aria-controls")),
+    label: button.textContent,
+  }));
+  const closeFootage = ({ button, mount, label }) => {
+    if (mount.hidden) return;
+    mount.replaceChildren();
+    mount.hidden = true;
+    button.textContent = label;
+    button.setAttribute("aria-expanded", "false");
+  };
+  const all = document.querySelector("#play-all");
+  const playlist = [];
+  let playingAll = false;
+  const setPlaylist = (next) => {
+    playingAll = next;
+    all.setAttribute("aria-pressed", String(next));
+    all.textContent = next ? "전체 자동 재생 끄기" : "전체 영상 자동 재생";
+    playlist.forEach((lesson) => lesson.auto(false));
+  };
+  const pauseLessons = (except) => activeVideos.forEach((video) => {
+    if (video !== except && !video.paused) video.pause();
+  });
+  for (const [group, lesson] of [...document.querySelectorAll(".lesson")].entries()) {
+    const find = (selector) => lesson.querySelector(selector);
+    const chapters = [...lesson.querySelectorAll("[data-chapter]")];
+    const text = [...lesson.querySelectorAll(".chapter-text > li")];
+    const video = find("video");
+    const start = find(".video-start");
+    const poster = find(".video-poster");
+    const auto = find(".lesson-auto");
+    const prev = find(".lesson-prev");
+    const next = find(".lesson-next");
+    const status = find(".lesson-status");
+    let index = 0, autoplay = false, loaded = false, selection = 0;
+    const setAuto = (next) => {
+      autoplay = next;
+      auto.setAttribute("aria-pressed", String(next));
+    };
+    playlist.push({
+      auto: setAuto,
+      begin() {
+        setAuto(true);
+        select(0, true);
+        lesson.scrollIntoView({ behavior: "instant", block: "start" });
+      },
+    });
 
-  function keyboard(event, buttons, index, select) {
-    let next;
-    switch (event.key) {
-      case "ArrowLeft": case "ArrowUp": next = Math.max(0, index - 1); break;
-      case "ArrowRight": case "ArrowDown": next = Math.min(buttons.length - 1, index + 1); break;
-      case "Home": next = 0; break;
-      case "End": next = buttons.length - 1; break;
-      default: return;
+    function select(i, shouldPlay = false) {
+      selection++;
+      index = i;
+      loaded = false;
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      video.hidden = true;
+      poster.hidden = false;
+      start.hidden = false;
+      prev.disabled = i === 0;
+      next.disabled = i === chapters.length - 1;
+      chapters.forEach((button, pos) => button.setAttribute("aria-current", pos === i ? "step" : "false"));
+      find(".lesson-readout").textContent = `${i + 1} / ${chapters.length}`;
+      find(".chapter-description").replaceChildren(...[...text[i].children].map((node) => node.cloneNode(true)));
+      status.textContent = "재생을 누르면 음성이 시작됩니다.";
+      if (shouldPlay) play();
     }
-    event.preventDefault();
-    select(next);
-    buttons[next].focus();
-  }
 
-  function selectPart(index) {
-    parts.forEach((button, i) => button.setAttribute("aria-pressed", String(i === index)));
-    machine.dataset.focus = parts[index].dataset.part;
-    partReadout.textContent = partCards[index].querySelector("dt").textContent;
-    partNote.replaceChildren(...[...partCards[index].querySelector("dd").children].map((node) => node.cloneNode(true)));
-  }
-
-  parts.forEach((button, index) => {
-    button.addEventListener("click", () => selectPart(index));
-    button.addEventListener("keydown", (event) => keyboard(event, parts, index, selectPart));
-  });
-
-  const motion = matchMedia("(prefers-reduced-motion: reduce)");
-  const flow = $("#flow");
-  const flowButtons = $$(".flow-controls button");
-  const flowCards = $$(".static-flow li");
-  const tracks = new Map($$(".field-track [data-track]").map((path) => [path.dataset.track, path]));
-  const marker = $(".tracer");
-  const stepCard = $("#step-card");
-  const stepReadout = $("#step-readout");
-  const previous = $("#previous");
-  const next = $("#next");
-  const play = $("#play");
-  const reset = $("#reset");
-  const beat = 4700;
-  let step = 0, running = false, visible = false, elapsed = 0, last = 0, frame = 0, trackLength = 0;
-
-  function showStep(index) {
-    step = index;
-    elapsed = 0;
-    const id = flowButtons[index].dataset.step;
-    flow.dataset.step = id;
-    trackLength = tracks.get(id).getTotalLength();
-    stepReadout.textContent = flowCards[index].dataset.readout;
-    stepCard.replaceChildren(...[...flowCards[index].children].map((node) => node.cloneNode(true)));
-    previous.disabled = !index;
-    next.disabled = index === flowButtons.length - 1;
-    flowButtons.forEach((button, i) => button.setAttribute("aria-pressed", String(i === index)));
-    paint();
-  }
-
-  function paint() {
-    marker.toggleAttribute("hidden", !running || motion.matches || elapsed === 0);
-    if (marker.hasAttribute("hidden")) return;
-    const path = tracks.get(flow.dataset.step);
-    const unit = elapsed / beat;
-    const phase = flow.dataset.step === "exhaust" ? Math.min(1, unit * 1.18) : unit;
-    const point = path.getPointAtLength(trackLength * phase);
-    marker.setAttribute("cx", point.x.toFixed(2));
-    marker.setAttribute("cy", point.y.toFixed(2));
-  }
-
-  function animate(now) {
-    frame = 0;
-    if (!running || !visible || document.hidden) { last = 0; return; }
-    elapsed += last ? Math.min(80, now - last) : 0;
-    last = now;
-    if (elapsed < beat) paint();
-    else if (step < flowButtons.length - 1) showStep(step + 1);
-    else stop();
-    wake();
-  }
-
-  function wake() {
-    if (!frame && running && visible && !document.hidden) {
-      frame = requestAnimationFrame(animate);
+    async function play() {
+      const currentSelection = selection;
+      pauseLessons(video);
+      if (!loaded) {
+        loaded = true;
+        video.src = `data:video/mp4;base64,${videos[chapters[index].dataset.chapter]}`;
+        video.hidden = false;
+        poster.hidden = true;
+        start.hidden = true;
+      }
+      try {
+        await video.play();
+        if (selection === currentSelection && !video.ended) status.textContent = autoplay ? "재생 중 · 다음 영상으로 자동 이동" : "재생 중";
+      } catch {
+        if (selection !== currentSelection || !loaded) return;
+        if (video.error) {
+          status.textContent = "이 브라우저에서 영상을 재생할 수 없습니다. 아래 음성 대본을 읽어 주세요.";
+          return;
+        }
+        status.textContent = "자동 재생이 차단되었습니다. 영상의 재생 버튼을 눌러 주세요.";
+      }
     }
+
+    video.addEventListener("play", () => {
+      if (playingAll && !autoplay) setPlaylist(false);
+      pauseLessons(video);
+      footage.forEach(closeFootage);
+      status.textContent = autoplay ? "재생 중 · 다음 영상으로 자동 이동" : "재생 중";
+    });
+    video.addEventListener("pause", () => {
+      if (loaded && !video.ended) status.textContent = "일시 정지";
+    });
+    video.addEventListener("error", () => {
+      if (loaded) status.textContent = "영상을 읽지 못했습니다. 아래 음성 대본을 읽어 주세요.";
+    });
+    video.addEventListener("ended", () => {
+      if (!loaded || !video.ended) return;
+      if (autoplay && index < chapters.length - 1) {
+        select(index + 1, true);
+      } else {
+        status.textContent = index === chapters.length - 1 ? "마지막 단계 재생이 끝났습니다." : "재생 완료 · 다음 단계로 이동할 수 있습니다.";
+        if (index === chapters.length - 1) {
+          setAuto(false);
+          if (playingAll && playlist[group + 1]) playlist[group + 1].begin();
+          else if (playingAll) setPlaylist(false);
+        }
+      }
+    });
+    start.addEventListener("click", () => {
+      play();
+      video.focus();
+    });
+    auto.addEventListener("click", () => {
+      const nextState = !autoplay;
+      if (playingAll) setPlaylist(false);
+      setAuto(nextState);
+      if (autoplay && video.ended) select(index < chapters.length - 1 ? index + 1 : 0, true);
+      else if (autoplay) play();
+      else status.textContent = "자동 넘김 꺼짐";
+    });
+    prev.addEventListener("click", () => select(index - 1, true));
+    next.addEventListener("click", () => select(index + 1, true));
+    chapters.forEach((chapter, i) => {
+      chapter.addEventListener("click", () => select(i, true));
+      chapter.addEventListener("keydown", (event) => {
+        const offsets = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 };
+        if (!(event.key in offsets) && event.key !== "Home" && event.key !== "End") return;
+        event.preventDefault();
+        const target = event.key === "Home" ? 0 : event.key === "End" ? chapters.length - 1 :
+          Math.max(0, Math.min(chapters.length - 1, i + offsets[event.key]));
+        chapters[target].focus();
+      });
+    });
+    select(0);
+    find(".chapter-text").hidden = true;
   }
 
-  function stop() {
-    running = false;
-    cancelAnimationFrame(frame);
-    frame = 0;
-    last = 0;
-    play.setAttribute("aria-pressed", "false");
-    play.textContent = "재생";
-    paint();
-  }
-
-  function go(index) {
-    stop();
-    showStep(index);
-  }
-
-  previous.addEventListener("click", () => go(step - 1));
-  next.addEventListener("click", () => go(step + 1));
-  reset.addEventListener("click", () => go(0));
-  play.addEventListener("click", () => {
-    if (running) { stop(); return; }
-    if (step === flowButtons.length - 1) showStep(0);
-    running = true;
-    play.setAttribute("aria-pressed", "true");
-    play.textContent = "일시 정지";
-    wake();
+  all.addEventListener("click", () => {
+    if (playingAll) {
+      setPlaylist(false);
+      pauseLessons();
+    } else {
+      setPlaylist(true);
+      playlist[0].begin();
+    }
   });
-  flowButtons.forEach((button, index) => {
-    button.addEventListener("click", () => go(index));
-    button.addEventListener("keydown", (event) => keyboard(event, flowButtons, index, go));
-  });
 
-  function updateVisibility(isVisible) {
-    visible = isVisible;
-    if (!visible || document.hidden) {
-      cancelAnimationFrame(frame);
-      frame = 0;
-      last = 0;
-    } else wake();
+  for (const entry of footage) {
+    const { button, mount } = entry;
+    button.addEventListener("click", () => {
+      if (!mount.hidden) {
+        closeFootage(entry);
+        return;
+      }
+      if (playingAll) setPlaylist(false);
+      pauseLessons();
+      footage.forEach(closeFootage);
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube-nocookie.com/embed/${button.dataset.video}`;
+      iframe.title = button.dataset.title;
+      iframe.allow = "encrypted-media; picture-in-picture; fullscreen";
+      iframe.allowFullscreen = true;
+      iframe.referrerPolicy = "strict-origin-when-cross-origin";
+      mount.replaceChildren(iframe);
+      mount.hidden = false;
+      button.textContent = "영상 닫기";
+      button.setAttribute("aria-expanded", "true");
+    });
   }
-
-  new IntersectionObserver((entries) => updateVisibility(entries[entries.length - 1].isIntersecting)).observe(flow);
-  document.addEventListener("visibilitychange", () => updateVisibility(visible));
-  motion.addEventListener("change", paint);
-  showStep(0);
-  $(".static-components").hidden = true;
-  $(".static-flow").hidden = true;
   root.dataset.enhanced = "";
-})();
+}
