@@ -1,0 +1,16 @@
+{
+  "blackbody": 55.632,
+  "photoelectric": 57.48,
+  "doubleslit": 51.984,
+  "schrodinger": 58.896,
+  "box": 54.6,
+  "uncertainty": 58.608,
+  "tunneling": 52.272,
+  "spin": 58.128,
+  "entanglement": 58.56,
+  "bell-tests": 52.2,
+  "measurement": 57.312,
+  "qcomputing": 58.704,
+  "applications": 57.936,
+  "frontier": 54.696
+}

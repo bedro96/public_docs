@@ -1,0 +1,51 @@
+{
+  "id": "graphall",
+  "nav": "그래프 전부",
+  "title": "그래프의 모든 요소",
+  "tag": { "tone": "concept", "text": "시험: 축, 곡선, 넓이, 점, 선분, 타원, 글자" },
+  "summary": "축과 **곡선**, 빗금 넓이, 점, 선분, 타원, 자유 글자를 모두 한 번씩 그려 봅니다.",
+  "narration": "이 단계는 시험용 장면입니다. 칠판에 곡선과 넓이와 점과 화살표와 글자를 차례로 그려 보면서, 글자가 서로 겹치지 않는지, 곡선이 칠판 밖으로 나가지 않는지, 한글이 알맞게 줄바꿈되는지를 눈으로 확인합니다. 실제 강의에서는 이 자리에 물리 이야기가 들어가지만 지금은 자리만 채운 문장입니다. 소리 내어 읽지 않아도 되니 그냥 넘어가 주세요. 이 문장은 길이를 맞추기 위한 것입니다. 그러니 천천히 그림이 그려지는 모습만 지켜봐 주세요. 다음 장면으로 넘어가 볼까요.",
+  "beats": [
+    { "at": 0.3, "text": "축과 눈금을 먼저 그려요." },
+    { "at": 6, "text": "곡선, 넓이, 점을 차례로 그려요." },
+    { "at": 20, "text": "선분과 타원과 글자로 마무리해요." }
+  ],
+  "callout": { "tone": "info", "title": "시험용 단계", "text": "모든 요소 종류를 한 장에 모았어요. ψ ħ λ ν |ψ⟩ ∫ √2 ≥ 글자도 함께 확인해요." },
+  "legend": [
+    { "color": "mint", "style": "line", "text": "가우스 곡선 ψ(x)" },
+    { "color": "orange", "style": "dash", "text": "점선 곡선" },
+    { "color": "yellow", "style": "dot", "text": "넓이와 점" }
+  ],
+  "alt": "가로축 x는 0에서 10, 세로축은 -1에서 3입니다. 3 근처에서 솟는 민트색 종 모양 곡선과 주황색 점선 사인 곡선, 노란 빗금 넓이, 분홍 타원과 하늘색 화살표가 있습니다.",
+  "board": {
+    "kind": "graph",
+    "view": { "x": [0, 10], "y": [-1.5, 3] },
+    "equalAspect": false,
+    "elements": [
+      {
+        "type": "axes", "at": 0.3, "dur": 1.4,
+        "xLabel": "위치 x (nm)", "yLabel": "ψ(x), |ψ|^{2}",
+        "xTicks": [ { "v": 2, "label": "2" }, { "v": 4, "label": "4" }, { "v": 6, "label": "6" }, { "v": 8, "label": "8" }, { "v": 10, "label": "10" } ],
+        "yTicks": [ { "v": -1, "label": "-1" }, { "v": 1, "label": "1" }, { "v": 2, "label": "2" }, { "v": 3, "label": "ħ" } ]
+      },
+      { "type": "fn", "expr": "2*exp(-(x-3)^2)", "color": "mint", "at": 2.2, "dur": 2.4, "samples": 240, "label": { "text": "가우스 ψ", "x": 4.6, "y": 0.9 } },
+      { "type": "fn", "expr": "sin(x)+0.5", "color": "orange", "dash": true, "at": 5, "dur": 2.4, "label": { "text": "sin x + 1/2", "x": 8.6, "y": 1.5 } },
+      { "type": "area", "expr": "2*exp(-(x-3)^2)", "x": [2, 4], "color": "yellow", "at": 8, "dur": 1.6 },
+      { "type": "point", "x": 3, "y": 2, "color": "pink", "at": 10, "label": "최댓값 ħ", "dir": "ur" },
+      { "type": "point", "x": 7, "y": 1.2, "color": "sky", "at": 11 },
+      { "type": "seg", "from": [5.2, 2.6], "to": [3.3, 2.05], "color": "sky", "arrow": true, "at": 12, "dur": 1.2, "label": { "text": "|ψ⟩ ≥ 0", "x": 5.3, "y": 2.7 } },
+      { "type": "seg", "from": [3, 0], "to": [3, 2], "color": "white", "style": "dash", "at": 14, "dur": 0.8 },
+      { "type": "ellipse", "cx": 7.6, "cy": 2.1, "rx": 1.6, "ry": 0.6, "color": "pink", "at": 15, "dur": 1.6 },
+      { "type": "ellipse", "cx": 7.6, "cy": -0.6, "rx": 1.8, "ry": 0.6, "color": "sky", "dash": true, "from": 0, "to": 3.14159, "at": 17, "dur": 1.4 },
+      { "type": "text", "x": 0.4, "y": 2.7, "text": "작은 글자 λ ν", "color": "white", "size": "s", "at": 19, "dir": "r" },
+      { "type": "text", "x": 0.4, "y": -1.1, "text": "중간 글자 √2 ∫", "color": "yellow", "size": "m", "at": 20.5, "dir": "r" },
+      { "type": "text", "x": 5.4, "y": -1.1, "text": "큰 ψ ħ", "color": "mint", "size": "l", "at": 22, "dir": "r" }
+    ]
+  },
+  "panel": [
+    { "text": "ψ(x) = 2 e^{-u} + x_{0}", "color": "mint", "size": "l", "at": 0.5 },
+    { "text": "∫ |ψ|^{2} dx ≥ 0", "color": "yellow", "size": "m", "at": 4 },
+    { "text": "|ψ⟩ = α|↑⟩ + β|↓⟩", "color": "pink", "size": "m", "at": 8 },
+    { "text": "λ = h / p, ν = c / λ", "color": "sky", "size": "s", "at": 12 }
+  ]
+}

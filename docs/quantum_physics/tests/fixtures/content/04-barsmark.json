@@ -1,0 +1,41 @@
+{
+  "id": "barsmark",
+  "nav": "막대 기준선",
+  "title": "기준 세로선이 있는 막대",
+  "tag": { "tone": "math", "text": "시험: bars amount 와 markers" },
+  "summary": "막대 세 개와 기준 세로선 둘. 기준선 이름이 서로 겹치지 않고 층을 나눕니다.",
+  "narration": "네 번째 시험 장면입니다. 가로 막대 세 개와 기준 세로선 두 개를 그려서 이름이 겹치지 않는지, 값이 막대 오른쪽에 알맞게 놓이는지 확인합니다. 기준선 이름이 가까이 붙으면 한 층 위로 올라가야 하고, 막대의 한글 이름이 기준선에 가려지지 않아야 합니다. 눈금은 영부터 사까지 놓이고 값은 막대 끝에 적힙니다. 이 글은 시험용 자리 채움이며 실제 강의의 내용이 아닙니다. 마지막으로 글자만 쓰는 빈 칠판 장면을 확인합니다. 곧 끝납니다. 조금만 더 지켜봐 주세요.",
+  "beats": [
+    { "at": 0.3, "text": "기준선 두 개를 먼저 그어요." },
+    { "at": 8, "text": "막대 세 개가 자라요." },
+    { "at": 20, "text": "값을 막대 옆에 적어요." }
+  ],
+  "callout": { "tone": "ok", "title": "겹침 확인", "text": "가까운 기준선 이름은 층을 나눠요." },
+  "legend": [
+    { "color": "mint", "style": "bar", "text": "작은 값 2" },
+    { "color": "yellow", "style": "bar", "text": "중간 값 2.83" },
+    { "color": "orange", "style": "bar", "text": "큰 값 4" },
+    { "color": "pink", "style": "line", "text": "기준선" }
+  ],
+  "alt": "가로 막대 세 개입니다. 값은 2, 2.83, 4이고 축은 0에서 4입니다. 2와 2.2 근처에 세로 기준선이 있습니다.",
+  "board": {
+    "kind": "bars",
+    "axisLabel": "비교 값 S",
+    "axisMax": 4,
+    "axisTicks": [0, 1, 2, 3, 4],
+    "markers": [
+      { "at": 2, "label": "고전 한계 2", "color": "pink" },
+      { "at": 2.3, "label": "가까운 선", "color": "sky" }
+    ],
+    "elements": [
+      { "type": "bar", "color": "mint", "at": 4, "dur": 1.4, "amount": 2, "label": "국소 숨은 변수의 최대", "value": "2" },
+      { "type": "bar", "color": "yellow", "at": 8, "dur": 1.4, "amount": 2.828, "label": "양자역학 (얽힌 한 쌍)", "value": "2√2 ≈ 2.83" },
+      { "type": "bar", "color": "orange", "at": 12, "dur": 1.4, "amount": 4, "label": "신호 금지만 지키는 가상 상자", "value": "4" }
+    ]
+  },
+  "panel": [
+    { "text": "|S| ≤ 2", "color": "pink", "size": "xl", "at": 0.5 },
+    { "text": "|S| = 2√2 ≈ 2.83", "color": "yellow", "size": "l", "at": 8 },
+    { "text": "|S| ≤ 4", "color": "orange", "size": "m", "at": 12 }
+  ]
+}

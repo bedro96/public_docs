@@ -1,0 +1,26 @@
+{
+  "provider": "Microsoft Foundry / Azure AI Speech",
+  "model": "MAI-Voice-2",
+  "voice": "ko-KR-Haena:MAI-Voice-2",
+  "synthetic": true,
+  "language": "ko-KR",
+  "format": "audio-24khz-96kbitrate-mono-mp3",
+  "auth": "Microsoft Entra ID (Azure CLI); no keys stored",
+  "script": "content/NN-*.json narration",
+  "scriptSha256": {
+    "blackbody": "c7f772e6c3015445ef3b44a96117473ad70777fb905ad57b3133ad0bb14e7b66",
+    "photoelectric": "ca8ae1965ad6814a2bd12fa5bc05ce632982a43db695283524d457b2203ca91e",
+    "doubleslit": "1e1bc78423ab629176e1c562f8f6496114e97246138582255775dacaf5d867b6",
+    "schrodinger": "bcdd4be59a11a8a64fbd670e90fb17e398ebfcde4e6385b9ed8960cdf111384b",
+    "box": "63fd73403165091afef87f5556f88a8d851093061c824ca03eb8172f66422e4c",
+    "uncertainty": "7f9873540aa7166d9b440f94f84fcfd9db354f8d9f793833be2dcfb05c2a2a35",
+    "tunneling": "54edc597b84813cabc2cc2cd9a9c055bc1373cfc404c6bcada0f62108bcdee4c",
+    "spin": "cc9a3eebd9f266ec3a7febd06afa4af27673ab8c89846ddcd17205d3d699b376",
+    "entanglement": "7d3339fe3774db508d4f1e96b0f3ddd4f3f6c769b21341d8a7be05f412581bcd",
+    "bell-tests": "cdad9df0129b260c48029c4af5a2b72ee078879ebd598f2d8661890c05b0e0a8",
+    "measurement": "9c18cbc86952a2305f37bae57ebebfb476819218b8fd84dde54994f1294a9c02",
+    "qcomputing": "537760fa9dde5ab725087286670d8ce1413d335c5358f3f11933874c7e0fd0ce",
+    "applications": "d4a898b5a386b99835c7252010646294e8012109ed00ce967e41044c02735b2b",
+    "frontier": "903d4b0c1d1fa4fefbdf9284e13d651cf4f7897dd9aa76793bbffe226196041c"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "graphequal",
+  "nav": "등비 그래프",
+  "title": "가로세로 눈금이 같은 도식",
+  "tag": { "tone": "experiment", "text": "시험: equalAspect 원과 화살표" },
+  "summary": "equalAspect 가 켜지면 원이 찌그러지지 않고 가운데에 놓입니다.",
+  "narration": "두 번째 시험 장면입니다. 가로와 세로 눈금 간격을 같게 맞춘 도식에서 원이 둥글게 그려지는지 확인합니다. 원 위에 점이 있고 화살표가 가운데에서 뻗어 나가며 글자가 둘레에 놓입니다. 글자가 원이나 선과 겹치지 않고 칠판 안쪽에 머무는지 눈으로 살펴봅니다. 휴대전화처럼 좁은 화면에서도 글자가 알아볼 만한 크기인지 함께 확인합니다. 이 문장들은 자리를 채우는 시험용 글입니다. 천천히 지켜봐 주세요. 이어서 상자와 화살표 장면으로 넘어갑니다. 잘 부탁합니다.",
+  "beats": [
+    { "at": 0.3, "text": "원과 축을 그려요." },
+    { "at": 6, "text": "화살표와 점을 더해요." },
+    { "at": 16, "text": "글자를 둘레에 놓아요." }
+  ],
+  "callout": { "tone": "ok", "title": "등비 확인", "text": "가로 배율과 세로 배율이 같아야 해요." },
+  "legend": [
+    { "color": "sky", "style": "line", "text": "원" },
+    { "color": "yellow", "style": "line", "text": "화살표" }
+  ],
+  "alt": "가로 -4에서 4, 세로 -2.5에서 2.5 범위의 원 도식입니다. 하늘색 원과 노란 화살표, 점 네 개가 있습니다.",
+  "board": {
+    "kind": "graph",
+    "view": { "x": [-4, 4], "y": [-2.5, 2.5] },
+    "equalAspect": true,
+    "elements": [
+      { "type": "axes", "at": 0.3, "dur": 1.2, "grid": false, "xLabel": "x", "yLabel": "y", "xTicks": [], "yTicks": [] },
+      { "type": "ellipse", "cx": 0, "cy": 0, "rx": 2, "ry": 2, "color": "sky", "at": 2, "dur": 2 },
+      { "type": "seg", "from": [0, 0], "to": [1.4, 1.4], "color": "yellow", "arrow": true, "at": 5, "dur": 1, "label": { "text": "|ψ⟩", "x": 1.5, "y": 1.5 } },
+      { "type": "point", "x": 0, "y": 2, "color": "mint", "at": 7, "label": "|↑⟩ = |0⟩", "dir": "u" },
+      { "type": "point", "x": 0, "y": -2, "color": "mint", "at": 8.4, "label": "|↓⟩ = |1⟩", "dir": "d" },
+      { "type": "point", "x": 2, "y": 0, "color": "orange", "at": 9.8, "label": "|→⟩", "dir": "r" },
+      { "type": "point", "x": -2, "y": 0, "color": "orange", "at": 11, "label": "|←⟩", "dir": "l" },
+      { "type": "text", "x": -3.9, "y": 2.3, "text": "블로흐 원", "color": "white", "size": "m", "at": 13, "dir": "r" }
+    ]
+  },
+  "panel": [
+    { "text": "|ψ⟩ = α|↑⟩ + β|↓⟩", "color": "white", "size": "l", "at": 0.5 },
+    { "text": "|α|^{2} + |β|^{2} = 1", "color": "yellow", "size": "m", "at": 5 },
+    { "text": "큐비트 = 원 위의 한 점", "color": "pink", "size": "m", "at": 10 }
+  ]
+}
